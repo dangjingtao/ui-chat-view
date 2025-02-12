@@ -4,7 +4,7 @@
   >
     <mobile-chat></mobile-chat>
   </div> -->
-  <div class="border-primary-10 h-full w-full overflow-hidden border">
+  <div class="h-full w-full overflow-hidden">
     <RouterView />
   </div>
 </template>
