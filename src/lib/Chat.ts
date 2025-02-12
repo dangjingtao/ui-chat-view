@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 
-type ProviderName = "kimi" | "qwen" | "deepseek";
+type ProviderName = "kimi" | "qwen" | "deepseek" | "groq";
 
 interface ChatConfig {
   baseURL: string;
@@ -15,6 +15,13 @@ type ConfigMap = {
 };
 
 const configMap: ConfigMap = {
+  groq: {
+    provider: "groq",
+    baseURL: "https://groq.tomz.io/openai/v1",
+    apiKey: "",
+    model: "deepseek-r1-distill-qwen-32b",
+    systemPrompt: "你是一个有用的助手",
+  },
   kimi: {
     provider: "kimi",
     baseURL: "http://localhost:5090/kimi/v1",
@@ -88,7 +95,7 @@ class Chat {
     const { systemPrompt, model } = clientConfig;
 
     if (this.chatHistory.length === 0) {
-      this.chatHistory.push(systemPrompt);
+      this.chatHistory.push({ role: "assistant", content: systemPrompt });
     }
 
     this.chatHistory.push(message);

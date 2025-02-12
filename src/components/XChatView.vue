@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto flex h-full flex-col overflow-auto p-2 text-sm">
+  <div class="mx-auto flex h-full flex-col p-2 text-sm">
     <div class="flex-1" ref="chatHistory">
       <div v-for="(message, index) in messages" :key="index" class="mb-4">
         <div
