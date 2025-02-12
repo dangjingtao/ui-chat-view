@@ -1,0 +1,50 @@
+@import "tailwindcss";
+/* @import "tailwindcss/preflight";
+@import "tailwindcss/utilities"; */
+
+
+@theme {
+  --color-geekblue-1: #f0f5ff;
+  --color-geekblue-2: #d6e4ff;
+  --color-geekblue-3: #adc6ff;
+  --color-geekblue-4: #85a5ff;
+  --color-geekblue-5: #85a5ff;
+  --color-geekblue-6: #2f54eb;
+  --color-geekblue-7: #1d39c4;
+  --color-geekblue-8: #10239e;
+  --color-geekblue-9: #061178;
+  --color-geekblue-10: #030852;
+}
+
+@theme {
+  --color-primary-1: var(--color-geekblue-1);
+  --color-primary-2: var(--color-geekblue-2);
+  --color-primary-3: var(--color-geekblue-3);
+  --color-primary-4: var(--color-geekblue-4);
+  --color-primary-5: var(--color-geekblue-5);
+  --color-primary-6: var(--color-geekblue-6);
+  --color-primary-7: var(--color-geekblue-7);
+  --color-primary-8: var(--color-geekblue-8);
+  --color-primary-9: var(--color-geekblue-9);
+  --color-primary-10: var(--color-geekblue-10);
+  --color-primary: var(--color-geekblue-6);
+  --color-primary-dark: var(--color-geekblue-7);
+  --color-primary-light: var(--color-geekblue-5);
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light dark;
+
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+
+
