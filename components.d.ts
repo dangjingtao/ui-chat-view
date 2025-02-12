@@ -7,12 +7,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Button: typeof import('./src/components/Button.vue')['default']
-    ChatView: typeof import('./src/components/ChatView.vue')['default']
-    Drawer: typeof import('./src/components/Drawer.vue')['default']
-    ICarbonAccessibility: typeof import('~icons/carbon/accessibility')['default']
-    IMdiAccountBox: typeof import('~icons/mdi/account-box')['default']
     IMdiSendOutline: typeof import('~icons/mdi/send-outline')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
     XBrand: typeof import('./src/components/XBrand.vue')['default']
     XButton: typeof import('./src/components/XButton.vue')['default']
     XChatView: typeof import('./src/components/XChatView.vue')['default']
