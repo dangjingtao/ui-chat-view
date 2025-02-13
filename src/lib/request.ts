@@ -32,20 +32,53 @@ service.interceptors.response.use(
   },
 );
 
-// 封装请求方法
-const request = {
+class Request {
+  request(config: {
+    url: string;
+    method: string;
+    headers?: any;
+    data?: any;
+    params?: any;
+  }) {
+    return service.request({
+      url: config.url,
+      method: config.method,
+      headers: config.headers,
+      data: config.data,
+      params: config.params,
+    });
+  }
+
+  // 封装请求方法
   get(url: string, params?: any) {
     return service.get(url, { params });
-  },
+  }
   post(url: string, data?: any) {
     return service.post(url, data);
-  },
+  }
   put(url: string, data?: any) {
     return service.put(url, data);
-  },
+  }
   delete(url: string, params?: any) {
     return service.delete(url, { params });
-  },
+  }
+}
+
+const requestInstance = new Request();
+
+const request = (config: {
+  url: string;
+  method: string;
+  headers?: any;
+  data?: any;
+  params?: any;
+}) => {
+  return requestInstance.request(config);
 };
+
+// 将其他方法绑定到request函数上
+["get", "post", "put", "delete"].forEach((method) => {
+  request[method] = requestInstance[method].bind(requestInstance);
+});
 
 export default request;

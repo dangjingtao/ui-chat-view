@@ -3,10 +3,14 @@
     <header
       class="flex h-10 items-center justify-between gap-2.5 bg-white px-4 text-gray-500 shadow"
     >
+      <div class="text-primary-7 flex-1 font-bold">UI-Chat-View</div>
       <div>
-        <x-select />
+        <x-select
+          :options="modelList"
+          @onChange="onSlectModel"
+          :selectedValue="currentModel"
+        />
       </div>
-      <div class="text-primary-7 flex-1 font-bold">Greeting!</div>
       <div>
         <button class="text-gray-500 focus:outline-none" @click="toggleMenu">
           <svg
@@ -40,41 +44,39 @@
         </x-button>
       </template>
       <template #content>
-        <x-menu class="custom-scrollbar" />
+        <x-menu />
       </template>
     </x-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useCache } from "@/plugins/cachePlugin";
+import request from "@/lib/request";
 
+const modelList = ref([]);
+const currentModel = ref("");
 const menuOpen = ref(false);
+
+const clientCache = useCache();
 
 const toggleMenu = () => {
   menuOpen.value = !menuOpen.value;
 };
+
+const onSlectModel = async (id) => {
+  await clientCache.setCurrentModel(id);
+};
+
+onMounted(async () => {
+  const currentModelCtx = await clientCache.getCurrentModelContext();
+  console.log(1111, currentModelCtx);
+  const { URLs, current_model_name } = currentModelCtx;
+  const { data } = await request.get(URLs.models);
+  console.log(current_model_name);
+  currentModel.value = current_model_name;
+  console.log(current_model_name);
+  modelList.value = data.map((x) => ({ id: x.id, name: x.id }));
+});
 </script>
-
-<style scoped>
-.custom-scrollbar {
-  overflow-y: auto; /* 允许垂直滚动 */
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px; /* 滚动条宽度 */
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #888; /* 滚动条颜色 */
-  border-radius: 4px; /* 滚动条圆角 */
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #555; /* 滚动条悬停颜色 */
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background-color: #f1f1f1; /* 滚动条轨道颜色 */
-}
-</style>

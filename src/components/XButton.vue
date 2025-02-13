@@ -44,7 +44,3 @@ const buttonClass = computed(() => {
   ];
 });
 </script>
-
-<style scoped>
-/* 这里可以添加一些额外的样式 */
-</style>

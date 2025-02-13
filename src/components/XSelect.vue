@@ -4,58 +4,63 @@
       @click="toggleDropdown"
       class="focus:shadow-outline block w-full cursor-pointer rounded bg-white px-4 py-2 pr-8 leading-tight focus:outline-none"
     >
-      {{ selectedOption || "select model" }}
+      {{ selectedValue || props.selectedValue || "Please Select" }}
       <div
         class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
       >
-        <svg
-          class="h-4 w-4 fill-current"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-        >
-          <path
-            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-          />
-        </svg>
+        <img :src="arrowSvg" class="h-4 w-4 fill-current" alt="Arrow Icon" />
       </div>
     </div>
-    <div
-      v-if="isOpen"
-      class="absolute z-10 mt-1 w-full rounded bg-white shadow-lg"
-      style="min-width: 200px"
+
+    <transition
+      :duration="{ enter: 50, leave: 50 }"
+      enter-active-class="transition-opacity"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition-opacity"
+      leave-class="opacity-100"
+      leave-to-class="opacity-0"
     >
       <div
-        v-for="option in options"
-        :key="option"
-        @click="selectOption(option)"
-        class="cursor-pointer px-4 py-1 hover:bg-gray-200"
+        v-if="isOpen"
+        class="absolute right-[-46px] z-10 mt-1 max-h-[500px] w-full min-w-[400px] overflow-auto rounded bg-white text-sm shadow-lg transition-opacity"
       >
-        {{ option }}
+        <div
+          v-for="option in props.options"
+          :key="option.id"
+          @click="selectOption(option.id)"
+          class="cursor-pointer px-4 py-1 hover:bg-gray-100"
+          :class="option.id === selectedValue ? 'bg-gray-200' : ''"
+        >
+          {{ option.name }}
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 
-<script>
-export default {
-  name: "XSelect",
-  data() {
-    return {
-      isOpen: false,
-      selectedOption: "",
-      options: ["kimi", "qwen", "deepseek"],
-    };
-  },
-  methods: {
-    toggleDropdown() {
-      this.isOpen = !this.isOpen;
-    },
-    selectOption(option) {
-      this.selectedOption = option;
-      this.isOpen = false;
-    },
-  },
+<script lang="ts" setup>
+import { ref, defineProps, onMounted, watch, defineEmits } from "vue";
+import arrowSvg from "@/assets/arrow.svg";
+
+const props = defineProps({
+  options: Array,
+  selectedValue: String,
+});
+
+const emits = defineEmits(["onChange"]);
+
+const isOpen = ref(false);
+
+const selectedValue = ref("");
+
+const toggleDropdown = () => {
+  isOpen.value = !isOpen.value;
+};
+
+const selectOption = (option) => {
+  isOpen.value = false;
+  selectedValue.value = option;
+  emits("onChange", option);
 };
 </script>
-
-<style scoped></style>

@@ -1,8 +1,21 @@
-import OpenAI from "openai";
+import { ChatOpenAI } from "@langchain/openai";
+import { ChatOllama } from "@langchain/ollama";
+import { ChatGroq } from "@langchain/groq";
+import _ from "lodash";
+import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import type OpenAI from "openai";
 
-type ProviderName = "kimi" | "qwen" | "deepseek" | "groq";
+type ProviderName =
+  | "kimi"
+  | "qwen"
+  | "deepseek"
+  | "groq"
+  | "ollama"
+  | "openai"
+  | "";
 
 interface ChatConfig {
+  URLs: any;
   baseURL: string;
   apiKey: string;
   provider: ProviderName;
@@ -49,33 +62,60 @@ const configMap: ConfigMap = {
 };
 
 class Chat {
-  private client?: OpenAI | null;
+  private client?: ChatOpenAI | ChatOllama | ChatGroq | OpenAI | null;
   private provider?: ProviderName;
   private clientConfig?: ChatConfig;
   private chatHistory: any[] = [];
 
-  constructor(options?: ChatConfig) {
-    if (options) {
-      this.provider = options.provider;
-      this.clientConfig = options;
-      const { baseURL, apiKey } = options;
-      this.client = new OpenAI({
-        baseURL,
-        apiKey,
-        dangerouslyAllowBrowser: true,
-      });
+  constructor() {}
+
+  use(config: any) {
+    this.clientConfig = _.merge(this.clientConfig, config);
+    return this;
+  }
+
+  private validConfig() {
+    if (!this.clientConfig) {
+      throw new Error("Client not initialized");
+    }
+    const { provider, model, URLs, apiKey } = this.clientConfig;
+
+    const requiredFields = { provider, model, URLs };
+    for (const [key, value] of Object.entries(requiredFields)) {
+      if (!value) {
+        throw new Error(
+          `${key.charAt(0).toUpperCase() + key.slice(1)} not set`,
+        );
+      }
     }
   }
 
-  use(provider: ProviderName) {
-    this.provider = provider;
-    this.clientConfig = configMap[this.provider];
-    const { baseURL, apiKey } = this.clientConfig;
-    this.client = new OpenAI({
-      baseURL,
-      apiKey,
-      dangerouslyAllowBrowser: true,
-    });
+  init() {
+    const { provider, model, URLs, apiKey, chatHistory } = this.clientConfig;
+    this.validConfig();
+    switch (provider) {
+      case "ollama":
+        this.client = new ChatOllama({
+          model: model,
+        });
+        break;
+      case "groq":
+        this.client = new ChatGroq({
+          baseUrl: URLs.base,
+          apiKey: apiKey,
+        });
+        break;
+      default:
+        this.client = new ChatOpenAI({
+          configuration: {
+            baseURL: URLs.base,
+          },
+          apiKey: apiKey,
+        });
+    }
+    console.log(this.client);
+
+    return this;
   }
 
   clearHistory() {
@@ -87,32 +127,29 @@ class Chat {
   }
 
   async sendMessage(message: string) {
-    if (!this.client || !this.clientConfig) {
-      throw new Error("Client not initialized");
-    }
-
     const { clientConfig } = this;
-    const { systemPrompt, model } = clientConfig;
+    const { systemPrompt } = clientConfig;
 
     if (this.chatHistory.length === 0) {
-      this.chatHistory.push({ role: "assistant", content: systemPrompt });
+      this.chatHistory.push({
+        role: "assistant",
+        content: systemPrompt || "你是一个有用的助手",
+      });
     }
 
     this.chatHistory.push(message);
-
-    const completion = await this.client.chat.completions.create({
-      model: model,
-      messages: this.chatHistory,
-      temperature: 0.3,
+    console.log(this.chatHistory);
+    const chst = this.chatHistory.map((item) => {
+      if (item.role === "assistant") {
+        return new SystemMessage(item.content);
+      } else {
+        return new HumanMessage(item.content);
+      }
     });
+    const r = await this.client?.invoke(chst);
+    console.log(r);
 
-    return this.reply(completion);
-  }
-
-  async reply(completion: any) {
-    const { choices } = completion;
-    const { message } = choices[0];
-    return message;
+    return r;
   }
 }
 
