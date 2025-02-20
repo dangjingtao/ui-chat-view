@@ -1,16 +1,7 @@
-type ProviderName = "kimi" | "qwen" | "deepseek" | "groq" | "ollama";
+type ProviderName = "kimi" | "qwen" | "deepseek" | "groq" | "ollama" | "openAI";
 type Models = {
   chatConfig: any;
   chatHistory: any[];
-};
-
-type Charactor = {
-  name: string;
-  chatClass: string;
-  type: ProviderName;
-  avatar: string;
-  description: string;
-  chatConfig: ChatConfig;
 };
 
 interface ChatConfig {
@@ -41,16 +32,17 @@ const llm_urls = (baseURL: string, extend?: any) => {
 const modelsMap: ConfigMap = {
   ollama: {
     provider: "ollama",
-    URLs: llm_urls("http://localhost:11434/v1"),
+    URLs: llm_urls("http://localhost:11434/v1", {
+      models: "http://localhost:11434/v1/models",
+    }),
     apiKey: "1234",
-    currentChatId: "", // or new
-    chatList: [],
+    systemPrompt: "You are a helpful assistant.",
   },
   groq: {
     provider: "groq",
     URLs: llm_urls("https://groq.tomz.io"),
     apiKey: "3214",
-    systemPrompt: "你是一个有用的助手",
+    systemPrompt: "You are a helpful assistant.",
   },
   // kimi: {
   //   provider: "kimi",
@@ -78,12 +70,37 @@ const modelsMap: ConfigMap = {
 };
 
 // 对话列表
-const chatList = [];
+type Conversation = {
+  id: string;
+  provider: string;
+  model: string;
+  chatHistory: any[];
+};
+type ConversationsList = Conversation[];
+const conversationsList: ConversationsList = [];
 
+// 角色列表
+type Charactor = {
+  name: string;
+  chatClass: string;
+  type: ProviderName;
+  avatar: string;
+  description: string;
+  chatConfig: ChatConfig;
+};
 const characterList: Charactor[] = [];
+
+export type ChatMessage = {
+  id?: string;
+  content: string;
+  role: string;
+  timestamp?: Date;
+  stream?: any;
+};
 
 export default {
   isInited: true,
   models: modelsMap,
-  character: characterList,
+  characters: characterList,
+  conversations: conversationsList,
 };

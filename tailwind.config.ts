@@ -3,6 +3,14 @@
 export default {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      spacing: {
+        "safe-top": "var(--safe-area-inset-top)",
+        "safe-right": "var(--safe-area-inset-right)",
+        "safe-bottom": "var(--safe-area-inset-bottom)",
+        "safe-left": "var(--safe-area-inset-left)",
+      },
+    },
   },
+  plugins: [require("tailwindcss-safe-area")],
 };

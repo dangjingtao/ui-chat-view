@@ -2,9 +2,11 @@
   <div class="relative inline-block w-full min-w-[120px]">
     <div
       @click="toggleDropdown"
-      class="focus:shadow-outline block w-full cursor-pointer rounded bg-white px-4 py-2 pr-8 leading-tight focus:outline-none"
+      class="focus:shadow-outline block w-full cursor-pointer rounded bg-white px-4 py-2 pr-8 text-sm leading-3.5 focus:outline-none"
     >
-      {{ selectedValue || props.selectedValue || "Please Select" }}
+      <span class="truncate">{{
+        selectedValue || props.selectedValue || "Please Select"
+      }}</span>
       <div
         class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
       >
@@ -23,7 +25,7 @@
     >
       <div
         v-if="isOpen"
-        class="absolute right-[-46px] z-10 mt-1 max-h-[500px] w-full min-w-[400px] overflow-auto rounded bg-white text-sm shadow-lg transition-opacity"
+        class="absolute right-[-40px] z-10 mt-1 max-h-[500px] w-full min-w-[400px] overflow-auto rounded bg-white text-sm shadow-lg transition-opacity"
       >
         <div
           v-for="option in props.options"
@@ -40,25 +42,38 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, onMounted, watch, defineEmits } from "vue";
+import { ref, defineProps, defineEmits, watch } from "vue";
 import arrowSvg from "@/assets/arrow.svg";
 
-const props = defineProps({
-  options: Array,
-  selectedValue: String,
-});
+interface Option {
+  id: string;
+  name: string;
+}
 
-const emits = defineEmits(["onChange"]);
+const props = defineProps<{
+  options: Option[];
+  selectedValue: string;
+}>();
+
+const emits = defineEmits<{
+  (e: "onChange", value: string): void;
+}>();
 
 const isOpen = ref(false);
-
 const selectedValue = ref("");
+
+watch(
+  () => props.selectedValue,
+  (newValue) => {
+    selectedValue.value = newValue;
+  },
+);
 
 const toggleDropdown = () => {
   isOpen.value = !isOpen.value;
 };
 
-const selectOption = (option) => {
+const selectOption = (option: string) => {
   isOpen.value = false;
   selectedValue.value = option;
   emits("onChange", option);

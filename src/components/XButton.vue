@@ -6,9 +6,11 @@
 
 <script setup lang="ts">
 import { defineEmits, computed } from "vue";
+import { twMerge } from "tailwind-merge";
 
 const props = defineProps<{
-  type?: "primarily" | "ghost";
+  round?: boolean;
+  type?: "primarily" | "ghost" | "text";
   size?: "small" | "default" | "large";
   disabled?: boolean;
   class?: string;
@@ -27,6 +29,7 @@ const buttonClass = computed(() => {
     primarily: "bg-primary-6 text-white hover:bg-primary-7",
     ghost:
       "bg-transparent border border-primary-6 text-primary-6 hover:bg-primary-1",
+    text: "bg-transparent text-primary-6 hover:bg-primary-1",
   };
 
   const sizeMap = {
@@ -35,12 +38,15 @@ const buttonClass = computed(() => {
     large: "px-6 py-3 text-lg",
   };
 
-  return [
-    "text-center leading-normal rounded-md transition-colors duration-100 ease-in-out",
+  const classResult = [
+    "text-center leading-normal transition-colors duration-100 ease-in-out",
+    props.round ? "rounded-full" : "rounded-md",
     sizeMap[props.size || "default"],
     typeMap[props.type || "primarily"],
     props.disabled ? "opacity-50 cursor-not-allowed" : "",
     props.class,
   ];
+
+  return twMerge(...classResult);
 });
 </script>

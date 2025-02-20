@@ -1,9 +1,27 @@
 import { ChatOpenAI } from "@langchain/openai";
-import { ChatOllama } from "@langchain/ollama";
+import { ChatOllama, Ollama } from "@langchain/ollama";
 import { ChatGroq } from "@langchain/groq";
 import _ from "lodash";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
-import type OpenAI from "openai";
+import {
+  HumanMessage,
+  SystemMessage,
+  AIMessage,
+} from "@langchain/core/messages";
+import ComonError from "@/lib/comonError";
+import {
+  START,
+  END,
+  MessagesAnnotation,
+  StateGraph,
+  Annotation,
+} from "@langchain/langgraph/web";
+import {
+  ChatPromptTemplate,
+  SystemMessagePromptTemplate,
+} from "@langchain/core/prompts";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+import { v4 as uuid } from "uuid";
+import { RunnableSequence, RunnableLambda } from "@langchain/core/runnables";
 
 type ProviderName =
   | "kimi"
@@ -23,57 +41,22 @@ interface ChatConfig {
   model: string;
 }
 
-type ConfigMap = {
-  [key in ProviderName]: ChatConfig;
-};
-
-const configMap: ConfigMap = {
-  groq: {
-    provider: "groq",
-    baseURL: "https://groq.tomz.io/openai/v1",
-    apiKey: "",
-    model: "deepseek-r1-distill-qwen-32b",
-    systemPrompt: "你是一个有用的助手",
-  },
-  kimi: {
-    provider: "kimi",
-    baseURL: "http://localhost:5090/kimi/v1",
-    apiKey: "",
-    model: "moonshot-v1-8k",
-    systemPrompt:
-      "你是 Kimi，由 Moonshot AI 提供的人工智能助手，你更擅长中文和英文的对话。你会为用户提供安全，有帮助，准确的回答。同时，你会拒绝一切涉及恐怖主义，种族歧视，黄色暴力等问题的回答。Moonshot AI 为专有名词，不可翻译成其他语言。",
-  },
-  qwen: {
-    provider: "qwen",
-    baseURL: "http://localhost:5090/qwen/v1",
-    apiKey: "",
-    model: "qwen-v1-8k",
-    systemPrompt:
-      "你是 Qwen，由 Qwen AI 提供的人工智能助手，你更擅长中文和英文的对话。你会为用户提供安全，有帮助，准确的回答。同时，你会拒绝一切涉及恐怖主义，种族歧视，黄色暴力等问题的回答。Qwen AI 为专有名词，不可翻译成其他语言。",
-  },
-  deepseek: {
-    provider: "deepseek",
-    baseURL: "http://localhost:5090/deepseek/v1",
-    apiKey: "",
-    model: "deepseek-v1-8k",
-    systemPrompt:
-      "你是 DeepSeek，由 DeepSeek AI 提供的人工智能助手，你更擅长中文和英文的对话。你会为用户提供安全，有帮助，准确的回答。同时，你会拒绝一切涉及恐怖主义，种族歧视，黄色暴力等问题的回答。DeepSeek AI 为专有名词，不可翻译成其他语言。",
-  },
-};
-
 class Chat {
-  private client?: ChatOpenAI | ChatOllama | ChatGroq | OpenAI | null;
+  private client?: ChatOpenAI | ChatOllama | ChatGroq | null;
   private provider?: ProviderName;
   private clientConfig?: ChatConfig;
   private chatHistory: any[] = [];
+  private app: any;
+  private clientMap: any;
 
   constructor() {}
 
   use(config: any) {
-    this.clientConfig = _.merge(this.clientConfig, config);
+    this.clientConfig = config;
     return this;
   }
 
+  // 抛错模块，用于检查是否有必要的配置
   private validConfig() {
     if (!this.clientConfig) {
       throw new Error("Client not initialized");
@@ -83,9 +66,11 @@ class Chat {
     const requiredFields = { provider, model, URLs };
     for (const [key, value] of Object.entries(requiredFields)) {
       if (!value) {
-        throw new Error(
-          `${key.charAt(0).toUpperCase() + key.slice(1)} not set`,
-        );
+        throw new ComonError(`Missing required field: ${key}`, {
+          code: key,
+          key,
+          value,
+        });
       }
     }
   }
@@ -93,27 +78,42 @@ class Chat {
   init() {
     const { provider, model, URLs, apiKey, chatHistory } = this.clientConfig;
     this.validConfig();
-    switch (provider) {
-      case "ollama":
-        this.client = new ChatOllama({
-          model: model,
-        });
-        break;
-      case "groq":
-        this.client = new ChatGroq({
-          baseUrl: URLs.base,
-          apiKey: apiKey,
-        });
-        break;
-      default:
-        this.client = new ChatOpenAI({
-          configuration: {
-            baseURL: URLs.base,
-          },
-          apiKey: apiKey,
-        });
+    this.chatHistory = chatHistory || [];
+    this.clientMap = this.clientMap || {};
+    if (!this.clientMap[provider]) {
+      let client: any = null;
+      switch (provider) {
+        case "ollama":
+          client = new ChatOllama({
+            model: model,
+            streaming: true,
+          });
+          break;
+        case "groq":
+          client = new ChatGroq({
+            model,
+            baseUrl: URLs.base,
+            apiKey: apiKey,
+          });
+          break;
+        default:
+          client = new ChatOpenAI({
+            configuration: {
+              baseURL: URLs.base,
+            },
+            apiKey: apiKey,
+          });
+      }
+      client.model = model;
+      this.clientMap[provider] = client;
+      this.client = client;
+    } else {
+      this.clientMap[provider].model = model;
+      this.client = this.clientMap[provider];
     }
-    console.log(this.client);
+
+    this.initChain(this.client);
+    this.initMiniPermissionChain(this.client);
 
     return this;
   }
@@ -126,30 +126,86 @@ class Chat {
     return this.chatHistory;
   }
 
-  async sendMessage(message: string) {
-    const { clientConfig } = this;
-    const { systemPrompt } = clientConfig;
+  initMiniPermissionChain(client) {
+    const systemMessage = SystemMessagePromptTemplate.fromTemplate(
+      "You are a useful assistant who is good at summarizing the current chat content in concise Chinese (no more than 20 words), and your reply only summarizes the user's chat content.",
+    );
+    const chatPrompt = ChatPromptTemplate.fromMessages([
+      systemMessage,
+      ["placeholder", "{messages}"],
+    ]);
 
-    if (this.chatHistory.length === 0) {
-      this.chatHistory.push({
-        role: "assistant",
-        content: systemPrompt || "你是一个有用的助手",
+    const parser = new StringOutputParser();
+
+    this.miniApp = chatPrompt.pipe(client).pipe(parser);
+  }
+
+  initChain(client) {
+    const systemMessage = SystemMessagePromptTemplate.fromTemplate(
+      "You are a helpful assistant. Answer all questions to the best of your ability in {language}.",
+    );
+    const chatPrompt = ChatPromptTemplate.fromMessages([
+      systemMessage,
+      ["placeholder", "{messages}"],
+    ]);
+
+    const parser = new StringOutputParser();
+
+    this.app = chatPrompt
+      .pipe(client)
+      // .pipe(
+      //   new RunnableLambda({
+      //     func(state) {
+      //       console.log("state", state, this);
+      //       return state;
+      //     },
+      //   }),
+      // )
+      .pipe(parser);
+  }
+
+  formatChatHistory() {
+    console.log("chatHistory", this.chatHistory);
+    const chst = this.chatHistory.map((item) => {
+      if (item.role === "assistant") {
+        return new AIMessage(item.content || "");
+      } else {
+        return new HumanMessage(item.content || "");
+      }
+    });
+    return chst;
+  }
+
+  async sendMessage() {
+    const { app } = this;
+    if (!app) {
+      throw new Error("App not initialized");
+    }
+    const config = {};
+    const chatContext = { messages: this.chatHistory, language: "Chinese" };
+    const stream = await app.stream(chatContext, config);
+    let title = "";
+    if (chatContext.messages.length > 0 && chatContext.messages.length < 2) {
+      // 生成对话标题
+      title = await this.miniApp.invoke({
+        messages: [
+          {
+            role: "user",
+            content:
+              chatContext.messages[chatContext.messages.length - 1].content,
+          },
+        ],
       });
     }
 
-    this.chatHistory.push(message);
-    console.log(this.chatHistory);
-    const chst = this.chatHistory.map((item) => {
-      if (item.role === "assistant") {
-        return new SystemMessage(item.content);
-      } else {
-        return new HumanMessage(item.content);
-      }
-    });
-    const r = await this.client?.invoke(chst);
-    console.log(r);
-
-    return r;
+    return {
+      title,
+      role: "assistant",
+      stream,
+      content: "",
+      timeStamp: Date.now(),
+      id: uuid(),
+    };
   }
 }
 

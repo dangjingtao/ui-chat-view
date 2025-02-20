@@ -4,4 +4,6 @@ import cachePlugin from "@/plugins/cachePlugin/index";
 import "./style.css";
 import App from "./App.vue";
 
-createApp(App).use(cachePlugin).use(router).mount("#app");
+cachePlugin.install().then(() => {
+  createApp(App).use(router).mount("#app");
+});

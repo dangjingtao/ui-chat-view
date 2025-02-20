@@ -7,7 +7,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    IMdiCloseOutline: typeof import('~icons/mdi/close-outline')['default']
+    IMdiMenu: typeof import('~icons/mdi/menu')['default']
+    IMdiMenuOutline: typeof import('~icons/mdi/menu-outline')['default']
     IMdiSendOutline: typeof import('~icons/mdi/send-outline')['default']
+    IMdiStop: typeof import('~icons/mdi/stop')['default']
+    IMdiStopOutline: typeof import('~icons/mdi/stop-outline')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     XBrand: typeof import('./src/components/XBrand.vue')['default']
@@ -15,6 +20,7 @@ declare module 'vue' {
     XChatView: typeof import('./src/components/XChatView.vue')['default']
     XDrawer: typeof import('./src/components/XDrawer.vue')['default']
     XMenu: typeof import('./src/components/XMenu.vue')['default']
+    XMessage: typeof import('./src/components/XMessage.vue')['default']
     XSelect: typeof import('./src/components/XSelect.vue')['default']
     XWelcome: typeof import('./src/components/XWelcome.vue')['default']
   }

@@ -25,7 +25,7 @@
     leave-to-class="translate-x-full"
   >
     <div
-      v-if="menuOpen"
+      v-show="menuOpen"
       class="absolute top-0 right-0 z-50 flex h-full justify-end"
     >
       <div class="z-50 h-full w-64 bg-white shadow-lg">
@@ -46,7 +46,6 @@
 
 <script setup lang="ts">
 import { defineProps, watch } from "vue";
-import XButton from "@/components/XButton.vue";
 
 const props = defineProps({
   menuOpen: Boolean,
