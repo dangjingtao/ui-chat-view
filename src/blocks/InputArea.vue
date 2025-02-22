@@ -4,7 +4,7 @@
       'outline-none': !isFocused,
       'outline-primary-light outline-2': isFocused,
     }"
-    class="absolute right-0 bottom-[25px] left-0 m-auto mb-4 flex w-[90%] max-w-[800px] min-w-[300px] flex-col items-end overflow-hidden rounded-lg border border-gray-200 bg-white p-0 shadow-lg"
+    class="absolute right-0 bottom-[25px] left-0 m-auto mb-4 flex w-[94%] max-w-[800px] min-w-[300px] flex-col items-end overflow-hidden rounded-lg border border-gray-200 bg-white p-0 shadow-lg"
   >
     <textarea
       @keydown="handleKeyDown"
@@ -23,11 +23,11 @@
           角色预设
         </x-button>
         <x-button type="text" size="small" @click="props.onStop" class="h-8">
-          + 附件
+          attachment
         </x-button>
-        <!-- <x-button type="text" size="small" @click="props.onStop" class="h-8">
+        <x-button type="text" size="small" @click="props.onStop" class="h-8">
           联网搜索
-        </x-button> -->
+        </x-button>
       </div>
       <x-button
         v-if="!props.isSending"
@@ -98,6 +98,7 @@ const autoResize = () => {
 };
 
 const onSend = async () => {
+  if (!canSend.value) return;
   // 在此写入父组件的onsend方法
   props.onSend?.({ role: "user", content: textareaValue.value });
   textareaValue.value = "";

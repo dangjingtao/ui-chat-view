@@ -1,15 +1,15 @@
-import { createMemoryHistory, createRouter } from "vue-router";
+import { createWebHistory, createRouter } from "vue-router";
 
-import HomeView from "@/blocks/MobileChat.vue";
-// import AboutView from "./AboutView.vue";
+import Home from "@/pages/Home.vue";
+import Setting from "@/pages/Setting.vue";
 
 const routes = [
-  { path: "/", component: HomeView },
-  // { path: "/about", component: AboutView },
+  { path: "/", component: Home },
+  { path: "/settings", component: Setting },
 ];
 
 const router = createRouter({
-  history: createMemoryHistory(),
+  history: createWebHistory(),
   routes,
 });
 

@@ -1,11 +1,11 @@
 <template>
   <div class="h-full w-full text-gray-700">
-    <ul class="flex flex-col gap-0.5 text-sm">
+    <ul class="flex flex-col gap-2 text-sm">
       <li
         v-for="item in props.menus"
         :key="item.id"
         :class="[
-          'flex cursor-pointer gap-0.5 rounded-md px-2 py-2 hover:bg-gray-100',
+          'flex cursor-pointer gap-0.5 rounded-md px-2 py-1.5 leading-6 hover:bg-gray-100',
           { 'bg-gray-100': selectedIndex === item.id },
         ]"
         @click="selectItem(item.id)"
@@ -14,8 +14,8 @@
         <x-button
           @click.stop="onDeleteMenuItem(item.id)"
           size="small"
-          class="ml-auto bg-gray-200 hover:bg-gray-400"
-          >-</x-button
+          class="ml-auto cursor-pointer bg-gray-200 hover:bg-gray-400"
+          >x</x-button
         >
       </li>
     </ul>

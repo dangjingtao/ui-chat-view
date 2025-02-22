@@ -2,7 +2,8 @@
   <div class="relative inline-block w-full min-w-[120px]">
     <div
       @click="toggleDropdown"
-      class="focus:shadow-outline block w-full cursor-pointer rounded bg-white px-4 py-2 pr-8 text-sm leading-3.5 focus:outline-none"
+      class="focus:shadow-outline transition-border block w-full cursor-pointer rounded border bg-white px-4 py-2 pr-8 text-sm leading-3.5 focus:outline-none"
+      :class="isOpen ? 'border-gray-300' : 'border-gray-100'"
     >
       <span class="truncate">{{
         selectedValue || props.selectedValue || "Please Select"
@@ -25,7 +26,8 @@
     >
       <div
         v-if="isOpen"
-        class="absolute right-[-40px] z-10 mt-1 max-h-[500px] w-full min-w-[400px] overflow-auto rounded bg-white text-sm shadow-lg transition-opacity"
+        class="absolute z-10 mt-2 overflow-auto rounded bg-white text-sm shadow-lg transition-opacity"
+        :class="props.dropdownClass || 'w-full'"
       >
         <div
           v-for="option in props.options"
@@ -53,6 +55,7 @@ interface Option {
 const props = defineProps<{
   options: Option[];
   selectedValue: string;
+  dropdownClass?: string;
 }>();
 
 const emits = defineEmits<{

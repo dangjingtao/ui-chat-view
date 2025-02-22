@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex h-full w-full flex-col bg-gray-50">
+  <div class="relative flex h-full w-full flex-col gap-0.5 bg-gray-50">
     <Chat-header
       :models="models"
       :currentModel="defaultCtx?.model ?? ''"
@@ -88,11 +88,16 @@ const chatHistory = computed(() => {
 
 const handleInitError = (e) => {
   const errorMessage: string = (e as any)?.message || "Unknown error";
-  globalInfoList.value.push({
-    code: (e as any)?.data?.code || "500",
-    content: errorMessage,
-    type: "danger",
-  });
+  const existingIndex = globalInfoList.value.findIndex(
+    (item) => item.content === errorMessage,
+  );
+  if (existingIndex === -1) {
+    globalInfoList.value.push({
+      code: (e as any)?.data?.code || "500",
+      content: errorMessage,
+      type: "danger",
+    });
+  }
 };
 
 //!
@@ -190,11 +195,18 @@ const onDeleteConversation = async (conversationId) => {
   const { conversations: newConversations } =
     await clientCache.deleteConversation(conversationId);
   // 需要判断delete的是当前的情况
-
-  chatCtx.value = {
-    ...chatCtx.value,
-    conversations: newConversations,
-  };
+  if (conversationId === selectedConversation.value) {
+    chatCtx.value = {
+      ...chatCtx.value,
+      conversation: null,
+      conversations: newConversations,
+    };
+  } else {
+    chatCtx.value = {
+      ...chatCtx.value,
+      conversations: newConversations,
+    };
+  }
 };
 
 const onChangeConversation = async (id) => {
@@ -204,6 +216,7 @@ const onChangeConversation = async (id) => {
     conversation,
   };
   chatCtx.value = newChatContext;
+  globalInfoList.value = [];
 };
 
 const onSend = async (message: ChatMessage) => {

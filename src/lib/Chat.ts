@@ -191,8 +191,9 @@ class Chat {
         messages: [
           {
             role: "user",
-            content:
+            content: removeThinkContent(
               chatContext.messages[chatContext.messages.length - 1].content,
+            ),
           },
         ],
       });
@@ -210,3 +211,17 @@ class Chat {
 }
 
 export default Chat;
+
+export const extractThinkContent = (text: string): string[] => {
+  const regex = /<think>(.*?)<\/think>/gs;
+  const matches: string[] = [];
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    matches.push(match[1]);
+  }
+  return matches;
+};
+
+export const removeThinkContent = (content) => {
+  return content.replace(/<think>.*?<\/think>/gs, "");
+};

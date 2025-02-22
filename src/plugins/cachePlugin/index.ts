@@ -80,9 +80,8 @@ class CachePlugin {
   // 获取所有聊天列表
   async getConversations() {
     const { cache } = this;
-    return (await cache.get("conversations")).sort(
-      (a, b) => b.timeStamp - a.timeStamp,
-    );
+    const conversations = (await cache.get("conversations")) || [];
+    return conversations.sort((a, b) => b.timeStamp - a.timeStamp);
   }
 
   // 获取当前聊天上下文
@@ -123,7 +122,7 @@ class CachePlugin {
     await cache.set("conversation", uuid);
 
     return {
-      conversations: await cache.get("conversations"),
+      conversations: await this.getConversations(),
       conversationId: await cache.get("conversation"),
       conversation: await this.getConversation(uuid),
     };
@@ -191,6 +190,11 @@ class CachePlugin {
     await cache.set("conversations", newConversations);
 
     return { conversations: newConversations };
+  }
+
+  async clearAllCache() {
+    const { cache } = this;
+    await cache.clear();
   }
 }
 

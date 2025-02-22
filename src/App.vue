@@ -1,11 +1,5 @@
 <template>
-  <!-- <div
-    class="border-primary-10 h-[600px] w-[350px] overflow-hidden rounded-2xl border"
-  >
-    <mobile-chat></mobile-chat>
-  </div> -->
-
-  <div class="h-full w-full overflow-hidden">
+  <div class="h-full w-full overflow-hidden bg-gray-100">
     <RouterView />
   </div>
 </template>
