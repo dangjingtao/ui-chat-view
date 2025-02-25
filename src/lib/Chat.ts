@@ -22,6 +22,8 @@ import {
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { v4 as uuid } from "uuid";
 import { RunnableSequence, RunnableLambda } from "@langchain/core/runnables";
+import promptParser from "@/lib/promptParser";
+import prompts from "@/dataSet/prompts.json";
 
 type ProviderName =
   | "kimi"
@@ -126,6 +128,7 @@ class Chat {
     return this.chatHistory;
   }
 
+  // 微任务模型
   initMiniPermissionChain(client) {
     const systemMessage = SystemMessagePromptTemplate.fromTemplate(
       "You are a useful assistant who is good at summarizing the current chat content in concise Chinese (no more than 20 words), and your reply only summarizes the user's chat content.",
@@ -142,7 +145,7 @@ class Chat {
 
   initChain(client) {
     const systemMessage = SystemMessagePromptTemplate.fromTemplate(
-      "You are a helpful assistant. Answer all questions to the best of your ability in {language}.",
+      "You are a helpful assistant. Answer all questions to the best of your ability in {language}. {userSystemMessage}",
     );
     const chatPrompt = ChatPromptTemplate.fromMessages([
       systemMessage,
@@ -176,28 +179,67 @@ class Chat {
     return chst;
   }
 
-  async sendMessage() {
+  // 获取最近一条用户信息
+  getLastUserMessage() {
+    const lastUserMessage = this.chatHistory
+      .slice()
+      .reverse()
+      .find((item) => item.role === "user");
+    return lastUserMessage;
+  }
+
+  // 提示词解析不能直接使用，需要先进行处理，但是否需要加入历史？
+  async beforeSendMessage() {
     const { app } = this;
     if (!app) {
       throw new Error("App not initialized");
     }
-    const config = {};
-    const chatContext = { messages: this.chatHistory, language: "Chinese" };
-    const stream = await app.stream(chatContext, config);
-    let title = "";
+  }
+
+  async genateTitle(chatContext) {
     if (chatContext.messages.length > 0 && chatContext.messages.length < 2) {
       // 生成对话标题
-      title = await this.miniApp.invoke({
-        messages: [
-          {
-            role: "user",
-            content: removeThinkContent(
-              chatContext.messages[chatContext.messages.length - 1].content,
-            ),
-          },
-        ],
-      });
+      return removeThinkContent(
+        await this.miniApp.invoke({
+          messages: [
+            {
+              role: "user",
+              content: removeThinkContent(
+                chatContext.messages[chatContext.messages.length - 1].content,
+              ),
+            },
+          ],
+        }),
+      );
     }
+    return "";
+  }
+
+  getSystmeMessagefromDirective(directive) {
+    const systemPrompt = directive.find(
+      (item) => item.name === "system_prompt",
+    );
+    const id = Number(systemPrompt?.props?.id);
+
+    if (id) {
+      const info = prompts.find((item) => item.id === id);
+      return info?.zh?.prompt || "";
+    }
+    return "";
+  }
+  async sendMessage() {
+    await this.beforeSendMessage();
+    const config = {};
+    const lastUserMessage = this.getLastUserMessage();
+    const { directive = [] } = lastUserMessage;
+    const userSystemMessage = this.getSystmeMessagefromDirective(directive);
+    const chatContext = {
+      messages: this.chatHistory,
+      language: "Chinese",
+      userSystemMessage,
+    };
+    const stream = await this.app.stream(chatContext, config);
+    const title = await this.genateTitle(chatContext);
 
     return {
       title,
