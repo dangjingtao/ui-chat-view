@@ -47,6 +47,7 @@ import InputArea from "@/blocks/InputArea.vue";
 import ChatHeader from "@/blocks/ChatHeader.vue";
 import Chat from "@/lib/Chat.ts";
 import { Message } from "@/components/XMessage.vue";
+import promptParser from "@/lib/promptParser";
 
 const chatContainer = ref<HTMLElement | null>(null);
 
@@ -221,6 +222,10 @@ const onChangeConversation = async (id) => {
 
 const onSend = async (message: ChatMessage) => {
   if (!hasError.value) {
+    const { content } = message;
+    const result = promptParser(content);
+    console.log("result", result);
+
     let currenConversation = await clientCache.getCurrentConversation();
     isSending.value = true;
 
@@ -228,7 +233,11 @@ const onSend = async (message: ChatMessage) => {
       currenConversation = await onAddConversation();
     }
 
-    await addMessageToHistory(message);
+    await addMessageToHistory({
+      ...message,
+      content: result.content,
+      directive: result.infoArray,
+    });
     const reply = await chat.sendMessage();
     await addMessageToHistory(reply);
     if (reply.title) {

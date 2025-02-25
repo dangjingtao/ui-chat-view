@@ -96,6 +96,7 @@ export type ChatMessage = {
   role: string;
   timestamp?: Date;
   stream?: any;
+  directive?: any;
 };
 
 export default {

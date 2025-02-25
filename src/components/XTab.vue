@@ -1,22 +1,24 @@
 <template>
-  <div class="mt-6">
-    <div
-      class="bg-geekblue-1 relative flex justify-center rounded-md px-3 py-1"
-    >
-      <button
-        v-for="(tab, index) in tabs"
-        :key="index"
-        :class="[
-          'text-md flex-1 rounded-lg px-2 py-0.5 text-center text-gray-700 transition-all duration-100',
-          selectedTab === index ? 'bg-white shadow' : 'bg-transparent',
-        ]"
-        @click="selectTab(index)"
+  <div class="flex h-full flex-col">
+    <div class="pb-5">
+      <div
+        class="bg-geekblue-1 relative flex justify-center rounded-md px-3 py-1"
       >
-        {{ tab }}
-      </button>
+        <button
+          v-for="(tab, index) in tabs"
+          :key="index"
+          :class="[
+            'text-md flex-1 rounded-lg px-2 py-0.5 text-center text-gray-700 transition-all duration-100',
+            selectedTab === index ? 'bg-white shadow' : 'bg-transparent',
+          ]"
+          @click="selectTab(index)"
+        >
+          {{ tab }}
+        </button>
+      </div>
     </div>
     <transition :name="transitionName" mode="out-in">
-      <div class="py-5" :key="selectedTab">
+      <div class="flex-1 overflow-auto pb-5" :key="selectedTab">
         <slot :name="`tab-${selectedTab}`"></slot>
       </div>
     </transition>

@@ -10,7 +10,11 @@
         ]"
         @click="selectItem(item.id)"
       >
-        <span :title="item.timeStamp">{{ item.title }}</span>
+        <span
+          class="overflow-hidden text-ellipsis whitespace-nowrap"
+          :title="item.title"
+          >{{ item.title }}</span
+        >
         <x-button
           @click.stop="onDeleteMenuItem(item.id)"
           size="small"
