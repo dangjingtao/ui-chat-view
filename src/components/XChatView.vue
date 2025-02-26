@@ -41,10 +41,10 @@
               class="inline-block rounded-lg px-4"
             >
               <div
-                class="text-md inline-block max-w-full leading-10"
+                class="text-md inline-block max-w-full py-2 leading-6"
                 v-if="message.role === 'user'"
               >
-                {{ message.content }}
+                <div v-html="formatContent(message.content)"></div>
               </div>
               <div class="pt-1.5 pb-3" v-else>
                 <x-think
@@ -73,9 +73,19 @@ import { MdPreview } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import { extractThinkContent, removeThinkContent } from "@/lib/Chat";
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import DOMPurify from "dompurify";
 
 const chatHistory = ref<HTMLElement | null>(null);
 const isSmallScreen = ref(false);
+
+const formatContent = (content) => {
+  // 将转义符号转换为相应的 HTML 标签
+  const formattedContent = content
+    .replace(/\n/g, "<br>")
+    .replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;");
+  // 使用 DOMPurify 来清理和转义 HTML 内容
+  return DOMPurify.sanitize(formattedContent);
+};
 
 const checkScreenSize = () => {
   isSmallScreen.value = window.innerWidth <= 768;
@@ -103,9 +113,10 @@ const formateDate = (timeStamp: number | string) => {
   return dayjs(timeStamp).format("YYYY-MM-DD HH:mm:ss");
 };
 
-defineProps<{
+const props = defineProps<{
   messages: { role: string; content: string; timeStamp?: number | string }[];
 }>();
+console.log(props.messages);
 
 onMounted(() => {
   checkScreenSize();

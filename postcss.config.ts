@@ -1,13 +1,13 @@
-import tailwind from "@tailwindcss/postcss";
-
-// module.exports = {
-//   plugins: [
-//     require("@tailwindcss/postcss"),
-//     require("autoprefixer"),
-//     // 其他插件
-//   ],
-// };
+import tailwindcss from "tailwindcss";
+import autoprefixer from "autoprefixer";
+import postcssPresetEnv from "postcss-preset-env";
 
 export default {
-  plugins: [tailwind],
+  plugins: [
+    postcssPresetEnv({
+      browsers: "last 2 versions, > 1%, IE 11",
+    }),
+    tailwindcss,
+    autoprefixer,
+  ],
 };

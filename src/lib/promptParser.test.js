@@ -54,4 +54,16 @@ describe("parseString", () => {
     ]);
     expect(result.content).toBe("正文内容");
   });
+
+  it("should handle content with newlines", () => {
+    const input =
+      "aaa[_aa=yyyy _a=yyy] bbb[_bbb=xxx] ccc[id=11 type=dddd]\n正文内容\n第二行内容";
+    const result = parseString(input);
+    expect(result.infoArray).toEqual([
+      { name: "aaa", props: { _aa: "yyyy", _a: "yyy" } },
+      { name: "bbb", props: { _bbb: "xxx" } },
+      { name: "ccc", props: { id: "11", type: "dddd" } },
+    ]);
+    expect(result.content).toBe("正文内容\n第二行内容");
+  });
 });

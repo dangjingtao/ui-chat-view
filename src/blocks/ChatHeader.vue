@@ -59,7 +59,7 @@
         >
           <i-mdi-github class="text-xl text-gray-600" />&nbsp;<span
             class="text-sm leading-6 text-gray-600"
-            >View Docs</span
+            >Docs</span
           >
         </a>
       </div>

@@ -41,5 +41,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
+    reporters: ["html"],
+    outputFile: "tests/unit.html",
   },
 });

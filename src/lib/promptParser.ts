@@ -1,11 +1,11 @@
-export default function parseString(input) {
-  const infoPattern = /(\w+)\[([^\]]+)\]/g;
-  const contentPattern = /(?:\w+\[[^\]]+\]\s*)*(.*)/;
-
+// promptParser.js
+function parseString(input) {
+  const regex = /(\w+)\[([^\]]*)\]/g;
+  const infoArray = [];
+  let content = input;
   let match;
-  const infoArray: { name: string; props: { [key: string]: string } }[] = [];
 
-  while ((match = infoPattern.exec(input)) !== null) {
+  while ((match = regex.exec(input)) !== null) {
     const name = match[1];
     const propsString = match[2];
     const props = {};
@@ -16,15 +16,10 @@ export default function parseString(input) {
     });
 
     infoArray.push({ name, props });
+    content = content.replace(match[0], "").trim();
   }
 
-  const contentMatch = contentPattern.exec(input);
-  const content = contentMatch ? contentMatch[1].trim() : "";
-
-  return {
-    infoArray,
-    content,
-  };
+  return { infoArray, content };
 }
 
-
+export default parseString;
