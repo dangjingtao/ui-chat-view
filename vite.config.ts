@@ -26,11 +26,11 @@ export default defineConfig({
       resolvers: [IconsResolver()],
     }),
     Icons(),
-    legacy({
-      targets: ["defaults", "not IE 11"],
-    }),
-    nodeResolve(),
-    commonjs(),
+    // legacy({
+    //   targets: ["defaults", "not IE 11"],
+    // }),
+    // nodeResolve(),
+    // commonjs(),
   ],
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
