@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import parseString from "./promptParser";
+import parseString from "./answerParser";
 
 describe("parseString", () => {
   it("should parse string with multiple entries and content", () => {

@@ -1,7 +1,6 @@
-// promptParser.js
-function parseString(input) {
+export default (input) => {
   const regex = /(\w+)\[([^\]]*)\]/g;
-  const infoArray = [];
+  const infoArray: { name: string; props: { [key: string]: string } }[] = [];
   let content = input;
   let match;
 
@@ -20,6 +19,4 @@ function parseString(input) {
   }
 
   return { infoArray, content };
-}
-
-export default parseString;
+};

@@ -22,7 +22,7 @@ import {
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { v4 as uuid } from "uuid";
 import { RunnableSequence, RunnableLambda } from "@langchain/core/runnables";
-import promptParser from "@/lib/promptParser";
+import promptParser from "@/lib/textProcessor/promptParser";
 import prompts from "@/dataSet/prompts.json";
 
 type ProviderName =

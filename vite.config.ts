@@ -6,6 +6,9 @@ import tailwindcss from "@tailwindcss/vite";
 import Icons from "unplugin-icons/vite";
 import IconsResolver from "unplugin-icons/resolver";
 import Components from "unplugin-vue-components/vite";
+import legacy from "@vitejs/plugin-legacy";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
@@ -23,6 +26,11 @@ export default defineConfig({
       resolvers: [IconsResolver()],
     }),
     Icons(),
+    legacy({
+      targets: ["defaults", "not IE 11"],
+    }),
+    nodeResolve(),
+    commonjs(),
   ],
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),

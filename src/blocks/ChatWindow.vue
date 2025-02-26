@@ -47,7 +47,7 @@ import InputArea from "@/blocks/InputArea.vue";
 import ChatHeader from "@/blocks/ChatHeader.vue";
 import Chat from "@/lib/Chat.ts";
 import { Message } from "@/components/XMessage.vue";
-import promptParser from "@/lib/promptParser";
+import promptParser from "@/lib/textProcessor/answerParser";
 
 const chatContainer = ref<HTMLElement | null>(null);
 
