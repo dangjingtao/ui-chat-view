@@ -36,7 +36,19 @@
         <template #footer>
           <x-button type="ghost" size="small"> 查看详情 </x-button>
           <x-button type="ghost" size="small"> 收藏 </x-button>
-          <x-button size="small" @click="() => copy(id)"> 复制指令 </x-button>
+          <x-button
+            type="ghost"
+            size="small"
+            @click="() => copy(`system_prompt[id=${id}] `)"
+          >
+            复制指令
+          </x-button>
+          <x-button
+            size="small"
+            @click="() => copy(`system_prompt[id=${id}] `)"
+          >
+            一键应用
+          </x-button>
         </template>
       </x-card>
     </div>
@@ -47,23 +59,12 @@ import { ref } from "vue";
 import prompts from "@/dataSet/prompts.json";
 import introduce from "@/dataSet/charactor_introduce.json";
 import { searchCharactor } from "@/lib/searchCharactor";
-import message from "@/lib/message";
-
-const copy = async (id) => {
-  try {
-    const directive = `system_prompt[id=${id}] `;
-    await navigator.clipboard.writeText(directive);
-    message.success(`${directive} 复制成功。请到聊天界面输入框粘贴使用`);
-  } catch (err) {
-    message.error(`复制失败: ${err}`);
-  }
-};
+import copy from "@/lib/textProcessor/copy";
 
 const charactors = ref(prompts);
 
 const onSearch = (value: string) => {
   if (value) {
-    console.log("搜索内容:", value);
     const searchResult = searchCharactor(value, prompts);
     charactors.value = searchResult;
   } else {

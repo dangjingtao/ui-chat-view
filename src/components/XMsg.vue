@@ -2,14 +2,14 @@
   <div
     v-if="visible"
     :class="[
-      'fixed top-4 right-4 rounded p-4 shadow-lg transition-opacity duration-500',
+      'fixed top-4 right-4 rounded p-2 shadow-lg transition-opacity duration-500',
       typeClass,
     ]"
     @animationend="handleAnimationEnd"
   >
     <div class="flex items-center">
       <span :class="iconClass" class="mr-2"></span>
-      <span class="text-xs">{{ message }}</span>
+      <span class="text-sm">{{ message }}</span>
     </div>
   </div>
 </template>

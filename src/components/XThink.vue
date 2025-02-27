@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-2 pb-2">
+  <div class="pt-2 pb-4">
     <div
       class="flex w-20 cursor-pointer items-center justify-between rounded-md bg-gray-100 p-2"
       @click="togglePanel"
@@ -32,12 +32,12 @@
       <div
         v-show="isOpen"
         ref="content"
-        class="mt-2 mb-3 border-l-3 border-gray-200 pl-2"
+        class="mt-2 border-l-3 border-gray-200 pl-2"
       >
         <p
           v-for="(content, index) in thinkContents"
           :key="index"
-          class="text-sm text-gray-500"
+          class="text-sm text-wrap text-gray-500"
         >
           {{ content }}
         </p>

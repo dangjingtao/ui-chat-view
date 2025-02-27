@@ -1,6 +1,6 @@
 import ClientCache from "@/lib/clientCache";
 import schema from "./schema";
-import _ from "lodash";
+import _, { last } from "lodash";
 import { v4 } from "uuid";
 import ComonError from "@/lib/comonError";
 
@@ -190,6 +190,36 @@ class CachePlugin {
     await cache.set("conversations", newConversations);
 
     return { conversations: newConversations };
+  }
+
+  async deleteMessageFromCurrenConversationHistory(messageId) {
+    const currentCoversation = await this.getCurrentConversation();
+    const { id, chatHistory = [] } = currentCoversation;
+    const newChatHistory = chatHistory.filter((item) => item.id !== messageId);
+    await this.updateConversation(id, { chatHistory: newChatHistory });
+    return await this.getConversation(id);
+  }
+
+  async removeMessageSinceCurrenConversationHistory(index) {
+    const currentCoversation = await this.getCurrentConversation();
+    const { chatHistory = [] } = currentCoversation;
+
+    let lastUserMessageIndex = 0;
+    for (let i = 0; i < index; i++) {
+      // 找到用户的最后一条消息
+      if (chatHistory[i].role === "user") {
+        lastUserMessageIndex = i;
+      }
+    }
+    const lastUserMessage = chatHistory[lastUserMessageIndex];
+    const newChatHistory = chatHistory.slice(0, lastUserMessageIndex);
+    await this.updateConversation(currentCoversation.id, {
+      chatHistory: newChatHistory,
+    });
+    return {
+      lastUserMessage,
+      updatedConversation: await this.getConversation(currentCoversation.id),
+    };
   }
 
   async clearAllCache() {

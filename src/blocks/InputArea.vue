@@ -4,7 +4,7 @@
       'outline-none': !isFocused,
       'outline-primary-light outline-2': isFocused,
     }"
-    class="absolute right-0 bottom-[25px] left-0 m-auto mb-4 flex w-[94%] max-w-[800px] min-w-[300px] flex-col items-end overflow-hidden rounded-lg border border-gray-200 bg-white p-0 shadow-lg"
+    class="absolute right-0 bottom-[20px] left-0 z-20 m-auto flex w-[94%] max-w-[800px] min-w-[300px] flex-col items-end overflow-hidden rounded-lg border border-gray-200 bg-white p-0 shadow-lg"
   >
     <textarea
       @keydown="handleKeyDown"
@@ -51,6 +51,9 @@
       </x-button>
     </div>
   </div>
+  <!-- <div
+    class="absolute top-[-40px] right-0 left-0 z-10 m-auto flex h-10 w-[94%] max-w-[800px] min-w-[300px] bg-amber-300"
+  ></div> -->
 </template>
 
 <script setup lang="ts">

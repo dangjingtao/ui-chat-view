@@ -43,7 +43,7 @@
     <template #footer>
       <div class="flex gap-1">
         <a
-          class="flex flex-1 rounded px-1.5 py-1 transition-colors duration-200 hover:bg-gray-100"
+          class="flex w-[50%] rounded px-1.5 py-1 transition-colors duration-200 hover:bg-gray-100"
           href="javascript:void(0)"
           @click="toSettings"
         >
@@ -53,7 +53,7 @@
           >
         </a>
         <a
-          class="flex rounded px-1.5 py-1 transition-colors duration-200 hover:bg-gray-100"
+          class="flex w-[50%] rounded px-1.5 py-1 transition-colors duration-200 hover:bg-gray-100"
           target="_blank"
           href="https://github.com/dangjingtao/ui-chat-view"
         >

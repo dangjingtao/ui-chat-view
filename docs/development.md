@@ -20,6 +20,12 @@ Then, add the Android platform.
 npx cap add android
 ```
 
+To 
+
+```
+npx cap sync
+```
+
 To open the project in Android Studio, run:
 
 ```bash

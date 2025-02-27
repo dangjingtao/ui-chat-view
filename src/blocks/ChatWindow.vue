@@ -27,9 +27,14 @@
       <!-- 这里可以添加聊天内容 -->
       <x-welcome v-if="showChatHistory" />
 
-      <x-chat-view v-if="!showChatHistory" :messages="chatHistory" />
+      <x-chat-view
+        v-else="!showChatHistory"
+        :messages="chatHistory"
+        @regenarate="regenarate"
+        @deleteMessage="deleteMessage"
+      />
     </div>
-    <div class="h-[120px]">
+    <div class="relative h-[100px]">
       <input-area
         :onSend="onSend"
         :canSend="!hasError"
@@ -165,6 +170,32 @@ const addMessageToHistory = async (message: ChatMessage) => {
       content: chunks,
     });
   }
+};
+
+const deleteMessage = async (message) => {
+  const { id } = message;
+  console.log("deleteMessage", id);
+  const updatedConversation =
+    await clientCache.deleteMessageFromCurrenConversationHistory(id);
+  chatCtx.value = {
+    ...chatCtx.value,
+    conversation: updatedConversation,
+  };
+};
+
+const regenarate = async (message) => {
+  const index = chatHistory.value.findIndex((x) => x.id === message.id);
+
+  const { updatedConversation, lastUserMessage } =
+    await clientCache.removeMessageSinceCurrenConversationHistory(index);
+  chatCtx.value = {
+    ...chatCtx.value,
+    conversation: updatedConversation,
+  };
+
+  await onSend(lastUserMessage);
+
+  // await onSend({});
 };
 
 const onAddConversation = async () => {

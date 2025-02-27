@@ -1,7 +1,7 @@
 <template>
-  <div class="h-full w-full overflow-hidden bg-gray-100">
+  <x-safe-area class="bg-gray-100">
     <RouterView />
-  </div>
+  </x-safe-area>
 </template>
 
 <script setup lang="ts">

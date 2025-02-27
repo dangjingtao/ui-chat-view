@@ -2,11 +2,9 @@
   <div
     id="xChatView"
     ref="chatHistory"
-    @mouseenter="enableScroll"
-    @mouseleave="disableScroll"
-    class="mx-auto flex h-full w-[90%] max-w-[800px] flex-col py-2 text-sm md:overflow-auto"
+    class="mx-auto flex h-full w-[90%] max-w-[800px] flex-col py-2 text-sm"
   >
-    <div class="flex-1" ref="chatHistory">
+    <div class="flex-1">
       <div
         v-for="(message, index) in messages"
         :key="index"
@@ -35,30 +33,53 @@
 
             <div
               :class="{
-                'bg-primary-2': isUser(message.role),
+                'bg-primary-2 ml-auto': isUser(message.role),
                 'bg-white': !isUser(message.role),
               }"
-              class="inline-block rounded-lg px-4"
+              class="inline-block w-max max-w-full flex-auto rounded-lg px-4 py-3"
             >
-              <div
-                class="text-md inline-block max-w-full py-2 leading-6"
-                v-if="message.role === 'user'"
+              <x-think
+                v-if="hasThinkContent(message.content)"
+                :text="message.content"
+              />
+              <x-markdown
+                v-if="!isUser(message.role)"
+                :content="removeThinkContent(message.content)"
+              />
+              <x-markdown
+                class="user-markdown"
+                v-else
+                :content="formatContent(message.content)"
+              />
+            </div>
+            <div
+              class="flex"
+              :class="{
+                'ml-auto w-max max-w-full flex-auto': isUser(message.role),
+              }"
+            >
+              <x-button
+                size="small"
+                type="text"
+                @click="() => copy(message.content)"
               >
-                <div v-html="formatContent(message.content)"></div>
-              </div>
-              <div class="pt-1.5 pb-3" v-else>
-                <x-think
-                  v-if="hasThinkContent(message.content)"
-                  :text="message.content"
-                />
-                <MdPreview
-                  editorId="preview-only"
-                  previewTheme="vuepress"
-                  codeTheme="github"
-                  :modelValue="removeThinkContent(message.content)"
-                />
-              </div>
-              <!-- {{ message.content }} -->
+                <i-mdi-content-copy class="text-[0.8rem] text-gray-500" />
+              </x-button>
+              <x-button
+                @click="emits('regenarate', message)"
+                size="small"
+                v-if="!isUser(message.role)"
+                type="text"
+              >
+                <i-mdi-replay class="text-[1rem] text-gray-500" />
+              </x-button>
+              <x-button
+                @click="emits('deleteMessage', message)"
+                size="small"
+                type="text"
+              >
+                <i-mdi-delete-outline class="text-[1rem] text-gray-500" />
+              </x-button>
             </div>
           </div>
         </div>
@@ -69,11 +90,10 @@
 
 <script setup lang="ts">
 import dayjs from "dayjs";
-import { MdPreview } from "md-editor-v3";
-import "md-editor-v3/lib/style.css";
 import { extractThinkContent, removeThinkContent } from "@/lib/Chat";
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onBeforeUnmount, onMounted } from "vue";
 import DOMPurify from "dompurify";
+import copy from "@/lib/textProcessor/copy";
 
 const chatHistory = ref<HTMLElement | null>(null);
 const isSmallScreen = ref(false);
@@ -91,18 +111,6 @@ const checkScreenSize = () => {
   isSmallScreen.value = window.innerWidth <= 768;
 };
 
-const enableScroll = () => {
-  if (chatHistory.value && !isSmallScreen.value) {
-    chatHistory.value.style.overflowY = "auto";
-  }
-};
-
-const disableScroll = () => {
-  if (chatHistory.value) {
-    chatHistory.value.style.overflowY = "hidden";
-  }
-};
-
 const isUser = (role: string) => role === "user";
 
 const hasThinkContent = (content: string) => {
@@ -116,7 +124,8 @@ const formateDate = (timeStamp: number | string) => {
 const props = defineProps<{
   messages: { role: string; content: string; timeStamp?: number | string }[];
 }>();
-console.log(props.messages);
+
+const emits = defineEmits(["deleteMessage", "regenarate"]);
 
 onMounted(() => {
   checkScreenSize();
