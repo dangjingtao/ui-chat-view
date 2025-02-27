@@ -10,11 +10,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     IMdiClose: typeof import('~icons/mdi/close')['default']
     IMdiContentCopy: typeof import('~icons/mdi/content-copy')['default']
-    IMdiContentCopyOutlineRounded: typeof import('~icons/mdi/content-copy-outline-rounded')['default']
-    IMdiContentReplay: typeof import('~icons/mdi/content-replay')['default']
-    IMdiCopy: typeof import('~icons/mdi/copy')['default']
-    IMdiCopyOutlin: typeof import('~icons/mdi/copy-outlin')['default']
-    IMdiCopyOutline: typeof import('~icons/mdi/copy-outline')['default']
     IMdiDeleteOutline: typeof import('~icons/mdi/delete-outline')['default']
     IMdiGithub: typeof import('~icons/mdi/github')['default']
     IMdiMagnify: typeof import('~icons/mdi/magnify')['default']
