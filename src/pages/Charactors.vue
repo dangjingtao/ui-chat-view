@@ -1,0 +1,110 @@
+<template>
+  <x-subpage-wrapper
+    title="角色卡"
+    :isFullWidth="props.isFullWidth"
+    @onClose="props.onClose"
+  >
+    <template #content>
+      <div class="flex h-full flex-col">
+        <div class="min-h-[114px] w-full border-b border-b-gray-300 p-1">
+          <x-input type="search" @onSearch="onSearch" @onClear="onClear" />
+          <x-ellipsis :lines="2">
+            <template #visible>
+              <span class="pt-2 text-sm leading-6 text-gray-600">
+                {{ introduce.content }}
+              </span>
+            </template>
+            <template #hidden>
+              <ul class="list-disc pt-3 pl-5">
+                <li
+                  class="mb-2"
+                  v-for="item in introduce.desc"
+                  :key="item.title"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="">
+                      <strong class="text-sm text-gray-800">{{
+                        item.title
+                      }}</strong
+                      >&nbsp;
+                      <span class="text-sm text-gray-400">{{
+                        item.content
+                      }}</span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </template>
+          </x-ellipsis>
+        </div>
+        <x-empty v-if="charactors.length === 0" />
+        <div class="flex flex-1 flex-wrap gap-3 overflow-auto px-2">
+          <x-card
+            v-for="{ id, zh, tags } in charactors"
+            :key="zh.title"
+            :title="zh.title"
+            :description="zh.description"
+            :tags="tags"
+            class="w-full"
+          >
+            <template #footer>
+              <x-button type="text" size="small">
+                <i-mdi-heart-outline />
+              </x-button>
+              <x-button
+                type="text"
+                size="small"
+                @click="() => copy(`system_prompt[id=${id}] `)"
+              >
+                <i-mdi-content-copy />
+              </x-button>
+              <x-button
+                type="ghost"
+                size="small"
+                @click="() => useCharactor({ id, zh, tags })"
+              >
+                一键应用
+              </x-button>
+            </template>
+          </x-card>
+        </div>
+      </div>
+    </template>
+  </x-subpage-wrapper>
+</template>
+<script lang="ts" setup>
+import { ref } from "vue";
+import prompts from "@/dataSet/prompts.json";
+import introduce from "@/dataSet/charactor_introduce.json";
+import { searchCharactor } from "@/lib/searchCharactor";
+import copy from "@/lib/textProcessor/copy";
+import { useChatStore } from "@/store/homeStore";
+
+const chatStore = useChatStore();
+
+const props = defineProps<{
+  isFullWidth?: boolean;
+  onClose?: () => void;
+}>();
+
+const charactors = ref(prompts);
+
+const onSearch = (value: string) => {
+  if (value) {
+    const searchResult = searchCharactor(value, prompts);
+    charactors.value = searchResult;
+  } else {
+    onClear();
+  }
+};
+
+const onClear = () => {
+  charactors.value = prompts;
+};
+
+const useCharactor = (charactor: any) => {
+  chatStore.$service.useCharactor(charactor);
+  console.log(charactor, chatStore);
+};
+</script>
+<style scoped></style>

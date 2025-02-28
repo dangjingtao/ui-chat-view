@@ -6,6 +6,8 @@ import tailwindcss from "@tailwindcss/vite";
 import Icons from "unplugin-icons/vite";
 import IconsResolver from "unplugin-icons/resolver";
 import Components from "unplugin-vue-components/vite";
+import dynamicImport from "vite-plugin-dynamic-import";
+
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
@@ -18,6 +20,9 @@ const pkg = JSON.parse(
 export default defineConfig({
   plugins: [
     vue(),
+    dynamicImport({
+      loose: true, // 更接近 Webpack 的行为
+    }),
     tailwindcss(),
     Components({
       resolvers: [IconsResolver()],
@@ -36,6 +41,21 @@ export default defineConfig({
     alias: {
       "@": path.resolve("./src"),
       "#": path.resolve("./types"),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            return id
+              .toString()
+              .split("node_modules/")[1]
+              .split("/")[0]
+              .toString();
+          }
+        },
+      },
     },
   },
   test: {

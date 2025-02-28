@@ -7,17 +7,12 @@
     </x-button>
     <div class="flex pt-8 pb-6 sm:pt-10">
       <img :src="logo" class="w-30" alt="UI Chat" srcset="" />&nbsp;
-      <span class="text-geekblue-5 self-end leading-2 font-bold">v{{version}}</span>
+      <span class="text-geekblue-5 self-end leading-2 font-bold"
+        >v{{ version }}</span
+      >
     </div>
     <div class="flex-1 overflow-auto">
-      <x-tab :tabs="['System', 'Charactors']">
-        <template #tab-0>
-          <system-setting />
-        </template>
-        <template #tab-1>
-          <charactors />
-        </template>
-      </x-tab>
+      <system-setting />
     </div>
   </div>
 </template>
@@ -25,8 +20,6 @@
 import { useRouter } from "vue-router";
 import logo from "@/assets/logo.png";
 import SystemSetting from "@/blocks/SystemSetting.vue";
-import Charactors from "@/blocks/Charactors.vue";
-
 
 declare const __APP_VERSION__: string;
 const version = __APP_VERSION__;

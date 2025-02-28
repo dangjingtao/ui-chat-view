@@ -4,7 +4,7 @@
       'outline-none': !isFocused,
       'outline-primary-light outline-2': isFocused,
     }"
-    class="absolute right-0 bottom-[20px] left-0 z-20 m-auto flex w-[94%] max-w-[800px] min-w-[300px] flex-col items-end overflow-hidden rounded-lg border border-gray-200 bg-white p-0 shadow-lg"
+    class="absolute right-0 bottom-5 left-0 z-20 m-auto flex w-[94%] max-w-[800px] flex-col items-end overflow-hidden rounded-lg border border-gray-200 bg-white p-0 shadow-lg md:w-full"
   >
     <textarea
       @keydown="handleKeyDown"
@@ -20,7 +20,7 @@
     <div class="flex w-full justify-between px-2 py-1">
       <div class="flex gap-2">
         <x-button type="text" size="small" @click="props.onStop" class="h-8">
-          角色预设
+          {{ props.charactor?.zh?.title || "角色卡" }}
         </x-button>
         <x-button type="text" size="small" @click="props.onStop" class="h-8">
           attachment
@@ -69,6 +69,7 @@ const props = defineProps<{
   onStop?: () => void;
   isSending?: boolean;
   canSend: boolean;
+  charactor?: any;
 }>();
 
 const canSend = computed(() => {
@@ -102,7 +103,7 @@ const autoResize = () => {
 
 const onSend = async () => {
   if (!canSend.value) return;
-  // 在此写入父组件的onsend方法
+  // 在此写入父组件的onsend方法 X-component不应该介入，也不需要再把状态回传过去。
   props.onSend?.({ role: "user", content: textareaValue.value });
   textareaValue.value = "";
   await nextTick();

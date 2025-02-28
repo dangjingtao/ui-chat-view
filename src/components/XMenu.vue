@@ -6,7 +6,9 @@
         :key="item.id"
         :class="[
           'flex cursor-pointer gap-0.5 rounded-md px-2 py-1.5 leading-6 hover:bg-gray-100',
-          { 'bg-gray-100': selectedIndex === item.id },
+          {
+            'bg-gray-100': selectedIndex === item.id,
+          },
         ]"
         @click="selectItem(item.id)"
       >
@@ -28,12 +30,13 @@
 
 <script lang="ts" setup>
 import { ref, defineProps, defineEmits, watch } from "vue";
-const selectedIndex = ref(null);
 
 const props = defineProps<{
   menus: any[];
   selectedItem?: string;
 }>();
+
+const selectedIndex = ref(props.selectedItem || null);
 
 const emits = defineEmits(["deleteMenuItem", "changeMenuItem"]);
 
@@ -49,7 +52,15 @@ const selectItem = (index) => {
 watch(
   () => props.selectedItem,
   (newVal) => {
+    console.log(777, newVal);
     selectedIndex.value = newVal;
+  },
+);
+
+watch(
+  () => props.menus,
+  (newVal) => {
+    console.log(888, newVal);
   },
 );
 </script>

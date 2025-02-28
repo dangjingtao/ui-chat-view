@@ -1,7 +1,7 @@
 {
   "name": "ui-chat-view",
   "private": true,
-  "version": "0.0.12",
+  "version": "0.0.14",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -27,6 +27,7 @@
     "@langchain/ollama": "^0.2.0",
     "@langchain/openai": "^0.4.4",
     "@mlc-ai/web-llm": "^0.2.78",
+    "@rollup/plugin-dynamic-import-vars": "^2.1.5",
     "@tailwindcss/postcss": "^4.0.6",
     "@tailwindcss/vite": "^4.0.6",
     "axios": "^1.7.9",
@@ -81,6 +82,7 @@
     "unplugin-icons": "^22.0.0",
     "unplugin-vue-components": "^28.0.0",
     "vite": "^6.1.0",
+    "vite-plugin-dynamic-import": "^1.6.0",
     "vitest": "^3.0.7",
     "vue-tsc": "^2.2.0"
   }

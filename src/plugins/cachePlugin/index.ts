@@ -60,6 +60,7 @@ class CachePlugin {
 
     const current_provider_name = await cache.get("current_provider_name");
     const modelsMap = await cache.get("models");
+    const defaultCharactor = await cache.get("charactor");
     const model = await cache.get("current_model_name");
     const conversations = await this.getConversations();
     const conversation = await this.getCurrentConversation();
@@ -69,6 +70,8 @@ class CachePlugin {
       model,
       provider: current_provider_name,
       ...modelsMap[current_provider_name],
+      models: [],
+      charactor: defaultCharactor,
     };
   }
 
@@ -150,6 +153,17 @@ class CachePlugin {
     await cache.set("conversations", updatedConversations);
   }
 
+  // 更新当前对话的model , 如果当前没有，返回null
+  async updateCurrentConversationModel(modelId) {
+    const { cache } = this;
+    const currentConversationId = await cache.get("conversation");
+    if (!currentConversationId) {
+      return null;
+    }
+    await this.updateConversation(currentConversationId, { model: modelId });
+    return await this.getConversation(currentConversationId);
+  }
+
   //  发送消息时更新当前对话列表
   async addMessageToCurrenConversationHistory(messsage) {
     const uuid = v4();
@@ -225,6 +239,23 @@ class CachePlugin {
   async clearAllCache() {
     const { cache } = this;
     await cache.clear();
+  }
+
+  async updateCharator(charactor) {
+    const { cache } = this;
+    const currentConversation = await this.getCurrentConversation();
+    const clonedCharactor = _.cloneDeep(charactor);
+    if (!currentConversation) {
+      cache.set("charactor", clonedCharactor);
+      return null;
+    } else {
+      const newConversation = {
+        ...currentConversation,
+        charactor: clonedCharactor,
+      };
+      await this.updateConversation(currentConversation.id, newConversation);
+      return await this.getConversation(currentConversation.id);
+    }
   }
 }
 

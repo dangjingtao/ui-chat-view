@@ -102,6 +102,7 @@ export type ChatMessage = {
 export default {
   isInited: true,
   models: modelsMap,
+  character: null,
   characters: characterList,
   conversations: conversationsList,
 };

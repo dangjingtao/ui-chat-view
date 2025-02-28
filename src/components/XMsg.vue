@@ -2,10 +2,12 @@
   <div
     v-if="visible"
     :class="[
-      'fixed top-4 right-4 rounded p-2 shadow-lg transition-opacity duration-500',
+      'fixed top-4 left-1/2 -translate-x-1/2 transform rounded border p-2 shadow-xs transition-opacity duration-300',
       typeClass,
     ]"
     @animationend="handleAnimationEnd"
+    @click="handleClick"
+    class="slide-down"
   >
     <div class="flex items-center">
       <span :class="iconClass" class="mr-2"></span>
@@ -34,10 +36,10 @@ const visible = ref(true);
 
 const typeClass = computed(() => {
   return {
-    "bg-blue-100 text-blue-700": props.type === "info",
-    "bg-yellow-100 text-yellow-700": props.type === "warning",
-    "bg-green-100 text-green-700": props.type === "success",
-    "bg-red-100 text-red-700": props.type === "error",
+    "bg-blue-100 text-blue-700 border-blue-400": props.type === "info",
+    "bg-yellow-100 text-yellow-700 border-yellow-400": props.type === "warning",
+    "bg-green-100 text-green-700 border-green-400": props.type === "success",
+    "bg-red-100 text-red-700 border-red-400": props.type === "error",
   };
 });
 
@@ -56,6 +58,10 @@ onMounted(() => {
   }, 3000);
 });
 
+function handleClick() {
+  visible.value = false;
+}
+
 function handleAnimationEnd() {
   if (!visible.value) {
     // 这里可以触发一个事件，通知父组件消息已经消失
@@ -64,6 +70,21 @@ function handleAnimationEnd() {
 </script>
 
 <style scoped>
+@keyframes slide-down {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.slide-down {
+  animation: slide-down 0.3s ease-out;
+}
+
 .icon-info::before {
   content: "ℹ️";
 }
