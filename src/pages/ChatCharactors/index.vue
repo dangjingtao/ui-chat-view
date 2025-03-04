@@ -6,7 +6,7 @@
   >
     <template #content>
       <div class="flex h-full flex-col">
-        <div class="min-h-[114px] w-full border-b border-b-gray-300 p-1">
+        <div class="min-h-[114px] w-full p-1 shadow">
           <x-input type="search" @onSearch="onSearch" @onClear="onClear" />
           <x-ellipsis :lines="2">
             <template #visible>
@@ -39,13 +39,14 @@
         </div>
         <x-empty v-if="charactors.length === 0" />
         <div class="flex flex-1 flex-wrap gap-3 overflow-auto px-2">
+          <div class="mt-1"></div>
           <x-card
             v-for="{ id, zh, tags } in charactors"
             :key="zh.title"
             :title="zh.title"
             :description="zh.description"
             :tags="tags"
-            class="w-full"
+            class="mt-1 w-full"
           >
             <template #footer>
               <x-button type="text" size="small">
@@ -67,6 +68,7 @@
               </x-button>
             </template>
           </x-card>
+          <div class="mt-1"></div>
         </div>
       </div>
     </template>
@@ -78,7 +80,7 @@ import prompts from "@/dataSet/prompts.json";
 import introduce from "@/dataSet/charactor_introduce.json";
 import { searchCharactor } from "@/lib/searchCharactor";
 import copy from "@/lib/textProcessor/copy";
-import { useChatStore } from "@/store/homeStore";
+import { useChatStore } from "@/store/chat";
 
 const chatStore = useChatStore();
 
@@ -102,9 +104,6 @@ const onClear = () => {
   charactors.value = prompts;
 };
 
-const useCharactor = (charactor: any) => {
-  chatStore.$service.useCharactor(charactor);
-  console.log(charactor, chatStore);
-};
+const { useCharactor } = chatStore.$service;
 </script>
 <style scoped></style>

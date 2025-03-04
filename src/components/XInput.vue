@@ -6,7 +6,7 @@
       @input="onInput"
       @keydown.enter="onSearch"
       :placeholder="placeholder"
-      class="focus:ring-geekblue-4 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm transition-all focus:ring-2 focus:outline-none"
+      class="w-full rounded-md bg-gray-100 px-2 py-1.5 text-sm transition-all outline-none hover:bg-gray-50"
     />
     <button
       v-if="type === 'search' && !inputValue"
@@ -19,8 +19,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps } from "vue";
-
 defineProps({
   type: {
     type: String,
@@ -32,13 +30,13 @@ defineProps({
   },
 });
 
+const inputValue = defineModel<string>();
+
 const emits = defineEmits(["onSearch", "onInput", "onClear"]);
 
 const onSearch = () => {
   emits("onSearch", inputValue.value);
 };
-
-const inputValue = ref("");
 
 const onInput = () => {
   // 处理输入事件

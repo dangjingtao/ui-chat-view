@@ -18,7 +18,6 @@ export const searchCharactor = (keyword: string, data) => {
   if (!fuse) {
     fuse = new Fuse(data, options);
   }
-  console.log(data);
   const results = fuse.search(keyword.toLowerCase());
 
   return results.map((result) => result.item); // 提取匹配的卡片

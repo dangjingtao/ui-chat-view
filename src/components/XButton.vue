@@ -34,12 +34,12 @@ const buttonClass = computed(() => {
 
   const sizeMap = {
     small: "px-2 py-1 text-xs",
-    default: "px-4 py-2 text-sm",
+    default: "px-3 py-1.5 text-sm",
     large: "px-6 py-3 text-lg",
   };
 
   const classResult = [
-    "text-center leading-normal transition-colors duration-100 ease-in-out",
+    "text-center leading-normal transition-colors duration-100 ease-in-out cursor-pointer",
     props.round ? "rounded-full" : "rounded-md",
     sizeMap[props.size || "default"],
     typeMap[props.type || "primarily"],

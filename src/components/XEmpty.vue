@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-full flex-col items-center justify-center">
     <img
-      src="@/assets/inllustrators/404.svg"
+      src="@/assets/inllustrators/empty.svg"
       alt="No Result"
       class="mb-4 w-[60%]"
     />

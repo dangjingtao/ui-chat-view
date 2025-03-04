@@ -1,26 +1,14 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import homeService from "@/services/homeService";
+import homeService from "@/store/chat/service";
 import { Message } from "@/components/XMessage.vue";
-import useDynamicComponent from "@/hooks/useDynamicCompoment";
+import useDynamicComponent from "@/hooks/useDynamicComponent";
 import { useRouter } from "vue-router";
+import type { ChatContext } from "@/plugins/cachePlugin/types";
 
 interface Option {
   id: string;
   name: string;
-}
-
-// 定义 ChatContext 类型
-interface ChatContext {
-  model: string;
-  provider: string;
-  conversation: any;
-  URLs: {
-    models: string;
-  };
-  systemPrompt: string;
-  id?: string; // 会话id
-  charactor?: any;
 }
 
 interface GlobalContext extends ChatContext {
@@ -39,11 +27,13 @@ export const useChatStore = defineStore("chat", () => {
     systemPrompt: "",
     models: [],
     conversations: [],
-    charactor: -1,
+    charactor: null,
   });
 
   // 左侧侧边栏是否打开
   const isSideBarOpen = ref(false);
+  // 右侧对话菜单
+  const isDrawerOpen = ref(false);
   // 发送中
   const isSending = ref(false);
   // 系统消息列表
@@ -101,6 +91,7 @@ export const useChatStore = defineStore("chat", () => {
     chatCtx,
     conversations,
     isSideBarOpen,
+    isDrawerOpen,
     isSending,
     models,
     globalInfoList,
@@ -131,6 +122,8 @@ export const useChatStore = defineStore("chat", () => {
       useCharactor: (CharactorId) =>
         homeService.useCharactor(pageStateContext, CharactorId),
       chat: homeService.chat,
+      toggleDrawer: () => homeService.toggleDrawer(isDrawerOpen),
+      clearCharactor: () => homeService.clearCharactor(pageStateContext),
     },
   };
 });

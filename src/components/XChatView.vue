@@ -89,10 +89,10 @@
 </template>
 
 <script setup lang="ts">
-import dayjs from "dayjs";
-import { extractThinkContent, removeThinkContent } from "@/lib/Chat";
 import { ref, onBeforeUnmount, onMounted } from "vue";
+import dayjs from "dayjs";
 import DOMPurify from "dompurify";
+import { extractThinkContent, removeThinkContent } from "@/lib/Chat";
 import copy from "@/lib/textProcessor/copy";
 
 const chatHistory = ref<HTMLElement | null>(null);
@@ -121,7 +121,7 @@ const formateDate = (timeStamp: number | string) => {
   return dayjs(timeStamp).format("YYYY-MM-DD HH:mm:ss");
 };
 
-const props = defineProps<{
+defineProps<{
   messages: { role: string; content: string; timeStamp?: number | string }[];
 }>();
 

@@ -1,5 +1,5 @@
 // src/lib/CustomError.ts
-export default class ComonError extends Error {
+export default class CommonError extends Error {
   data: any;
 
   constructor(message: string, data?: any) {

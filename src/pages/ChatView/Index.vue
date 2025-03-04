@@ -1,16 +1,6 @@
 <template>
   <div class="relative flex h-full w-full flex-col gap-0.5 bg-gray-50">
-    <chat-header
-      :models="chatStore.models"
-      :currentModel="chatStore.defaultCtx?.model ?? ''"
-      :selectedConversation="chatStore.conversationId"
-      :conversations="chatStore.conversations"
-      :onSelectModel="onSelectModel"
-      :onAddConversation="onAddConversation"
-      :onDeleteConversation="onDeleteConversation"
-      :onChangeConversation="onChangeConversation"
-      :onOpenCharactors="onOpenCharactors"
-    />
+    <chat-header />
     <div class="flex h-[calc(100lvh-44px)] w-full flex-1">
       <!-- 动态加载的侧边栏 -->
       <transition
@@ -46,7 +36,6 @@
             </template>
           </x-message>
 
-          <!-- 这里可以添加聊天内容 -->
           <x-welcome v-if="chatStore.isEmptyConversation" />
 
           <x-chat-view
@@ -56,23 +45,37 @@
             @deleteMessage="deleteMessage"
           />
         </div>
+
         <div class="relative h-[100px]">
           <x-sender
             :charactor="chatStore.defaultCtx?.charactor"
             :onSend="onSend"
             :canSend="!chatStore.hasError && !!chatStore.defaultCtx?.model"
             :isSending="chatStore.isSending"
-          />
+          >
+            <template #functionsGroup>
+              <x-clickable-tag
+                :closable="true"
+                @click="onOpenCharactors"
+                @close="clearCharactor"
+                :text="charactorUsed"
+                :isActived="!!chatStore.defaultCtx?.charactor"
+              />
+              <x-clickable-tag text="🌐 联网搜索" />
+            </template>
+          </x-sender>
         </div>
       </div>
     </div>
+    <chat-drawer />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from "vue";
-import { useChatStore } from "@/store/homeStore";
-import ChatHeader from "@/blocks/ChatHeader.vue";
+import { ref, watch, nextTick, computed } from "vue";
+import { useChatStore } from "@/store/chat";
+import ChatHeader from "./components/ChatHeader.vue";
+import ChatDrawer from "./components/ChatDrawer.vue";
 
 const chatContainer = ref<HTMLElement | null>(null);
 const chatStore = useChatStore();
@@ -80,20 +83,21 @@ const chatStore = useChatStore();
 const {
   init,
   regenerate,
-  onChangeConversation,
-  onDeleteConversation,
-  onAddConversation,
-  onSelectModel,
   deleteMessage,
   onSend,
   closeSideBar,
-  onOpenCharactors,
   chat,
   handleUIError,
+  onOpenCharactors,
+  clearCharactor,
 } = chatStore.$service;
 
 init().then(() => {
   console.log(chatStore.conversationId);
+});
+
+const charactorUsed = computed(() => {
+  return chatStore.defaultCtx?.charactor?.zh?.title || "🧑‍💻 角色卡";
 });
 
 watch(

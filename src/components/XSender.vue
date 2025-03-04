@@ -18,37 +18,32 @@
       @blur="handleBlur"
     ></textarea>
     <div class="flex w-full justify-between px-2 py-1">
+      <div class="my-auto flex h-6 gap-2">
+        <slot name="functionsGroup"> </slot>
+      </div>
       <div class="flex gap-2">
-        <x-button type="text" size="small" @click="props.onStop" class="h-8">
-          {{ props.charactor?.zh?.title || "角色卡" }}
+        <x-button
+          type="text"
+          size="small"
+          @click="onSend"
+          class="h-[32px] w-[32px] p-0"
+        >
+          <i-mdi-paperclip class="m-auto block text-lg" />
         </x-button>
-        <x-button type="text" size="small" @click="props.onStop" class="h-8">
-          attachment
-        </x-button>
-        <x-button type="text" size="small" @click="props.onStop" class="h-8">
-          联网搜索
+
+        <x-button
+          :disabled="!canSend && !props.isSending"
+          size="small"
+          @click="onSend"
+          class="h-[32px] w-[32px] p-0"
+        >
+          <i-mdi-send-outline
+            v-if="!props.isSending"
+            class="m-auto block text-xs text-white"
+          />
+          <i-mdi-stop v-else class="m-auto block text-xs text-white" />
         </x-button>
       </div>
-      <x-button
-        v-if="!props.isSending"
-        :disabled="!canSend"
-        size="small"
-        round
-        @click="onSend"
-        class="h-[24px] w-[24px] pl-[6px] text-center"
-      >
-        <i-mdi-send-outline class="text-xs text-white" />
-      </x-button>
-
-      <x-button
-        v-else
-        size="small"
-        round
-        @click="onSend"
-        class="h-[24px] w-[24px] p-[5px] text-center"
-      >
-        <i-mdi-stop class="text-xs text-white" />
-      </x-button>
     </div>
   </div>
   <!-- <div

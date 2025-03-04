@@ -1,42 +1,57 @@
 <template>
   <div class="h-full w-full text-gray-700">
-    <ul class="flex flex-col gap-2 text-sm">
-      <li
-        v-for="item in props.menus"
-        :key="item.id"
-        :class="[
-          'flex cursor-pointer gap-0.5 rounded-md px-2 py-1.5 leading-6 hover:bg-gray-100',
-          {
-            'bg-gray-100': selectedIndex === item.id,
-          },
-        ]"
-        @click="selectItem(item.id)"
-      >
-        <span
-          class="overflow-hidden text-ellipsis whitespace-nowrap"
-          :title="item.title"
-          >{{ item.title }}</span
-        >
-        <x-button
-          @click.stop="onDeleteMenuItem(item.id)"
-          size="small"
-          class="ml-auto cursor-pointer bg-gray-200 hover:bg-gray-400"
-          >x</x-button
-        >
+    <ul class="flex flex-col gap-3 text-sm">
+      <li v-for="(group, date) in groupedMenus" :key="date">
+        <div class="bg-primary-1 mb-2 rounded p-2 font-bold text-gray-500">
+          {{ date }}
+        </div>
+        <ul class="flex flex-col gap-2">
+          <li
+            v-for="item in group"
+            :key="item.id"
+            :class="[
+              'flex cursor-pointer gap-2 rounded-md px-2 py-1.5 leading-6 hover:bg-gray-100',
+              {
+                'bg-gray-100': selectedIndex === item.id,
+              },
+            ]"
+            @click="selectItem(item.id)"
+          >
+            <span
+              class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
+              :title="item.title"
+              >{{ item.title }}</span
+            >
+            <div
+              @click.stop="onDeleteMenuItem(item.id)"
+              :class="[
+                'ml-auto flex w-6 cursor-pointer rounded-full hover:bg-gray-200',
+              ]"
+            >
+              <i-mdi-close class="m-auto block text-xs leading-6" />
+            </div>
+          </li>
+        </ul>
       </li>
     </ul>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, defineEmits, watch } from "vue";
+import { ref, defineProps, defineEmits, watch, computed } from "vue";
+
+interface MenuItem {
+  id: string;
+  title: string;
+  timeStamp: string;
+}
 
 const props = defineProps<{
-  menus: any[];
+  menus: MenuItem[];
   selectedItem?: string;
 }>();
 
-const selectedIndex = ref(props.selectedItem || null);
+const selectedIndex = ref<string | null>(props.selectedItem ?? null);
 
 const emits = defineEmits(["deleteMenuItem", "changeMenuItem"]);
 
@@ -49,18 +64,21 @@ const selectItem = (index) => {
   emits("changeMenuItem", index);
 };
 
+const groupedMenus = computed(() => {
+  return props.menus.reduce((groups, item) => {
+    const date = new Date(item.timeStamp).toLocaleDateString();
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(item);
+    return groups;
+  }, {});
+});
+
 watch(
   () => props.selectedItem,
   (newVal) => {
-    console.log(777, newVal);
-    selectedIndex.value = newVal;
-  },
-);
-
-watch(
-  () => props.menus,
-  (newVal) => {
-    console.log(888, newVal);
+    selectedIndex.value = newVal ?? null;
   },
 );
 </script>

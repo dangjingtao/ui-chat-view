@@ -7,6 +7,7 @@ import Icons from "unplugin-icons/vite";
 import IconsResolver from "unplugin-icons/resolver";
 import Components from "unplugin-vue-components/vite";
 import dynamicImport from "vite-plugin-dynamic-import";
+import cdn from "vite-plugin-cdn-import";
 
 import { readFileSync } from "fs";
 import { resolve } from "path";
@@ -22,6 +23,9 @@ export default defineConfig({
     vue(),
     dynamicImport({
       loose: true, // 更接近 Webpack 的行为
+    }),
+    cdn({
+      modules: ["dayjs", "axios", "lodash"],
     }),
     tailwindcss(),
     Components({
@@ -57,7 +61,14 @@ export default defineConfig({
         },
       },
     },
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
+
   test: {
     globals: true,
     environment: "jsdom",

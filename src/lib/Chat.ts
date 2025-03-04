@@ -7,7 +7,7 @@ import {
   SystemMessage,
   AIMessage,
 } from "@langchain/core/messages";
-import ComonError from "@/lib/comonError";
+import ComonError from "@/lib/CommonError";
 import {
   START,
   END,

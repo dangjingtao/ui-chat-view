@@ -1,15 +1,16 @@
 <template>
   <div
-    class="flex max-h-[236px] min-h-[206px] flex-col overflow-visible rounded border border-gray-200"
+    class="flex max-h-[236px] flex-col overflow-visible rounded border border-gray-200"
   >
     <img v-if="!!image" class="w-full" :src="image" :alt="title" />
     <div class="px-6 py-4">
       <div class="text-md mb-2 font-bold text-gray-700">
         {{ title }}
         <x-tag v-for="tag in tags" :key="tag" :text="tag" class="m-1" />
+        <slot v-if="!title" name="header"></slot>
       </div>
       <p
-        class="max-h-[100px] overflow-hidden text-sm text-gray-700"
+        class="max-h-[40px] overflow-hidden text-sm text-gray-700"
         :class="{ 'line-clamp': true }"
         :title="description"
       >
@@ -28,7 +29,7 @@ import { defineProps } from "vue";
 defineProps({
   title: {
     type: String,
-    required: true,
+    required: false,
   },
   description: {
     type: String,

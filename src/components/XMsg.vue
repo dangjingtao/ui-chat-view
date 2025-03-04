@@ -2,7 +2,7 @@
   <div
     v-if="visible"
     :class="[
-      'fixed top-4 left-1/2 -translate-x-1/2 transform rounded border p-2 shadow-xs transition-opacity duration-300',
+      'fixed top-4 left-1/2 z-50 -translate-x-1/2 transform rounded border p-2 shadow-xs transition-opacity duration-300',
       typeClass,
     ]"
     @animationend="handleAnimationEnd"

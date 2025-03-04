@@ -49,8 +49,8 @@
 <script setup lang="ts">
 import { defineProps, watch } from "vue";
 
-const props = defineProps({
-  menuOpen: Boolean,
-  toggleMenu: Function,
-});
+const props = defineProps<{
+  menuOpen: boolean;
+  toggleMenu: (payload: MouseEvent) => void;
+}>();
 </script>

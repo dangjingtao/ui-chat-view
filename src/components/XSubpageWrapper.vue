@@ -3,14 +3,14 @@
     :class="{
       'md:w-[80%]': !isFullWidth,
     }"
-    class="relative m-auto flex h-full min-h-[400px] w-full flex-col bg-white px-3 sm:mt-1 sm:px-5"
+    class="relative m-auto flex h-full min-h-[400px] w-full flex-col bg-white px-3 sm:px-5"
   >
-    <x-button type="text" class="absolute top-1 right-0" @click="onClose">
+    <x-button type="text" class="absolute top-0 right-0" @click="onClose">
       <i-mdi-close class="text-bold text-xl text-gray-800" />
     </x-button>
-    <div class="flex h-14 w-full">
+    <div class="flex h-11 w-full">
       <h2
-        class="m-0 w-full p-0 text-center text-lg leading-14 font-bold text-gray-600"
+        class="m-0 w-full p-0 text-center text-lg leading-11 font-bold text-gray-600"
       >
         {{ title }}
       </h2>
@@ -38,8 +38,6 @@ const title = computed(() => {
 const router = useRouter();
 
 const onClose = () => {
-  console.log(router);
-
   emits("onClose", router);
   router.go(-1);
 };

@@ -22,7 +22,7 @@ const chatService = {
 
     if (!stream) {
       const updatedConversation =
-        await clientCache.addMessageToCurrenConversationHistory(message);
+        await clientCache.addMessageToCurrentConversationHistory(message);
 
       this._updateChatContext(chatCtx, updatedConversation);
     } else {
@@ -45,7 +45,7 @@ const chatService = {
     }
     delete message.stream;
     const updatedConversation =
-      await clientCache.addMessageToCurrenConversationHistory({
+      await clientCache.addMessageToCurrentConversationHistory({
         ...message,
         content: chunks,
       });
@@ -100,7 +100,7 @@ const chatService = {
     const { chatCtx } = pageStateContext;
     const { id } = message;
     const updatedConversation =
-      await clientCache.deleteMessageFromCurrenConversationHistory(id);
+      await clientCache.deleteMessageFromCurrentConversationHistory(id);
     this._updateChatContext(chatCtx, updatedConversation);
   },
 
@@ -112,7 +112,7 @@ const chatService = {
     );
 
     const { updatedConversation, lastUserMessage } =
-      await clientCache.removeMessageSinceCurrenConversationHistory(index);
+      await clientCache.removeMessageSinceCurrentConversationHistory(index);
     this._updateChatContext(chatCtx, updatedConversation);
 
     await this.onSend(pageStateContext, lastUserMessage);
@@ -168,6 +168,10 @@ const chatService = {
     isSideBarOpen.value = false;
   },
 
+  toggleDrawer(isDrawerOpen) {
+    isDrawerOpen.value = !isDrawerOpen.value;
+  },
+
   async onOpenCharactors({ isSideBarOpen, loadComponent, router }) {
     const { isMobile } = getScreen();
 
@@ -176,7 +180,7 @@ const chatService = {
       // chatStore.isSideBarOpen = !chatStore.isSideBarOpen;
       return;
     } else {
-      await loadComponent("pages/Charactors");
+      await loadComponent("pages/ChatCharactors/index");
       isSideBarOpen.value = !isSideBarOpen.value;
     }
   },
@@ -246,7 +250,7 @@ const chatService = {
   // 应用角色
   async useCharactor(pageStateContext, charactor) {
     const { chatCtx } = pageStateContext;
-    const newConversation = await clientCache.updateCharator(charactor);
+    const newConversation = await clientCache.updateCharacter(charactor);
 
     if (!newConversation) {
       chatCtx.value = {
@@ -257,6 +261,14 @@ const chatService = {
       this._updateChatContext(chatCtx, newConversation);
     }
     message.success("success");
+  },
+
+  // 删除角色
+  async clearCharactor(pageStateContext) {
+    const { chatCtx } = pageStateContext;
+    const newConversation = await clientCache.updateCharacter(null);
+    this._updateChatContext(chatCtx, newConversation);
+    message.success("删除成功");
   },
 };
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="relative inline-block w-full min-w-[120px]">
+  <div class="relative inline-block w-full min-w-[120px]" ref="dropdown">
     <div
       @click="toggleDropdown"
       class="focus:shadow-outline transition-border block w-full cursor-pointer rounded border bg-white px-4 py-2 pr-8 text-sm leading-3.5 focus:outline-none"
@@ -44,7 +44,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, defineEmits, watch } from "vue";
+import {
+  ref,
+  defineProps,
+  defineEmits,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+} from "vue";
 import arrowSvg from "@/assets/arrow.svg";
 
 interface Option {
@@ -64,6 +71,7 @@ const emits = defineEmits<{
 
 const isOpen = ref(false);
 const selectedValue = ref("");
+const dropdown = ref<HTMLElement | null>(null);
 
 watch(
   () => props.selectedValue,
@@ -81,4 +89,18 @@ const selectOption = (option: string) => {
   selectedValue.value = option;
   emits("onChange", option);
 };
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (dropdown.value && !dropdown.value.contains(event.target as Node)) {
+    isOpen.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>

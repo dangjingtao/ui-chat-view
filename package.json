@@ -1,7 +1,7 @@
 {
   "name": "ui-chat-view",
   "private": true,
-  "version": "0.0.14",
+  "version": "0.0.15",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -40,7 +40,6 @@
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "markdown-it": "^14.1.0",
-    "markdown-it-highlightjs": "^4.2.0",
     "npm": "^11.1.0",
     "openai": "^4.83.0",
     "pinia": "^3.0.1",
@@ -82,6 +81,7 @@
     "unplugin-icons": "^22.0.0",
     "unplugin-vue-components": "^28.0.0",
     "vite": "^6.1.0",
+    "vite-plugin-cdn-import": "^1.0.1",
     "vite-plugin-dynamic-import": "^1.6.0",
     "vitest": "^3.0.7",
     "vue-tsc": "^2.2.0"

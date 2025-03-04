@@ -3,16 +3,25 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed, ref } from "vue";
+import { defineProps, computed } from "vue";
 import MarkdownIt from "markdown-it";
-import hljs_plugin from "markdown-it-highlightjs";
+import hljs from "highlight.js/lib/common";
 
 const props = defineProps<{ content: string }>();
 const md = new MarkdownIt({
   html: true,
   linkify: true,
   typographer: true,
-}).use(hljs_plugin);
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(lang, str).value;
+      } catch (__) {}
+    }
+
+    return ""; // 使用额外的默认转义
+  },
+});
 
 const markdownContent = computed(() => {
   return md.render(props.content);
