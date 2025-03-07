@@ -5,6 +5,7 @@ import promptParser from "@/lib/textProcessor/answerParser";
 import { getScreen } from "@/lib/plateform";
 import wrapWithTryCatch from "@/lib/wrapWithTryCatch";
 import message from "@/lib/message";
+import _ from "lodash";
 
 const chatService = {
   // 更新聊天上下文
@@ -56,12 +57,37 @@ const chatService = {
 
   // 初始化聊天服务
   async init(pageStateContext) {
+    //  前端初始化的状态，无任何参考价值
     const { chatCtx } = pageStateContext;
     const chatContext = await clientCache.getChatContext();
+    // 在此检查数据一致性
+
     chatCtx.value = chatContext;
+
     const URLs = chatCtx.value?.URLs || { models: "" };
     const { data } = await request({ url: URLs.models, method: "GET" });
+
     chatCtx.value.models = data.map((x) => ({ id: x.id, name: x.id }));
+
+    if (
+      chatCtx.value.conversation &&
+      chatCtx.value.provider !== chatCtx.value.conversation.provider
+    ) {
+      message.warning(
+        "检查到你换了模型提供商，已尝试为你自动合并到本地储存。但你仍然需要选择模型",
+      );
+      const post = _.cloneDeep({
+        URLs: chatCtx.value.URLs,
+        apiKey: chatCtx.value.apiKey,
+        provider: chatCtx.value.provider,
+        model: "",
+      });
+      await clientCache.updateConversation(chatCtx.value.conversation.id, post);
+      this._updateChatContext(chatCtx, {
+        ...chatCtx.value.conversation,
+        ...post,
+      });
+    }
   },
 
   // 处理初始化错误
@@ -176,11 +202,11 @@ const chatService = {
     const { isMobile } = getScreen();
 
     if (isMobile) {
-      router.push("/charactors");
+      router.push("/characters");
       // chatStore.isSideBarOpen = !chatStore.isSideBarOpen;
       return;
     } else {
-      await loadComponent("pages/ChatCharactors/index");
+      await loadComponent("pages/ChatCharacters/index");
       isSideBarOpen.value = !isSideBarOpen.value;
     }
   },
@@ -189,6 +215,7 @@ const chatService = {
   async onChangeConversation(pageStateContext, id) {
     const { chatCtx, globalInfoList } = pageStateContext;
     const conversation = await clientCache.setConversation(id);
+    this.init(pageStateContext);
     this._updateChatContext(chatCtx, conversation);
     globalInfoList.value = [];
   },

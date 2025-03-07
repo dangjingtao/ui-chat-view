@@ -30,7 +30,7 @@
     >
       <div class="z-50 h-full w-64 bg-white shadow-lg">
         <!-- Drawer content -->
-        <div class="flex h-full flex-col gap-2.5 p-4">
+        <div class="flex h-full flex-col gap-2.5 p-4 pt-0">
           <div v-if="$slots.header" class="h-10">
             <slot name="header"></slot>
           </div>
@@ -47,8 +47,6 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, watch } from "vue";
-
 const props = defineProps<{
   menuOpen: boolean;
   toggleMenu: (payload: MouseEvent) => void;

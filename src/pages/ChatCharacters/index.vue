@@ -8,34 +8,36 @@
       <div class="flex h-full flex-col">
         <div class="min-h-[114px] w-full p-1 shadow">
           <x-input type="search" @onSearch="onSearch" @onClear="onClear" />
-          <x-ellipsis :lines="2">
-            <template #visible>
-              <span class="pt-2 text-sm leading-6 text-gray-600">
-                {{ introduce.content }}
-              </span>
-            </template>
-            <template #hidden>
-              <ul class="list-disc pt-3 pl-5">
-                <li
-                  class="mb-2"
-                  v-for="item in introduce.desc"
-                  :key="item.title"
-                >
-                  <div class="flex items-center justify-between">
-                    <div class="">
-                      <strong class="text-sm text-gray-800">{{
-                        item.title
-                      }}</strong
-                      >&nbsp;
-                      <span class="text-sm text-gray-400">{{
-                        item.content
-                      }}</span>
+          <div class="py-3">
+            <x-ellipsis :lines="4">
+              <template #visible>
+                <span class="pt-2 text-sm leading-6 text-gray-600">
+                  {{ introduce.content }}
+                </span>
+              </template>
+              <template #hidden>
+                <ul class="list-disc pt-3 pl-5">
+                  <li
+                    class="mb-2"
+                    v-for="item in introduce.desc"
+                    :key="item.title"
+                  >
+                    <div class="flex items-center justify-between">
+                      <div class="">
+                        <strong class="text-sm text-gray-800">{{
+                          item.title
+                        }}</strong
+                        >&nbsp;
+                        <span class="text-sm text-gray-400">{{
+                          item.content
+                        }}</span>
+                      </div>
                     </div>
-                  </div>
-                </li>
-              </ul>
-            </template>
-          </x-ellipsis>
+                  </li>
+                </ul>
+              </template>
+            </x-ellipsis>
+          </div>
         </div>
         <x-empty v-if="charactors.length === 0" />
         <div class="flex flex-1 flex-wrap gap-3 overflow-auto px-2">
@@ -44,10 +46,16 @@
             v-for="{ id, zh, tags } in charactors"
             :key="zh.title"
             :title="zh.title"
-            :description="zh.description"
             :tags="tags"
-            class="mt-1 w-full"
+            class="mt-1 h-60 w-full"
           >
+            <template #body>
+              <x-tooltip width="200" :text="zh.description" position="right">
+                <x-ellipsis :is-show-expand-button="false" :lines="5">
+                  <template #visible>{{ zh.description }}</template>
+                </x-ellipsis>
+              </x-tooltip>
+            </template>
             <template #footer>
               <x-button type="text" size="small">
                 <i-mdi-heart-outline />

@@ -1,8 +1,5 @@
 <template>
-  <x-card
-    :description="props.knowledgeBaseDescription"
-    class="h-[full] w-full cursor-pointer bg-white hover:shadow-sm md:h-[170px]"
-  >
+  <x-card class="h-full w-full cursor-pointer bg-white hover:shadow-sm">
     <template #header>
       <div class="flex gap-3">
         <div class="bg-primary-1 border-primary-2 rounded-sm border p-2.5">
@@ -15,6 +12,15 @@
           </div>
         </div>
       </div>
+    </template>
+    <template #body>
+      <x-ellipsis :lines="4" :isShowExpandButton="false">
+        <template #visible>
+          <x-tooltip position="right" :text="props.knowledgeBaseDescription">
+            {{ props.knowledgeBaseDescription }}
+          </x-tooltip>
+        </template>
+      </x-ellipsis>
     </template>
     <template #footer>
       <div class="flex gap-2">

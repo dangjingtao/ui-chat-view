@@ -6,9 +6,12 @@
           <x-card
             title="创建知识库"
             @click="openAddDialog"
-            description="导入您自己的文本数据或通过 Webhook 实时写入数据以增强 LLM 的上下文。"
             class="h-[full] w-full cursor-pointer hover:shadow-sm"
           >
+            <template #body>
+              导入您自己的文本数据或通过 Webhook 实时写入数据以增强 LLM
+              的上下文。
+            </template>
           </x-card>
         </div>
         <div class="flex-1 overflow-auto bg-gray-50">
@@ -16,7 +19,7 @@
             :class="{
               grid: knowledgeBaseStore.knowledgeBases.length !== 0,
             }"
-            class="grid-cols-1 justify-between gap-4 overflow-auto bg-gray-50 p-2.5 md:grid-cols-2 lg:grid-cols-3"
+            class="auto-rows-[210px] grid-cols-1 justify-between gap-4 overflow-auto bg-gray-50 p-2.5 md:grid-cols-2 lg:grid-cols-3"
           >
             <x-empty
               v-if="knowledgeBaseStore.knowledgeBases.length === 0"
@@ -32,6 +35,7 @@
               :knowledgeBaseDescription="knowledgeBase.knowledgeBaseDescription"
               @confirmDelete="() => confirmDelete(knowledgeBase.id)"
               @openEditDialog="() => openEditDialog(knowledgeBase)"
+              @click="() => toKnowledgeBase(knowledgeBase.id)"
             />
 
             <div class="mt-1"></div>
@@ -54,6 +58,13 @@ import { useKnowledgeBaseStore } from "@/store/KnowledgeHub";
 import _ from "lodash";
 import KnowledgeCard from "./components/KnowledgeCard.vue";
 import OperateKnowledgeDialog from "./components/OperateKnowledgeDialog.vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+const toKnowledgeBase = (baseId) => {
+  router.push(`/knowledge-base/${baseId}`);
+};
 
 const chatStore = useChatStore();
 const knowledgeBaseStore = useKnowledgeBaseStore();

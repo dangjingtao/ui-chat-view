@@ -13,6 +13,7 @@
         </x-formItem>
         <x-formItem name="knowledgeBaseDescription" label="知识库描述">
           <x-textarea
+            :rows="6"
             v-model="formData.knowledgeBaseDescription"
             placeholder="详细的描述可以让AI更快访问数据集的内容"
           />

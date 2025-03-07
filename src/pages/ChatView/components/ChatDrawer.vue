@@ -3,6 +3,12 @@
     <template #header>
       <div class="flex items-center gap-2 p-2 pt-0">
         <div class="w-[45%]">
+          <!-- <img
+            class="block h-[38px]"
+            src="https://groq.com/wp-content/uploads/2024/03/PBG-mark1-color.svg"
+            src="https://ollama.com/public/ollama.png"
+            alt="LLM Provider"
+          /> -->
           <img
             class="flex-1"
             src="@/assets/images/STORE.png"

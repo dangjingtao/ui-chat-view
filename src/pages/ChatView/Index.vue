@@ -22,19 +22,21 @@
       </transition>
 
       <!-- 主界面 -->
-      <div class="m-auto flex h-full w-full flex-col">
+      <div class="relative m-auto flex h-full w-full flex-col">
         <div ref="chatContainer" class="m-auto w-full flex-1 overflow-y-auto">
           <!-- 全局信息 -->
-          <x-message
-            v-for="(globalInfo, index) in chatStore.globalInfoList"
-            :key="index"
-            :type="globalInfo.type"
-            dismissible
-          >
-            <template #default>
-              <p class="text-center">{{ globalInfo.content }}</p>
-            </template>
-          </x-message>
+          <div class="absolute w-full">
+            <x-message
+              v-for="(globalInfo, index) in chatStore.globalInfoList"
+              :key="index"
+              :type="globalInfo.type"
+              dismissible
+            >
+              <template #default>
+                <p class="text-center">{{ globalInfo.content }}</p>
+              </template>
+            </x-message>
+          </div>
 
           <x-welcome v-if="chatStore.isEmptyConversation" />
 

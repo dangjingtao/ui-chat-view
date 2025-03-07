@@ -80,13 +80,14 @@ export default class extends Base {
     };
   }
 
+  // 激活指定的聊天
   async setConversation(conversationId) {
     const { cache } = this;
     await cache.set("conversation", conversationId);
     return await this.getConversationById(conversationId);
   }
 
-  // 不是update当前对话
+  // 不是update当前对话。update指定的聊天
   async updateConversation(conversationId: string, content) {
     const { CommonError } = this;
     if (!conversationId) {
@@ -101,6 +102,7 @@ export default class extends Base {
     );
 
     await cache.set("conversations", updatedConversations);
+    return updatedConversations;
   }
 
   // 更新当前对话的model , 如果当前没有，返回null

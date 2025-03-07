@@ -5,9 +5,7 @@
       class="focus:shadow-outline transition-border block w-full cursor-pointer rounded border bg-white px-4 py-2 pr-8 text-sm leading-3.5 focus:outline-none"
       :class="isOpen ? 'border-gray-300' : 'border-gray-100'"
     >
-      <span class="truncate">{{
-        selectedValue || props.selectedValue || "Please Select"
-      }}</span>
+      <span class="truncate">{{ selectedName }}</span>
       <div
         class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
       >
@@ -51,6 +49,7 @@ import {
   watch,
   onMounted,
   onBeforeUnmount,
+  computed,
 } from "vue";
 import arrowSvg from "@/assets/arrow.svg";
 
@@ -66,11 +65,11 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (e: "onChange", value: string): void;
+  (e: "change", value: string): void;
 }>();
 
 const isOpen = ref(false);
-const selectedValue = ref("");
+const selectedValue = ref(props.selectedValue || "");
 const dropdown = ref<HTMLElement | null>(null);
 
 watch(
@@ -87,8 +86,15 @@ const toggleDropdown = () => {
 const selectOption = (option: string) => {
   isOpen.value = false;
   selectedValue.value = option;
-  emits("onChange", option);
+  emits("change", option);
 };
+
+const selectedName = computed(() => {
+  return (
+    props.options.find((option) => option.id === selectedValue.value)?.name ||
+    "Please Select"
+  );
+});
 
 const handleClickOutside = (event: MouseEvent) => {
   if (dropdown.value && !dropdown.value.contains(event.target as Node)) {

@@ -9,7 +9,7 @@
       <x-select
         dropdownClass="right-[-45px] max-h-[500px] min-w-[400px]"
         :options="chatStore.models"
-        @onChange="onSelectModel"
+        @change="onSelectModel"
         :selectedValue="chatStore.defaultCtx?.model"
       />
     </div>

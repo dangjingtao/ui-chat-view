@@ -1,88 +1,131 @@
 <template>
   <div
-    class="relative flex items-center"
     @mouseenter="showTooltip"
     @mouseleave="hideTooltip"
+    class="relative"
+    ref="parent"
   >
     <slot></slot>
-    <div v-if="visible" :class="tooltipClasses">
-      <div :class="arrowClasses"></div>
-      {{ text }}
+    <div
+      v-if="visible"
+      :class="{
+        'fixed z-10 max-w-[300px] rounded bg-gray-800 p-2 text-sm break-words text-white opacity-[80%] shadow-lg': true,
+      }"
+      ref="tooltip"
+      :style="tooltipStyle"
+    >
+      <div class="relative">
+        <div
+          :class="{
+            'absolute transform text-gray-700': true,
+            'top-[-8px] left-1/2 -translate-x-1/2 -translate-y-full':
+              position === 'bottom',
+            'top-1/2 right-[-5px] translate-x-full -translate-y-1/2 rotate-90':
+              position === 'left',
+            'bottom-[-8px] left-1/2 -translate-x-1/2 translate-y-full -rotate-180':
+              position === 'top',
+            'top-1/2 left-[-5px] -translate-x-full -translate-y-1/2 -rotate-90':
+              position === 'right',
+          }"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 10 5"
+            width="10"
+            height="5"
+          >
+            <polygon points="0,5 5,0 10,5" fill="currentColor" />
+          </svg>
+        </div>
+
+        {{ text }}
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 
 const props = defineProps<{
   text: string;
   position?: "top" | "bottom" | "left" | "right";
+  width?: string | number;
 }>();
 
+const position = computed(() => props.position || "bottom");
+
 const visible = ref(false);
+const tooltip = ref(null);
+const parent = ref(null);
+const tooltipStyle = ref({});
 
 const showTooltip = () => {
   visible.value = true;
+  nextTick(() => {
+    updateTooltipPosition();
+  });
 };
 
 const hideTooltip = () => {
   visible.value = false;
 };
 
-const tooltipClasses = computed(() => {
-  const baseClasses =
-    "absolute z-10 p-2 text-sm text-white bg-gray-800 opacity-[80%] rounded shadow-lg whitespace-nowrap";
-  let positionClasses = "";
+const updateTooltipPosition = () => {
+  if (!tooltip.value || !parent.value) return;
+
+  const tooltipEl = tooltip.value as HTMLElement;
+  const parentEl = parent.value as HTMLElement;
+  const parentRect = parentEl.getBoundingClientRect();
+  const tooltipRect = tooltipEl.getBoundingClientRect();
+
+  let top = 0;
+  let left = 0;
+
   switch (props.position) {
     case "top":
-      positionClasses = "bottom-full left-1/2 transform -translate-x-1/2 mb-2";
+      top = parentRect.top - tooltipRect.height - 8;
+      left = parentRect.left + parentRect.width / 2 - tooltipRect.width / 2;
       break;
     case "bottom":
-      positionClasses = "top-full left-1/2 transform -translate-x-1/2 mt-2";
+      top = parentRect.bottom + 8;
+      left = parentRect.left + parentRect.width / 2 - tooltipRect.width / 2;
       break;
     case "left":
-      positionClasses = "right-full top-1/2 transform -translate-y-1/2 mr-2";
+      top = parentRect.top + parentRect.height / 2 - tooltipRect.height / 2;
+      left = parentRect.left - tooltipRect.width - 8;
       break;
     case "right":
-      positionClasses = "left-full top-1/2 transform -translate-y-1/2 ml-2";
+      top = parentRect.top + parentRect.height / 2 - tooltipRect.height / 2;
+      left = parentRect.right + 8;
       break;
     default:
-      positionClasses = "top-full left-1/2 transform -translate-x-1/2 mt-2";
+      top = parentRect.bottom + 8;
+      left = parentRect.left + parentRect.width / 2 - tooltipRect.width / 2;
       break;
   }
-  return `${baseClasses} ${positionClasses}`;
+
+  // Ensure tooltip does not exceed screen boundaries
+  if (left < 0) left = 8;
+  if (left + tooltipRect.width > window.innerWidth)
+    left = window.innerWidth - tooltipRect.width - 8;
+  if (top < 0) top = 8;
+  if (top + tooltipRect.height > window.innerHeight)
+    top = window.innerHeight - tooltipRect.height - 8;
+
+  tooltipStyle.value = {
+    top: `${top}px`,
+    left: `${left}px`,
+  };
+};
+
+const tooltipClasses = computed(() => {
+  return `fixed z-10 p-2 text-sm text-white bg-gray-800 opacity-[80%] rounded shadow-lg w-auto max-w-[${props.width || 120}px] break-words`;
 });
 
-const arrowClasses = computed(() => {
-  const baseArrowClasses = "absolute w-0 h-0 border-transparent";
-  let positionArrowClasses = "";
-  switch (props.position) {
-    case "top":
-      positionArrowClasses =
-        "border-t-gray-800 border-t-8 border-x-8 bottom-[-4px] left-1/2 transform -translate-x-1/2";
-      break;
-    case "bottom":
-      positionArrowClasses =
-        "border-b-gray-800 border-b-8 border-x-8 top-[-4px] left-1/2 transform -translate-x-1/2";
-      break;
-    case "left":
-      positionArrowClasses =
-        "border-l-gray-800 border-l-8 border-y-8 right-[-4px] top-1/2 transform -translate-y-1/2";
-      break;
-    case "right":
-      positionArrowClasses =
-        "border-r-gray-800 border-r-8 border-y-8 left-[-4px] top-1/2 transform -translate-y-1/2";
-      break;
-    default:
-      positionArrowClasses =
-        "border-b-gray-800 border-b-8 border-x-8 top-[-4px] left-1/2 transform -translate-x-1/2";
-      break;
-  }
-  return `${baseArrowClasses} ${positionArrowClasses}`;
+onMounted(() => {
+  nextTick(() => {
+    updateTooltipPosition();
+  });
 });
 </script>
-
-<style scoped>
-/* 在这里添加你的样式 */
-</style>

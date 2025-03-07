@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { update } from "lodash";
 import { v4 } from "uuid";
 import ClientCache from "@/lib/clientCache";
 import CommonError from "@/lib/CommonError";
@@ -28,6 +28,18 @@ export default class CachePlugin {
     }
   }
 
+  generateNewDataMeta(data) {
+    console.log(this);
+    data = this.lodash.cloneDeep(data);
+    const meta = {
+      createTime: Date.now(),
+      updateTime: Date.now(),
+      id: this.uuidV4(),
+    };
+    return this.lodash.merge(meta, data);
+  }
+
+  //! 危险操作
   async clearAllCache() {
     const { cache } = this;
     await cache.clear();
