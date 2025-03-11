@@ -148,9 +148,12 @@ init().then((ctx) => {
 });
 
 const removeCache = () => {
-  cachePlugin.clearAllCache().then(() => {
-    cachePlugin.install();
-    message.success("清除完毕");
-  });
+  cachePlugin
+    .clearAllCache()
+    .then(cachePlugin.install.bind(cachePlugin))
+    .then(() => {
+      message.success("清除成功");
+      location.reload();
+    });
 };
 </script>

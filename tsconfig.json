@@ -36,7 +36,8 @@
     "types": [
       // 编译过程中被包含进来的类型声明文件
       "node",
-      "vite/client"
+      "vite/client",
+      "vite-plugin-pwa/client"
     ]
   }
 }

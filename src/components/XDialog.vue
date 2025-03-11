@@ -23,6 +23,10 @@
               v-if="props.type === 'alert'"
               class="text-md mt-0.5 text-red-500"
             />
+            <i-mdi-information-slabCircle
+              v-if="props.type === 'info'"
+              class="text-md text-primary-6 mt-0.5"
+            />
             &nbsp;&nbsp;{{ displayTitle }}
           </div>
         </div>

@@ -37,7 +37,7 @@ export default defineConfig({
       // registerType: "autoUpdate", // 自动更新 Service Worker 并刷新页面
       registerType: "prompt",
       injectRegister: "auto",
-
+      // strategies: "injectManifest",
       includeAssets: [
         "favicon.svg",
         "robots.txt",
@@ -52,17 +52,19 @@ export default defineConfig({
         "**/*.otf",
       ],
       workbox: {
-        globPatterns: ["**/*.{js,css,html,png,jpg,gif,svg,woff,ttf,otf,woff2}"],
-        // runtimeCaching: [
-        //   {
-        //     urlPattern: /\.(png|jpg|jpeg|svg|gif|woff|ttf|otf|woff2)$/,
-        //     handler: "CacheFirst", // 优先从缓存中查找响应
-        //   },
-        //   {
-        //     urlPattern: /\.(js|css|html)$/,
-        //     handler: "StaleWhileRevalidate", // 先返回缓存，后台更新
-        //   },
-        // ],
+        globPatterns: [
+          "**/*.{js,css,html,png,jpg,gif,svg,woff,ttf,otf,woff2,webp}",
+        ],
+        runtimeCaching: [
+          {
+            urlPattern: /\.(png|jpg|jpeg|svg|gif|woff|ttf|otf|woff2|webp)$/,
+            handler: "CacheFirst", // 优先从缓存中查找响应
+          },
+          {
+            urlPattern: /\.(js|css|html)$/,
+            handler: "StaleWhileRevalidate", // 先返回缓存，后台更新
+          },
+        ],
         // skipWaiting: true, // 跳过等待，直接激活新版本
         // clientsClaim: true, // 激活后接管页面
       },
@@ -77,7 +79,7 @@ export default defineConfig({
 
         icons: [
           {
-            src: "logoIcon-192.png",
+            src: "/logoIcon-192.png",
             sizes: "192x192",
             type: "image/png",
           },
@@ -103,6 +105,7 @@ export default defineConfig({
       devOptions: {
         enabled: true, // 开发环境中启用 PWA 功能
         type: "classic",
+        // type: "module",
         navigateFallback: "index.html",
       },
     }),

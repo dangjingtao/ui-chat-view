@@ -6,7 +6,9 @@ import router from "@/router";
 import cachePlugin from "@/plugins/cachePlugin/index";
 import App from "./App.vue";
 import "./styles/index.css";
-import { initPwa, updateSW } from "@/lib/pwa";
+import { checkUpdate } from "@/lib/pwa";
+
+checkUpdate();
 
 // initPwa();
 cachePlugin.install().then(() => {
