@@ -52,6 +52,7 @@
     "tailwindcss": "^4.0.6",
     "tailwindcss-safe-area": "^0.6.0",
     "uuid": "^11.0.5",
+    "vite-plugin-pwa": "^0.21.1",
     "vue": "^3.5.13",
     "vue-router": "4",
     "zod": "^3.24.2"

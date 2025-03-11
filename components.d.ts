@@ -8,7 +8,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    IMdiArchiveSettingsOutline: typeof import('~icons/mdi/archive-settings-outline')['default']
     IMdiBookmarkBoxMultipleOutline: typeof import('~icons/mdi/bookmark-box-multiple-outline')['default']
     IMdiCartCheck: typeof import('~icons/mdi/cart-check')['default']
     IMdiCheckCircleOutline: typeof import('~icons/mdi/check-circle-outline')['default']
@@ -65,9 +64,7 @@ declare module 'vue' {
     XTextarea: typeof import('./src/components/XTextarea.vue')['default']
     XThink: typeof import('./src/components/XThink.vue')['default']
     XTooltip: typeof import('./src/components/XTooltip.vue')['default']
-    XUplaod: typeof import('./src/components/XUplaod.vue')['default']
     XUpload: typeof import('./src/components/XUpload.vue')['default']
-    XUplod: typeof import('./src/components/XUplod.vue')['default']
     XWelcome: typeof import('./src/components/XWelcome.vue')['default']
   }
 }

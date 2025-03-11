@@ -8,6 +8,7 @@ import IconsResolver from "unplugin-icons/resolver";
 import Components from "unplugin-vue-components/vite";
 import dynamicImport from "vite-plugin-dynamic-import";
 import cdn from "vite-plugin-cdn-import";
+import { VitePWA } from "vite-plugin-pwa";
 
 import { readFileSync } from "fs";
 import { resolve } from "path";
@@ -32,6 +33,79 @@ export default defineConfig({
       resolvers: [IconsResolver()],
     }),
     Icons(),
+    VitePWA({
+      // registerType: "autoUpdate", // 自动更新 Service Worker 并刷新页面
+      registerType: "prompt",
+      injectRegister: "auto",
+
+      includeAssets: [
+        "favicon.svg",
+        "robots.txt",
+        "apple-touch-icon.png",
+        "**/*.png",
+        "**/*.jpg",
+        "**/*.jpeg",
+        "**/*.svg",
+        "**/*.woff2",
+        "**/*.woff",
+        "**/*.ttf",
+        "**/*.otf",
+      ],
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,png,jpg,gif,svg,woff,ttf,otf,woff2}"],
+        // runtimeCaching: [
+        //   {
+        //     urlPattern: /\.(png|jpg|jpeg|svg|gif|woff|ttf|otf|woff2)$/,
+        //     handler: "CacheFirst", // 优先从缓存中查找响应
+        //   },
+        //   {
+        //     urlPattern: /\.(js|css|html)$/,
+        //     handler: "StaleWhileRevalidate", // 先返回缓存，后台更新
+        //   },
+        // ],
+        // skipWaiting: true, // 跳过等待，直接激活新版本
+        // clientsClaim: true, // 激活后接管页面
+      },
+      manifest: {
+        name: "UI Chat",
+        short_name: "UIChat",
+        description: "渐进式的客户端聊天智能体",
+        theme_color: "#2f54eb", //PWA 的主题颜色，用于地址栏、通知栏等
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
+
+        icons: [
+          {
+            src: "logoIcon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "/logoIcon.png",
+            sizes: "512x512",
+            type: "image/png",
+          },
+          {
+            src: "/logoIcon.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/logoIcon.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
+      },
+      devOptions: {
+        enabled: true, // 开发环境中启用 PWA 功能
+        type: "classic",
+        navigateFallback: "index.html",
+      },
+    }),
   ],
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
@@ -50,6 +124,9 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
+        entryFileNames: "assets/[name].[hash].js",
+        chunkFileNames: "assets/[name].[hash].js",
+        assetFileNames: "assets/[name].[hash].[ext]",
         manualChunks(id) {
           if (id.includes("node_modules")) {
             return id

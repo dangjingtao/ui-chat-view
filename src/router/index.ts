@@ -1,5 +1,12 @@
 import { createWebHistory, createRouter } from "vue-router";
 import { useKnowledgeBaseStore } from "@/store/KnowledgeHub";
+import { initPwa, updateSW } from "@/lib/pwa";
+
+// initPwa();
+
+// router.afterEach(() => {
+//   pwaPostMessage(); // 在每次路由切换时触发更新
+// });
 
 const Login = () => import("@/pages/Login/index.vue");
 const Home = () => import("@/pages/ChatView/Index.vue");
