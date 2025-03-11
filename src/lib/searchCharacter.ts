@@ -14,7 +14,7 @@ const options = {
   shouldSort: true, // 是否对结果排序
 };
 
-export const searchCharactor = (keyword: string, data) => {
+export const searchCharacter = (keyword: string, data) => {
   if (!fuse) {
     fuse = new Fuse(data, options);
   }

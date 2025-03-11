@@ -34,7 +34,7 @@
         <x-button
           :disabled="!canSend && !props.isSending"
           size="small"
-          @click="onSend"
+          @click="props.isSending ? onStop() : onSend()"
           class="h-[32px] w-[32px] p-0"
         >
           <i-mdi-send-outline
@@ -59,17 +59,29 @@ const sendButtonVisible = ref(false);
 const textarea = ref<HTMLTextAreaElement | null>(null);
 const isFocused = ref(false);
 
+const controller = new AbortController();
+
 const props = defineProps<{
   onSend: (ctx: any) => void | Promise<void>;
-  onStop?: () => void;
   isSending?: boolean;
   canSend: boolean;
-  charactor?: any;
+  character?: any;
 }>();
+
+const emits = defineEmits(["onStop"]);
 
 const canSend = computed(() => {
   return props.canSend && textareaValue.value.length > 0;
 });
+
+const onStop = () => {
+  // props.onStop?.();
+
+  emits("onStop");
+  // const startTimer = console.time("timer1");
+
+  controller.abort();
+};
 
 const handleFocus = () => {
   isFocused.value = true;

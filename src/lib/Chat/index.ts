@@ -1,20 +1,17 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { ChatOllama, Ollama } from "@langchain/ollama";
+import { ChatCohere } from "@langchain/cohere";
+import { ChatDeepSeek } from "@langchain/deepseek";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatGroq } from "@langchain/groq";
+import { CohereClient } from "cohere-ai";
 import _ from "lodash";
 import {
   HumanMessage,
   SystemMessage,
   AIMessage,
 } from "@langchain/core/messages";
-import ComonError from "@/lib/CommonError";
-import {
-  START,
-  END,
-  MessagesAnnotation,
-  StateGraph,
-  Annotation,
-} from "@langchain/langgraph/web";
+import CommonError from "@/lib/CommonError";
 import {
   ChatPromptTemplate,
   SystemMessagePromptTemplate,
@@ -24,6 +21,14 @@ import { v4 as uuid } from "uuid";
 import { RunnableSequence, RunnableLambda } from "@langchain/core/runnables";
 import promptParser from "@/lib/textProcessor/promptParser";
 import prompts from "@/dataSet/prompts.json";
+// 工具
+import calculatorTool from "./tools/calculator";
+import { Calculator } from "@langchain/community/tools/calculator";
+import { WebBrowser } from "langchain/tools/webbrowser";
+import { SerpAPI } from "@langchain/community/tools/serpapi";
+import { initializeAgentExecutorWithOptions } from "langchain/agents";
+import webBrowserTool from "./tools/webBroswer";
+import createClient from "./utils/createClient";
 
 type ProviderName =
   | "kimi"
@@ -35,7 +40,6 @@ type ProviderName =
   | "";
 
 interface ChatConfig {
-  URLs: any;
   baseURL: string;
   apiKey: string;
   provider: ProviderName;
@@ -49,7 +53,9 @@ class Chat {
   private clientConfig?: ChatConfig;
   private chatHistory: any[] = [];
   private app: any;
+  private miniApp: any;
   private clientMap: any;
+  private sendMessageController?: AbortController | null;
 
   constructor() {}
 
@@ -63,12 +69,12 @@ class Chat {
     if (!this.clientConfig) {
       throw new Error("Client not initialized");
     }
-    const { provider, model, URLs, apiKey } = this.clientConfig;
+    const { provider, model, baseURL } = this.clientConfig;
 
-    const requiredFields = { provider, model, URLs };
+    const requiredFields = { provider, model, baseURL };
     for (const [key, value] of Object.entries(requiredFields)) {
       if (!value) {
-        throw new ComonError(`Missing required field: ${key}`, {
+        throw new CommonError(`Missing required field: ${key}`, {
           code: key,
           key,
           value,
@@ -77,44 +83,84 @@ class Chat {
     }
   }
 
+  abort() {
+    this.sendMessageController?.abort();
+    this.sendMessageController = null;
+  }
+  // const model = new OpenAI({ temperature: 0 });
+  //   const embeddings = new OpenAIEmbeddings();
+  //   const tools = [
+  //     new SerpAPI(process.env.SERPAPI_API_KEY, {
+  //       location: "Austin,Texas,United States",
+  //       hl: "en",
+  //       gl: "us",
+  //     }),
+  //     new Calculator(),
+  //     new WebBrowser({ model, embeddings }),
+  async useTool() {
+    const tools = [
+      new Calculator(),
+      webBrowserTool(this.client, "nomic-embed-text:v1.5"),
+    ];
+    this.client?.bindTools(tools);
+
+    initializeAgentExecutorWithOptions(tools, model, {
+      agentType: "zero-shot-react-description",
+      verbose: true,
+    });
+  }
+
+  useClient() {
+    const { provider, model, baseURL, advanceOptions } = this.clientConfig;
+    const client = createClient(provider, model, baseURL, advanceOptions);
+    client.model = model;
+
+    this.client = client;
+  }
+
   init() {
-    const { provider, model, URLs, apiKey, chatHistory } = this.clientConfig;
+    const { provider, model, baseURL, apiKey, chatHistory, advanceOptions } =
+      this.clientConfig;
+    // console.log(advanceOptions);
     this.validConfig();
     this.chatHistory = chatHistory || [];
-    this.clientMap = this.clientMap || {};
-    if (!this.clientMap[provider]) {
-      let client: any = null;
-      switch (provider) {
-        case "ollama":
-          client = new ChatOllama({
-            model: model,
-            streaming: true,
-          });
-          break;
-        case "groq":
-          client = new ChatGroq({
-            model,
-            baseUrl: URLs.base,
-            apiKey: apiKey,
-          });
-          break;
-        default:
-          client = new ChatOpenAI({
-            configuration: {
-              baseURL: URLs.base,
-            },
-            apiKey: apiKey,
-          });
-      }
-      client.model = model;
-      this.clientMap[provider] = client;
-      this.client = client;
-    } else {
-      this.clientMap[provider].model = model;
-      this.client = this.clientMap[provider];
-    }
 
-    this.initChain(this.client);
+    this.useClient();
+    // this.clientMap = this.clientMap || {};
+    // if (!this.clientMap[provider]) {
+    //   let client: any = null;
+    //   switch (provider) {
+    //     case "ollama":
+    //       client = new ChatOllama({
+    //         model: model,
+    //         streaming: true,
+    //         ...advanceOptions,
+    //       });
+    //       break;
+    //     case "groq":
+    //       client = new ChatGroq({
+    //         model,
+    //         baseUrl: baseURL,
+    //         apiKey: apiKey || "1234",
+    //         ...advanceOptions,
+    //       });
+    //       break;
+    //     default:
+    //       client = new ChatOpenAI({
+    //         configuration: {
+    //           baseURL: baseURL,
+    //         },
+    //         apiKey: apiKey,
+    //       });
+    //   }
+    //   client.model = model;
+    //   this.clientMap[provider] = client;
+    //   this.client = client;
+    // } else {
+    //   this.clientMap[provider].model = model;
+    //   this.client = this.clientMap[provider];
+    // }
+    this.initChain();
     this.initMiniPermissionChain(this.client);
 
     return this;
@@ -128,7 +174,7 @@ class Chat {
     return this.chatHistory;
   }
 
-  // 微任务模型
+  // 微任务模型：生成标题，向量化
   initMiniPermissionChain(client) {
     const systemMessage = SystemMessagePromptTemplate.fromTemplate(
       "You are a useful assistant who is good at summarizing the current chat content in concise Chinese (no more than 20 words), and your reply only summarizes the user's chat content.",
@@ -143,7 +189,8 @@ class Chat {
     this.miniApp = chatPrompt.pipe(client).pipe(parser);
   }
 
-  initChain(client) {
+  initChain() {
+    const { client } = this;
     const systemMessage = SystemMessagePromptTemplate.fromTemplate(
       "You are a helpful assistant. Answer all questions to the best of your ability in {language}. {userSystemMessage}",
     );
@@ -153,6 +200,10 @@ class Chat {
     ]);
 
     const parser = new StringOutputParser();
+
+    if (!client) {
+      throw new Error("Client not initialized");
+    }
 
     this.app = chatPrompt
       .pipe(client)
@@ -169,14 +220,13 @@ class Chat {
 
   formatChatHistory() {
     console.log("chatHistory", this.chatHistory);
-    const chst = this.chatHistory.map((item) => {
+    return this.chatHistory.map((item) => {
       if (item.role === "assistant") {
         return new AIMessage(item.content || "");
       } else {
         return new HumanMessage(item.content || "");
       }
     });
-    return chst;
   }
 
   // 获取最近一条用户信息
@@ -188,15 +238,8 @@ class Chat {
     return lastUserMessage;
   }
 
-  // 提示词解析不能直接使用，需要先进行处理，但是否需要加入历史？
-  async beforeSendMessage() {
-    const { app } = this;
-    if (!app) {
-      throw new Error("App not initialized");
-    }
-  }
-
-  async genateTitle(chatContext) {
+  // 生成对话标题
+  async generateTitle(chatContext) {
     if (chatContext.messages.length > 0 && chatContext.messages.length < 2) {
       // 生成对话标题
       return removeThinkContent(
@@ -215,7 +258,13 @@ class Chat {
     return "";
   }
 
-  getSystmeMessagefromDirective(directive) {
+  // 解析指令
+  getSystemMessageFromDirective(directive) {
+    // 注入用户自己写的提示词.优先度最高
+    if (this.clientConfig?.advanceOptions?.systemPrompt) {
+      return this.clientConfig?.advanceOptions.systemPrompt;
+    }
+
     const systemPrompt = directive.find(
       (item) => item.name === "system_prompt",
     );
@@ -225,21 +274,35 @@ class Chat {
       const info = prompts.find((item) => item.id === id);
       return info?.zh?.prompt || "";
     }
+
     return "";
   }
+
+  // 提示词解析不能直接使用，需要先进行处理，但是否需要加入历史？
+  async beforeSendMessage() {
+    const { app } = this;
+    if (!app) {
+      throw new Error("App not initialized");
+    }
+    this.sendMessageController = new AbortController();
+  }
+
+  // 发消息，流式输出
   async sendMessage() {
     await this.beforeSendMessage();
-    const config = {};
+    const config = {
+      signal: this.sendMessageController?.signal,
+    };
     const lastUserMessage = this.getLastUserMessage();
     const { directive = [] } = lastUserMessage;
-    const userSystemMessage = this.getSystmeMessagefromDirective(directive);
+    const userSystemMessage = this.getSystemMessageFromDirective(directive);
     const chatContext = {
       messages: this.chatHistory,
       language: "Chinese",
       userSystemMessage,
     };
     const stream = await this.app.stream(chatContext, config);
-    const title = await this.genateTitle(chatContext);
+    const title = await this.generateTitle(chatContext);
 
     return {
       title,

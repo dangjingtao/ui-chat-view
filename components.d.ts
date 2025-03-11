@@ -54,6 +54,8 @@ declare module 'vue' {
     XSafeArea: typeof import('./src/components/XSafeArea.vue')['default']
     XSelect: typeof import('./src/components/XSelect.vue')['default']
     XSender: typeof import('./src/components/XSender.vue')['default']
+    XSlider: typeof import('./src/components/XSlider.vue')['default']
+    XSpin: typeof import('./src/components/XSpin.vue')['default']
     XSubpageWrapper: typeof import('./src/components/XSubpageWrapper.vue')['default']
     XSwitch: typeof import('./src/components/XSwitch.vue')['default']
     XTab: typeof import('./src/components/XTab.vue')['default']

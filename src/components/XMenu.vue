@@ -43,7 +43,7 @@ import { ref, defineProps, defineEmits, watch, computed } from "vue";
 interface MenuItem {
   id: string;
   title: string;
-  timeStamp: string;
+  createTime: string;
 }
 
 const props = defineProps<{
@@ -66,7 +66,7 @@ const selectItem = (index) => {
 
 const groupedMenus = computed(() => {
   return props.menus.reduce((groups, item) => {
-    const date = new Date(item.timeStamp).toLocaleDateString();
+    const date = new Date(item.createTime).toLocaleDateString();
     if (!groups[date]) {
       groups[date] = [];
     }

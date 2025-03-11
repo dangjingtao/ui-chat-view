@@ -1,17 +1,25 @@
 import axios from "axios";
+import { setupCache, buildWebStorage } from "axios-cache-interceptor";
+import message from "./message";
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: "http://localhost:5090", // 基础URL
+  baseURL: "https://ai-proxy.tomz.io",
   timeout: 30000, // 请求超时时间
+  headers: {
+    "Content-Type": "json/application",
+  },
+  validateStatus: function (status) {
+    return status < 500;
+    // return status < 500; // Reject only if the status code is greater than or equal to 500
+  },
+  // withCredentials: true,
 });
 
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
     // 在发送请求之前做些什么
-    // 比如添加 token
-    // config.headers['Authorization'] = 'Bearer token';
     return config;
   },
   (error) => {
@@ -23,8 +31,15 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response) => {
+    if (response.status === 401) {
+      if (location.pathname !== "/login") {
+        location.href = "/login";
+      } else {
+        message.error("登录失败");
+      }
+    }
     // 对响应数据做点什么
-    return response.data;
+    return response;
   },
   (error) => {
     // 处理响应错误
@@ -33,6 +48,12 @@ service.interceptors.response.use(
 );
 
 class Request {
+  private apiKey: null | string;
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
   request(config: {
     url: string;
     method: string;
@@ -40,10 +61,17 @@ class Request {
     data?: any;
     params?: any;
   }) {
-    return service.request({
+    const headers = { ...config.headers };
+    let flag = headers.Authorization === null;
+    headers.Authorization = headers.Authorization || `${this.apiKey}`;
+    if (flag) {
+      delete headers.Authorization;
+    }
+
+    return service({
       url: config.url,
       method: config.method,
-      headers: config.headers,
+      headers,
       data: config.data,
       params: config.params,
     });
@@ -51,20 +79,25 @@ class Request {
 
   // 封装请求方法
   get(url: string, params?: any) {
-    return service.get(url, { params });
+    return this.request({ url, method: "get", params });
   }
   post(url: string, data?: any) {
-    return service.post(url, data);
+    return this.request({ url, method: "post", data });
   }
   put(url: string, data?: any) {
-    return service.put(url, data);
+    return this.request({ url, method: "put", data });
   }
   delete(url: string, params?: any) {
-    return service.delete(url, { params });
+    return this.request({ url, method: "delete", params });
   }
 }
 
-const requestInstance = new Request();
+const getAPIHeader = () => {
+  const apiKey = localStorage.getItem("apiKey"); // 从环境变量中获取 apiKey
+  return apiKey ? `Bearer ${apiKey}` : null;
+};
+
+const requestInstance = new Request(getAPIHeader());
 
 const request = (config: {
   url: string;
@@ -75,10 +108,5 @@ const request = (config: {
 }) => {
   return requestInstance.request(config);
 };
-
-// 将其他方法绑定到request函数上
-["get", "post", "put", "delete"].forEach((method) => {
-  request[method] = requestInstance[method].bind(requestInstance);
-});
 
 export default request;

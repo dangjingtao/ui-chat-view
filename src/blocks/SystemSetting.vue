@@ -76,11 +76,7 @@
           class="mt-2"
           :selectedValue="webllmProvider"
           @change="setWebllmProvider"
-          :options="[
-            { id: 'ollama', name: 'ollama' },
-            { id: 'groq', name: 'groq' },
-            // { id: 'webllm', name: 'WebLLM' },
-          ]"
+          :options="providers"
         />
       </div>
     </div>
@@ -115,12 +111,20 @@
   </div>
 </template>
 <script lang="ts" setup>
+import message from "@/lib/message";
 import cachePlugin from "@/plugins/cachePlugin";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+
 const router = useRouter();
 
+const providers = ref<{ id: string; name: string }>([]);
+
 const webllmProvider = ref("");
+cachePlugin.getProviders().then((res) => {
+  providers.value = res.map((x) => ({ id: x.provider, name: x.provider }));
+  // webllmProvider.value = providers[0];
+});
 
 const setWebllmProvider = async (provider) => {
   await cachePlugin.setCurrentProvider(provider);
@@ -144,6 +148,9 @@ init().then((ctx) => {
 });
 
 const removeCache = () => {
-  cachePlugin.clearAllCache();
+  cachePlugin.clearAllCache().then(() => {
+    cachePlugin.install();
+    message.success("清除完毕");
+  });
 };
 </script>

@@ -39,11 +39,11 @@
             </x-ellipsis>
           </div>
         </div>
-        <x-empty v-if="charactors.length === 0" />
+        <x-empty v-if="characters.length === 0" />
         <div class="flex flex-1 flex-wrap gap-3 overflow-auto px-2">
           <div class="mt-1"></div>
           <x-card
-            v-for="{ id, zh, tags } in charactors"
+            v-for="{ id, zh, tags } in characters"
             :key="zh.title"
             :title="zh.title"
             :tags="tags"
@@ -70,7 +70,7 @@
               <x-button
                 type="ghost"
                 size="small"
-                @click="() => useCharactor({ id, zh, tags })"
+                @click="() => useCharacter({ id, zh, tags })"
               >
                 一键应用
               </x-button>
@@ -85,8 +85,8 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import prompts from "@/dataSet/prompts.json";
-import introduce from "@/dataSet/charactor_introduce.json";
-import { searchCharactor } from "@/lib/searchCharactor";
+import introduce from "@/dataSet/character_introduce.json";
+import { searchCharacter } from "@/lib/searchCharacter";
 import copy from "@/lib/textProcessor/copy";
 import { useChatStore } from "@/store/chat";
 
@@ -97,21 +97,21 @@ const props = defineProps<{
   onClose?: () => void;
 }>();
 
-const charactors = ref(prompts);
+const characters = ref(prompts);
 
 const onSearch = (value: string) => {
   if (value) {
-    const searchResult = searchCharactor(value, prompts);
-    charactors.value = searchResult;
+    const searchResult = searchCharacter(value, prompts);
+    characters.value = searchResult;
   } else {
     onClear();
   }
 };
 
 const onClear = () => {
-  charactors.value = prompts;
+  characters.value = prompts;
 };
 
-const { useCharactor } = chatStore.$service;
+const { useCharacter } = chatStore.$service;
 </script>
 <style scoped></style>

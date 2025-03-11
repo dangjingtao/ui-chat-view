@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-2 pb-4">
+  <div class="w-full pt-2 pb-4">
     <div
       class="flex w-20 cursor-pointer items-center justify-between rounded-md bg-gray-100 p-2"
       @click="togglePanel"

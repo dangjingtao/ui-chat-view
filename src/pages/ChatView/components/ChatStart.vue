@@ -1,12 +1,16 @@
 <template>
-  <x-subpage-wrapper title="Change Log">
-    <!-- <x-tab></x-tab> -->
-    <template #content>
-      <x-result title="正在艰难翻越GFW..." v-if="loading" />
-      <x-markdown v-else="!loading" :content="content"></x-markdown>
-      <x-result :title="error.message" type="500" v-if="error" />
-    </template>
-  </x-subpage-wrapper>
+  <div>
+    <!-- <x-result title="正在艰难翻越GFW..." v-if="loading" /> -->
+    <x-spin v-if="loading" class="mt-50" />
+
+    <x-markdown
+      class="p-5 px-6"
+      v-else="!loading"
+      :content="content"
+    ></x-markdown>
+    <x-result :title="error.message" type="500" v-if="error" />
+    <!-- <x-result type="500" v-if="true" /> -->
+  </div>
 </template>
 <script setup lang="ts">
 import { ref, computed } from "vue";
@@ -17,7 +21,7 @@ const loading = ref(true);
 const error = ref<AxiosError | null>(null);
 
 request({
-  url: "https://raw.githubusercontent.com/dangjingtao/ui-chat-view/main/docs/CHANGELOG.md",
+  url: "https://raw.githubusercontent.com/dangjingtao/ui-chat-view/main/README.md",
   method: "get",
   headers: {
     Authorization: null,
@@ -25,7 +29,6 @@ request({
 })
   .then((res) => {
     loading.value = false;
-
     content.value = res.data;
   })
   .catch((err: AxiosError) => {

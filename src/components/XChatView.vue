@@ -16,7 +16,7 @@
             'flex justify-start gap-2': !isUser(message.role),
           }"
         >
-          <div class="flex max-w-[100%] flex-col gap-1 sm:max-w-[90%]">
+          <div class="flex max-w-[100%] flex-col gap-1">
             <div class="flex w-full items-end gap-2">
               <div v-if="message.role !== 'user'" class="w-8 min-w-8">
                 <img src="@/assets/fmt.webp" alt="" srcset="" />
@@ -43,6 +43,7 @@
                 :text="message.content"
               />
               <x-markdown
+                :show-cursor="true"
                 v-if="!isUser(message.role)"
                 :content="removeThinkContent(message.content)"
               />
@@ -81,6 +82,18 @@
                 <i-mdi-delete-outline class="text-[1rem] text-gray-500" />
               </x-button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 虚假的输入中 -->
+      <div v-if="isSending" class="chat-item mb-4">
+        <div class="flex w-full items-end gap-2">
+          <div class="w-8 min-w-8">
+            <img src="@/assets/fmt.webp" alt="" srcset="" />
+          </div>
+          <div class="w-full text-left text-xs leading-6 text-gray-500">
+            typing...
           </div>
         </div>
       </div>
@@ -123,6 +136,7 @@ const formateDate = (timeStamp: number | string) => {
 
 defineProps<{
   messages: { role: string; content: string; timeStamp?: number | string }[];
+  isSending: boolean;
 }>();
 
 const emits = defineEmits(["deleteMessage", "regenarate"]);

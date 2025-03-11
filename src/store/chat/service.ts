@@ -1,11 +1,12 @@
 import clientCache from "@/plugins/cachePlugin";
 import request from "@/lib/request";
-import Chat from "@/lib/Chat.ts";
+import Chat from "@/lib/Chat";
 import promptParser from "@/lib/textProcessor/answerParser";
 import { getScreen } from "@/lib/plateform";
 import wrapWithTryCatch from "@/lib/wrapWithTryCatch";
 import message from "@/lib/message";
 import _ from "lodash";
+import { toRaw } from "vue";
 
 const chatService = {
   // 更新聊天上下文
@@ -58,16 +59,11 @@ const chatService = {
   // 初始化聊天服务
   async init(pageStateContext) {
     //  前端初始化的状态，无任何参考价值
-    const { chatCtx } = pageStateContext;
+    const { chatCtx, conversationConfig } = pageStateContext;
     const chatContext = await clientCache.getChatContext();
     // 在此检查数据一致性
-
+    console.log("init", chatCtx);
     chatCtx.value = chatContext;
-
-    const URLs = chatCtx.value?.URLs || { models: "" };
-    const { data } = await request({ url: URLs.models, method: "GET" });
-
-    chatCtx.value.models = data.map((x) => ({ id: x.id, name: x.id }));
 
     if (
       chatCtx.value.conversation &&
@@ -77,7 +73,7 @@ const chatService = {
         "检查到你换了模型提供商，已尝试为你自动合并到本地储存。但你仍然需要选择模型",
       );
       const post = _.cloneDeep({
-        URLs: chatCtx.value.URLs,
+        baseURL: chatCtx.value.baseURL,
         apiKey: chatCtx.value.apiKey,
         provider: chatCtx.value.provider,
         model: "",
@@ -91,9 +87,17 @@ const chatService = {
   },
 
   // 处理初始化错误
-  handleUIError(e, pageStateContext) {
+  handleUIError(pageStateContext, e) {
     const { globalInfoList } = pageStateContext;
     const errorMessage: string = (e as any)?.message || "Unknown error";
+    if (
+      errorMessage === "Aborted" ||
+      errorMessage ===
+        "Failed to execute 'throwIfAborted' on 'AbortSignal': signal is aborted without reason"
+    ) {
+      message.info("已放弃");
+      return;
+    }
     const existingIndex = globalInfoList.value.findIndex(
       (item) => item.content === errorMessage,
     );
@@ -147,16 +151,17 @@ const chatService = {
   // 添加新对话
   async onAddConversation(pageStateContext) {
     const { chatCtx } = pageStateContext;
-    const { model, provider, URLs, apiKey, systemPrompt, charactorId } =
+    const { model, provider, baseURL, apiKey, systemPrompt, characterId } =
       chatCtx.value;
+
     const newConversation = {
       title: "New Conversation",
       model,
       provider,
-      URLs,
+      baseURL,
       apiKey,
       systemPrompt,
-      charactorId,
+      characterId,
     };
 
     const {
@@ -171,17 +176,26 @@ const chatService = {
 
   // 删除对话
   async onDeleteConversation(pageStateContext, conversationId) {
-    const { chatCtx } = pageStateContext;
-    const { conversations: newConversations } =
-      await clientCache.deleteConversation(conversationId);
+    const { chatCtx, isSending } = pageStateContext;
+
+    // 删除的是当前的
     if (conversationId === chatCtx.value.conversation?.id) {
-      this._updateChatContext(chatCtx, null, newConversations);
-      chatCtx.value = {
-        ...chatCtx.value,
-        conversation: null,
-        conversations: newConversations,
-      };
+      if (isSending.value) {
+        message.warning("正在发送消息，请稍后再试");
+      } else {
+        const { conversations: newConversations } =
+          await clientCache.deleteConversation(conversationId);
+        this._updateChatContext(chatCtx, null, newConversations);
+        chatCtx.value = {
+          ...chatCtx.value,
+          model: "",
+          conversation: null,
+          conversations: newConversations,
+        };
+      }
     } else {
+      const { conversations: newConversations } =
+        await clientCache.deleteConversation(conversationId);
       chatCtx.value = {
         ...chatCtx.value,
         conversations: newConversations,
@@ -194,11 +208,12 @@ const chatService = {
     isSideBarOpen.value = false;
   },
 
-  toggleDrawer(isDrawerOpen) {
+  toggleDrawer({ isDrawerOpen }) {
     isDrawerOpen.value = !isDrawerOpen.value;
   },
 
-  async onOpenCharactors({ isSideBarOpen, loadComponent, router }) {
+  // 打开角色卡面板
+  async onOpenCharactersSidebar({ isSideBarOpen, loadComponent, router }) {
     const { isMobile } = getScreen();
 
     if (isMobile) {
@@ -207,17 +222,44 @@ const chatService = {
       return;
     } else {
       await loadComponent("pages/ChatCharacters/index");
-      isSideBarOpen.value = !isSideBarOpen.value;
+      isSideBarOpen.value = true;
+    }
+  },
+
+  // 打开高级设置面板
+  async onOpenConversationAdvanceSettingSidebar({
+    isSideBarOpen,
+    loadComponent,
+    router,
+  }) {
+    const { isMobile } = getScreen();
+
+    if (isMobile) {
+      router.push("/conversation-advance-setting");
+      // chatStore.isSideBarOpen = !chatStore.isSideBarOpen;
+      return;
+    } else {
+      await loadComponent("pages/ConversationAdvanceSetting/index");
+      isSideBarOpen.value = true;
     }
   },
 
   // 切换对话
   async onChangeConversation(pageStateContext, id) {
-    const { chatCtx, globalInfoList } = pageStateContext;
-    const conversation = await clientCache.setConversation(id);
-    this.init(pageStateContext);
-    this._updateChatContext(chatCtx, conversation);
-    globalInfoList.value = [];
+    // 在发送中时，应当阻止切换
+    const { isSending, isSideBarOpen } = pageStateContext;
+    if (isSending.value) {
+      message.warning("正在发送消息，请稍后再试");
+      return;
+    } else {
+      const { chatCtx, globalInfoList } = pageStateContext;
+      globalInfoList.value = [];
+      const conversation = await clientCache.setConversation(id);
+      //! 为了隐藏一个bug,侧边栏不更新
+      isSideBarOpen.value = false;
+      this._updateChatContext(chatCtx, conversation);
+      this.init(pageStateContext);
+    }
   },
 
   // 发送消息
@@ -236,14 +278,16 @@ const chatService = {
       if (!has_systemPrompt) {
         result.infoArray.push({
           name: "system_prompt",
-          props: { id: chatCtx.value.conversation?.charactor?.id },
+          props: { id: chatCtx.value.conversation?.character?.id },
         });
       }
 
       let currentConversation = await clientCache.getCurrentConversation();
 
       if (!currentConversation) {
-        currentConversation = await this.onAddConversation(pageStateContext);
+        // currentConversation = await this.onAddConversation(pageStateContext);
+        message.warning("请先创建一个对话吧");
+        return;
       }
 
       await this._addMessageToHistory(
@@ -257,7 +301,10 @@ const chatService = {
 
       try {
         const reply = await this.chat.sendMessage();
-        await this._addMessageToHistory(reply, chatCtx);
+        requestAnimationFrame(() => {
+          this._addMessageToHistory(reply, chatCtx);
+        });
+
         if (reply.title) {
           const updatedConversations =
             await clientCache.updateConversationTitle(reply.title);
@@ -267,35 +314,58 @@ const chatService = {
           };
         }
       } catch (error) {
-        this.handleUIError(error, pageStateContext);
+        this.handleUIError(pageStateContext, error);
       } finally {
         isSending.value = false;
       }
     }
   },
 
+  async onStopSend(pageStateContext) {
+    const isSending = pageStateContext.isSending;
+    isSending.value = false;
+    this.chat.abort();
+  },
+
   // 应用角色
-  async useCharactor(pageStateContext, charactor) {
-    const { chatCtx } = pageStateContext;
-    const newConversation = await clientCache.updateCharacter(charactor);
+  async useCharacter(pageStateContext, character) {
+    const { chatCtx, conversationConfig } = pageStateContext;
+    const newConversation = await clientCache.updateCharacter(character);
 
     if (!newConversation) {
       chatCtx.value = {
         ...chatCtx.value,
-        charactor: charactor,
+        character,
       };
     } else {
       this._updateChatContext(chatCtx, newConversation);
     }
+
     message.success("success");
   },
 
   // 删除角色
-  async clearCharactor(pageStateContext) {
-    const { chatCtx } = pageStateContext;
+  async clearCharacter(pageStateContext) {
+    const { chatCtx, conversationConfig } = pageStateContext;
     const newConversation = await clientCache.updateCharacter(null);
     this._updateChatContext(chatCtx, newConversation);
+
     message.success("删除成功");
+  },
+
+  // 对话高级参数更新
+  async updateConversationAdvanceSetting(pageStateContext, data) {
+    const { chatCtx } = pageStateContext;
+    if (!chatCtx.value.conversation) {
+      message.error("未创建对话");
+      return;
+    } else {
+      data = toRaw(data);
+      const newConversation =
+        await clientCache.updateConversationAdvanceSetting(data);
+      this._updateChatContext(chatCtx, newConversation);
+      message.success("更新成功");
+    }
   },
 };
 

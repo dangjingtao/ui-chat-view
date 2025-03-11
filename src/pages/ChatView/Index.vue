@@ -1,6 +1,7 @@
 <template>
   <div class="relative flex h-full w-full flex-col gap-0.5 bg-gray-50">
     <chat-header />
+
     <div class="flex h-[calc(100lvh-44px)] w-full flex-1">
       <!-- 动态加载的侧边栏 -->
       <transition
@@ -10,7 +11,7 @@
       >
         <div
           v-if="chatStore.isSideBarOpen"
-          class="h-full w-140 overflow-hidden border-r border-r-gray-300"
+          class="h-full w-[33vw] max-w-110 min-w-95 overflow-hidden shadow-md"
         >
           <component
             :onClose="closeSideBar"
@@ -23,8 +24,20 @@
 
       <!-- 主界面 -->
       <div class="relative m-auto flex h-full w-full flex-col">
-        <div ref="chatContainer" class="m-auto w-full flex-1 overflow-y-auto">
-          <!-- 全局信息 -->
+        <div>
+          <x-spin v-if="loading" class="mt-50" />
+
+          <chat-start
+            class="mx-auto max-w-[800px]"
+            v-if="chatStore.defaultCtx.conversation === null && !loading"
+          />
+        </div>
+        <div
+          v-if="chatStore.defaultCtx.conversation !== null && !loading"
+          ref="chatContainer"
+          class="m-auto w-full flex-1 overflow-y-auto"
+        >
+          <!-- 聊天框全局信息 -->
           <div class="absolute w-full">
             <x-message
               v-for="(globalInfo, index) in chatStore.globalInfoList"
@@ -42,28 +55,37 @@
 
           <x-chat-view
             v-else
+            :isSending="chatStore.isSending"
             :messages="chatStore.chatHistory"
             @regenarate="regenerate"
             @deleteMessage="deleteMessage"
           />
         </div>
 
-        <div class="relative h-[100px]">
+        <div
+          v-if="chatStore.defaultCtx.conversation !== null && !loading"
+          class="relative h-[100px]"
+        >
           <x-sender
-            :charactor="chatStore.defaultCtx?.charactor"
+            :character="chatStore.defaultCtx?.character"
             :onSend="onSend"
+            @onStop="onStopSend"
             :canSend="!chatStore.hasError && !!chatStore.defaultCtx?.model"
             :isSending="chatStore.isSending"
           >
             <template #functionsGroup>
               <x-clickable-tag
                 :closable="true"
-                @click="onOpenCharactors"
-                @close="clearCharactor"
-                :text="charactorUsed"
-                :isActived="!!chatStore.defaultCtx?.charactor"
+                @click="onOpenCharactersSidebar"
+                @close="clearCharacter"
+                :text="currentCharacter"
+                :isActived="!!chatStore.defaultCtx?.character"
               />
-              <x-clickable-tag text="🌐 联网搜索" />
+              <x-clickable-tag
+                @click="onOpenConversationAdvanceSettingSidebar"
+                text="🪄 高级"
+              />
+              <x-clickable-tag text="🌐 联网" />
             </template>
           </x-sender>
         </div>
@@ -78,10 +100,11 @@ import { ref, watch, nextTick, computed } from "vue";
 import { useChatStore } from "@/store/chat";
 import ChatHeader from "./components/ChatHeader.vue";
 import ChatDrawer from "./components/ChatDrawer.vue";
+import ChatStart from "./components/ChatStart.vue";
+const loading = ref(true);
 
 const chatContainer = ref<HTMLElement | null>(null);
 const chatStore = useChatStore();
-
 const {
   init,
   regenerate,
@@ -90,16 +113,19 @@ const {
   closeSideBar,
   chat,
   handleUIError,
-  onOpenCharactors,
-  clearCharactor,
+  onOpenCharactersSidebar,
+  onOpenConversationAdvanceSettingSidebar,
+  clearCharacter,
+  onStopSend,
 } = chatStore.$service;
 
 init().then(() => {
-  console.log(chatStore.conversationId);
+  console.log(chatStore.defaultCtx.conversation);
+  loading.value = false;
 });
 
-const charactorUsed = computed(() => {
-  return chatStore.defaultCtx?.charactor?.zh?.title || "🧑‍💻 角色卡";
+const currentCharacter = computed(() => {
+  return chatStore.defaultCtx?.character?.zh?.title || "🧑‍💻 角色卡";
 });
 
 watch(
@@ -116,9 +142,13 @@ watch(
 
 watch(
   () => chatStore.defaultCtx,
-  async (newChatContext, oldChatContext) => {
+  async (newChatContext) => {
     try {
-      await chat.use(newChatContext).init();
+      if (chat && typeof (chat as any).use === "function") {
+        await (chat as any).use(newChatContext).init();
+      } else {
+        console.error("chat.use is not a function");
+      }
     } catch (error) {
       handleUIError(error);
     }

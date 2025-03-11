@@ -2,24 +2,81 @@ import Base from "./Base";
 
 // 只存基础数据
 export default class extends Base {
+  [x: string]: any;
+  async getProviderConfigByName(provider_name) {
+    const providerConfigs = await this.getProviders();
+
+    const providerConfig = providerConfigs.find(
+      (item) => item.provider === provider_name,
+    );
+
+    return providerConfig;
+  }
+
+  // 网络请求，根据服务商找模型
+  private async getModelsByProvider() {
+    const { cache, request } = this;
+    const llm_provider_name = await cache.get("llm_provider_name");
+
+    const providerConfig =
+      await this.getProviderConfigByName(llm_provider_name);
+    const { baseURL } = providerConfig;
+
+    let models_url = `${baseURL}/v1/models`;
+    if (llm_provider_name === "groq") {
+      models_url = `${baseURL}/openai/v1/models`;
+    }
+
+    if (llm_provider_name === "gemini") {
+      models_url = `${baseURL}/v1beta/openai/models`;
+    }
+
+    try {
+    } catch (error) {}
+    const { data } = await request({
+      url: models_url,
+      method: "GET",
+    });
+
+    const { models } = data;
+    let result = data.data;
+    if (llm_provider_name === "cohere" && !!models) {
+      result = models;
+    }
+    return result.map((item) => ({
+      ...item,
+      id: item.id || item.name,
+      name: item.name || item.id,
+    }));
+  }
+
   // 初始化获取上下文
   async getChatContext() {
     const { cache } = this;
 
-    const current_provider_name = await cache.get("current_provider_name");
-    const modelsMap = await cache.get("models");
-    const defaultCharacter = await cache.get("charactor");
+    const llm_provider_name = await cache.get("llm_provider_name");
+    // ! 此处读写会很高频
+    const providerConfig =
+      await this.getProviderConfigByName(llm_provider_name);
+
+    // ! 这里的网络请求目前不会存库
+    const models = await this.getModelsByProvider();
+
+    const defaultCharacter = await cache.get("character");
     const model = await cache.get("current_model_name");
     const conversations = await this.getConversationList();
     const conversation = await this.getCurrentConversation();
+    const defaultAdvanceOptions = await this.cache.get("defaultAdvanceOptions");
+
     return {
       conversation,
       conversations,
       model,
-      provider: current_provider_name,
-      ...modelsMap[current_provider_name],
-      models: [],
-      charactor: defaultCharacter,
+      provider: llm_provider_name,
+      ...(providerConfig || {}),
+      models,
+      character: defaultCharacter,
+      defaultAdvanceOptions,
     };
   }
 
@@ -65,7 +122,7 @@ export default class extends Base {
     const newConversation = lodash.cloneDeep({
       ...conversation,
       id: uuid,
-      timeStamp: Date.now(), //! 应改为createTime
+      createTime: Date.now(), //! 应改为createTime
       chatHistory: [],
     });
 
@@ -183,5 +240,17 @@ export default class extends Base {
       lastUserMessage,
       updatedConversation: await this.getConversationById(id),
     };
+  }
+
+  // 配置当前对话，
+  async updateConversationAdvanceSetting(advanceOptions) {
+    const currentConversation = await this.getCurrentConversation();
+    const newConversation = {
+      ...currentConversation,
+      advanceOptions,
+    };
+    const { id } = newConversation;
+    await this.updateConversation(id, newConversation);
+    return newConversation;
   }
 }

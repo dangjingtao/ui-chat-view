@@ -1,6 +1,7 @@
 import { createWebHistory, createRouter } from "vue-router";
 import { useKnowledgeBaseStore } from "@/store/KnowledgeHub";
 
+const Login = () => import("@/pages/Login/index.vue");
 const Home = () => import("@/pages/ChatView/Index.vue");
 const Setting = () => import("@/pages/Settings/index.vue");
 const Character = () => import("@/pages/ChatCharacters/index.vue");
@@ -8,6 +9,8 @@ const KnowledgeHub = () => import("@/pages/KnowledgeHub/index.vue");
 const KnowledgeBase = () => import("@/pages/KnowledgeBase/index.vue");
 const ResultPage = () => import("@/pages/ResultPage/index.vue");
 const About = () => import("@/pages/Settings/components/about.vue");
+const ConversationAdvanceSetting = () =>
+  import("@/pages/ConversationAdvanceSetting/index.vue");
 
 const routes = [
   { path: "/", component: Home },
@@ -42,6 +45,14 @@ const routes = [
     path: "/resultPage/:type/:title/:description",
     component: ResultPage,
     name: "ResultPage",
+  },
+  {
+    path: "/conversation-advance-setting",
+    component: ConversationAdvanceSetting,
+  },
+  {
+    path: "/login",
+    component: Login,
   },
 ];
 

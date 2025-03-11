@@ -1,19 +1,13 @@
-# ui-chat-view
+# ui-chat
 
-本项目使用vite+vue构建。为纯前端UI界面。目的是让网站嵌入AI 聊天的性能更方便高效
+[更新日志](./docs/CHANGELOG.md)
 
-[更新日志](./docs/CHANGELOG.md)。
+基于浏览器客户端的AI智能体。原本是想写一个内嵌服务的。不小心写大了。
 
-## how to use
-
-### 通过微前端接入
-
-### script 标签接入
-
-## setting
+本项目服务基于[open-proxy-api-deno](https://github.com/dangjingtao/open-proxy-api-deno). 客户端部署于cloudflare，地址 https://uichat.tomz.io
 
 
-## deploy
 
 
-## 路线图
+
+

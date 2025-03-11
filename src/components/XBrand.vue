@@ -4,7 +4,7 @@
     target="_blank"
     href="https://github.com/dangjingtao/ui-chat-view"
   >
-    <img :src="logo" class="w-[50%]" alt="logo" srcset=""
+    <img :src="logo" class="m-auto w-[50%]" alt="logo" srcset=""
   /></a>
 </template>
 

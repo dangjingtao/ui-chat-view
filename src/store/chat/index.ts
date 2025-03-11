@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import homeService from "@/store/chat/service";
+import injectContextToMethods from "@/lib/injectContextToMethods";
 import { Message } from "@/components/XMessage.vue";
 import useDynamicComponent from "@/hooks/useDynamicComponent";
 import { useRouter } from "vue-router";
@@ -16,18 +17,28 @@ interface GlobalContext extends ChatContext {
   models: Option[];
 }
 
+export type ConversationConfig = {
+  topK?: number; // 0~100 step 0.5
+  topP?: number; // 0~1 /0.01
+  temperature?: number; // 0~2
+  frequencyPenalty?: number; // 频率惩罚 Frequency Penalty -2~2
+  presencePenalty?: number; // 存在惩罚 -2~2
+  systemPrompt?: string;
+
+  // repeatPenalty?: number; //重复惩罚
+  // numPredict?: number; //此选项设置了模型在回答中可以生成的最大 Token 数。增加这个限制可以让模型提供更长的答案，但也可能增加生成无用或不相关内容的可能性。 (默认值：128）
+  // seed?: number; // any number
+};
+
 export const useChatStore = defineStore("chat", () => {
   const chatCtx = ref<GlobalContext>({
     model: "",
     provider: "",
     conversation: null,
-    URLs: {
-      models: "",
-    },
     systemPrompt: "",
     models: [],
     conversations: [],
-    charactor: null,
+    character: null,
   });
 
   // 左侧侧边栏是否打开
@@ -38,6 +49,21 @@ export const useChatStore = defineStore("chat", () => {
   const isSending = ref(false);
   // 系统消息列表
   const globalInfoList = ref<Message[]>([]);
+
+  // 这不是一个响应式对象
+  const conversationConfig = computed(() => {
+    return {
+      ...chatCtx.value.defaultAdvanceOptions, // 优先度最低
+      ...chatCtx.value.conversation?.advanceOptions, // 优先度中
+      systemPrompt:
+        chatCtx.value.conversation?.advanceOptions?.systemPrompt ||
+        chatCtx.value.conversation?.character?.zh?.prompt ||
+        chatCtx.value.defaultAdvanceOptions?.systemPrompt,
+    };
+  });
+
+  // 这个只是一个输入控件的值。需要响应初始化
+  // const conversationConfig = ref<ConversationConfig>(systemDefaultConfig);
 
   const { currentComponent, loadComponent } = useDynamicComponent();
 
@@ -85,7 +111,14 @@ export const useChatStore = defineStore("chat", () => {
     currentComponent,
     loadComponent,
     router,
+    isDrawerOpen,
+    conversationConfig,
   };
+
+  // 批量注入状态到方法，不用再把所有方法显式声明一次了。
+  const $service = injectContextToMethods(homeService, pageStateContext, [
+    "chat",
+  ]);
 
   return {
     chatCtx,
@@ -101,29 +134,7 @@ export const useChatStore = defineStore("chat", () => {
     defaultCtx,
     chatHistory,
     currentComponent,
-    $service: {
-      init: () => homeService.init(pageStateContext),
-      onSelectModel: (id) => homeService.onSelectModel(pageStateContext, id),
-      deleteMessage: (message) =>
-        homeService.deleteMessage(pageStateContext, message),
-      regenerate: (message) =>
-        homeService.regenerate(pageStateContext, message),
-      onAddConversation: () => homeService.onAddConversation(pageStateContext),
-      onDeleteConversation: (conversationId) =>
-        homeService.onDeleteConversation(pageStateContext, conversationId),
-      onChangeConversation: (id) =>
-        homeService.onChangeConversation(pageStateContext, id),
-      onSend: (message) => homeService.onSend(pageStateContext, message),
-      closeSideBar: (router) =>
-        homeService.closeSideBar(pageStateContext, router),
-      onOpenCharactors: () => homeService.onOpenCharactors(pageStateContext),
-      handleUIError: (error) =>
-        homeService.handleUIError(error, pageStateContext),
-      useCharactor: (CharactorId) =>
-        homeService.useCharactor(pageStateContext, CharactorId),
-      chat: homeService.chat,
-      toggleDrawer: () => homeService.toggleDrawer(isDrawerOpen),
-      clearCharactor: () => homeService.clearCharactor(pageStateContext),
-    },
+    conversationConfig,
+    $service,
   };
 });

@@ -38,8 +38,11 @@ const title = computed(() => {
 const router = useRouter();
 
 const onClose = () => {
-  emits("onClose", router);
-  router.go(-1);
+  if (props.isFullWidth) {
+    emits("onClose", router);
+  } else {
+    router.go(-1);
+  }
 };
 </script>
 <style scoped></style>

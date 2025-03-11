@@ -9,7 +9,7 @@
     <div
       v-if="visible"
       :class="{
-        'fixed z-10 max-w-[300px] rounded bg-gray-800 p-2 text-sm break-words text-white opacity-[80%] shadow-lg': true,
+        'fixed z-50 max-w-[300px] rounded bg-gray-800 p-2 text-sm break-words text-white opacity-[80%] shadow-lg': true,
       }"
       ref="tooltip"
       :style="tooltipStyle"
@@ -120,7 +120,7 @@ const updateTooltipPosition = () => {
 };
 
 const tooltipClasses = computed(() => {
-  return `fixed z-10 p-2 text-sm text-white bg-gray-800 opacity-[80%] rounded shadow-lg w-auto max-w-[${props.width || 120}px] break-words`;
+  return `fixed z-50 p-2 text-sm text-white bg-gray-800 opacity-[80%] rounded shadow-lg w-auto max-w-[${props.width || 120}px] break-words`;
 });
 
 onMounted(() => {
