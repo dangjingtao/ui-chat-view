@@ -1,26 +1,37 @@
 <template>
-  <div class="flex min-h-full justify-center">
-    <div class="m-auto flex items-center space-x-2">
-      <div
-        class="h-8 w-8 animate-spin rounded-full border-4 border-t-4 border-gray-200"
-      ></div>
-      <span class="text-sm text-gray-700">加载中...</span>
-    </div>
+  <div class="flex items-center justify-center">
+    <svg class="text-primary h-8 w-8 animate-spin" viewBox="0 0 50 50">
+      <circle
+        class="path"
+        cx="25"
+        cy="25"
+        r="20"
+        fill="none"
+        stroke-width="4"
+      ></circle>
+    </svg>
   </div>
 </template>
 
-<script lang="ts" setup></script>
-
 <style scoped>
-@keyframes spin {
+.path {
+  stroke: currentColor;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes dash {
   0% {
-    transform: rotate(0deg);
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
   }
   100% {
-    transform: rotate(360deg);
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
   }
-}
-.animate-spin {
-  animation: spin 1s linear infinite;
 }
 </style>

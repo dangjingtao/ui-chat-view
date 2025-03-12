@@ -17,7 +17,7 @@
     >
       <img
         class="mx-auto block h-16 rounded-full sm:mx-0 sm:shrink-0"
-        src="https://tailwindcss.com/_next/static/media/erin-lindford.90b9d461.jpg"
+        :src="host"
         alt=""
       />
       <div class="space-y-2 text-center sm:text-left">
@@ -31,6 +31,9 @@
     </div>
   </transition>
 </template>
+<script setup lang="ts">
+import host from "@/assets/images/host.webp";
+</script>
 
 <style scoped>
 .slide-enter-active,

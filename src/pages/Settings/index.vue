@@ -19,7 +19,7 @@
 <script lang="ts" setup>
 import { useRouter } from "vue-router";
 import logo from "@/assets/logo.png";
-import SystemSetting from "@/blocks/SystemSetting.vue";
+import SystemSetting from "./components/SystemSetting.vue";
 
 declare const __APP_VERSION__: string;
 const version = __APP_VERSION__;
@@ -27,7 +27,7 @@ const version = __APP_VERSION__;
 const router = useRouter();
 
 const goBack = () => {
-  router.go(-1);
+  router.push("/");
 };
 </script>
 <style scoped></style>

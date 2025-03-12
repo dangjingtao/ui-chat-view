@@ -1,39 +1,45 @@
 <template>
-  <div>
-    <!-- <x-result title="正在艰难翻越GFW..." v-if="loading" /> -->
-    <x-spin v-if="loading" class="mt-50" />
+  <div
+    class="flex h-[calc(100vh-400px)] flex-col items-center justify-center bg-gray-50 lg:h-[calc(100vh-400px)]"
+  >
+    <!-- <x-brand /> -->
+    <div class="-ml-5 flex w-[80%] justify-center lg:w-[50%]">
+      <div ref="lottieContainer" class="w-[45%]"></div>
 
-    <x-markdown
-      class="p-5 px-6"
-      v-else="!loading"
-      :content="content"
-    ></x-markdown>
-    <x-result :title="error.message" type="500" v-if="error" />
-    <!-- <x-result type="500" v-if="true" /> -->
+      <img class="mt-[20%] block h-fit w-[55%] flex-1" :src="logo" alt="logo" />
+    </div>
+    <p class="pt-1 pb-5 text-2xl font-semibold text-gray-500">AI 体验新秩序</p>
+    <div class="mt-5 flex gap-3">
+      <x-button @click="start" size="large">开始体验</x-button>
+      <x-button @click="learnMore" type="ghost" size="large">尿解更多</x-button>
+    </div>
   </div>
 </template>
-<script setup lang="ts">
-import { ref, computed } from "vue";
-import request from "@/lib/request";
-import { AxiosError } from "axios";
-const content = ref("");
-const loading = ref(true);
-const error = ref<AxiosError | null>(null);
 
-request({
-  url: "https://raw.githubusercontent.com/dangjingtao/ui-chat-view/main/README.md",
-  method: "get",
-  headers: {
-    Authorization: null,
-  },
-})
-  .then((res) => {
-    loading.value = false;
-    content.value = res.data;
-  })
-  .catch((err: AxiosError) => {
-    console.log(err);
-    loading.value = false;
-    error.value = err;
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+import lottie from "lottie-web";
+import { useChatStore } from "@/store/chat";
+import json from "./lottie.json";
+import logo from "@/assets/logo.png";
+const start = () => {
+  const chatStore = useChatStore();
+  chatStore.$service.onAddConversation();
+};
+
+const learnMore = () => {
+  window.open("https://github.com/dangjingtao/ui-chat-view");
+};
+
+const lottieContainer = ref(null);
+
+onMounted(() => {
+  lottie.loadAnimation({
+    container: lottieContainer.value as unknown as Element,
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+    animationData: json,
   });
+});
 </script>

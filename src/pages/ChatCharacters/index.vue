@@ -39,7 +39,7 @@
             </x-ellipsis>
           </div>
         </div>
-        <x-empty v-if="characters.length === 0" />
+        <x-result type="404" v-if="characters.length === 0" />
         <div class="flex flex-1 flex-wrap gap-3 overflow-auto px-2">
           <div class="mt-1"></div>
           <x-card

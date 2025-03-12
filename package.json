@@ -1,7 +1,7 @@
 {
   "name": "ui-chat-view",
   "private": true,
-  "version": "0.0.21",
+  "version": "0.0.22",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -44,6 +44,7 @@
     "langchain": "^0.3.15",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
+    "lottie-web": "^5.12.2",
     "markdown-it": "^14.1.0",
     "npm": "^11.1.0",
     "openai": "^4.83.0",

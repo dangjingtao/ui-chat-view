@@ -1,11 +1,18 @@
 <template>
-  <div class="relative inline-block w-full min-w-[120px]" ref="dropdown">
+  <div
+    class="relative inline-block w-full max-w-[200px] min-w-[120px]"
+    ref="dropdown"
+  >
     <div
       @click="toggleDropdown"
-      class="focus:shadow-outline transition-border block w-full cursor-pointer rounded border bg-white px-4 py-2 pr-8 text-sm leading-3.5 focus:outline-none"
+      class="focus:shadow-outline transition-border block w-full cursor-pointer rounded border bg-white px-4 py-1 pr-8 text-sm leading-3.5 focus:outline-none"
       :class="isOpen ? 'border-gray-300' : 'border-gray-100'"
     >
-      <span class="truncate">{{ selectedName }}</span>
+      <span
+        class="inline-block max-w-full truncate overflow-hidden py-1 text-ellipsis whitespace-nowrap"
+        >{{ selectedName }}</span
+      >
+
       <div
         class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
       >
@@ -42,15 +49,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ref,
-  defineProps,
-  defineEmits,
-  watch,
-  onMounted,
-  onBeforeUnmount,
-  computed,
-} from "vue";
+import { ref, watch, onMounted, onBeforeUnmount, computed } from "vue";
 import arrowSvg from "@/assets/arrow.svg";
 
 interface Option {

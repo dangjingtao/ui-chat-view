@@ -5,7 +5,7 @@
     <div class="text-primary-7 flex-1 font-bold">
       <img :src="logo" class="w-[80px]" alt="UI Chat" srcset="" />
     </div>
-    <div>
+    <div v-if="!!chatStore.chatCtx.conversation">
       <x-select
         dropdownClass="right-[-45px] max-h-[500px] min-w-[400px]"
         :options="chatStore.models"

@@ -50,9 +50,7 @@ service.interceptors.response.use(
 class Request {
   private apiKey: null | string;
 
-  constructor(apiKey: string) {
-    this.apiKey = apiKey;
-  }
+  constructor() {}
 
   request(config: {
     url: string;
@@ -63,7 +61,8 @@ class Request {
   }) {
     const headers = { ...config.headers };
     let flag = headers.Authorization === null;
-    headers.Authorization = headers.Authorization || `${this.apiKey}`;
+    const apiKey = getAPIHeader();
+    headers.Authorization = headers.Authorization || `${apiKey}`;
     if (flag) {
       delete headers.Authorization;
     }
@@ -97,7 +96,7 @@ const getAPIHeader = () => {
   return apiKey ? `Bearer ${apiKey}` : null;
 };
 
-const requestInstance = new Request(getAPIHeader());
+const requestInstance = new Request();
 
 const request = (config: {
   url: string;

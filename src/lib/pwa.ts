@@ -1,4 +1,5 @@
 import { registerSW } from "virtual:pwa-register";
+import { useRegisterSW } from "virtual:pwa-register/vue";
 import dialog from "./dialog.ts";
 import message from "./message.ts";
 

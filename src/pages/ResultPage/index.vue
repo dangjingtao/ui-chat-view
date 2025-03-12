@@ -12,5 +12,4 @@ const route = useRoute();
 const ctx = computed(() => {
   return { title: route.params.title, description: route.params.description };
 });
-console.log(111, route);
 </script>

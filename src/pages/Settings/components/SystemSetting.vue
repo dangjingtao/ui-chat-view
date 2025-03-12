@@ -115,6 +115,7 @@ import message from "@/lib/message";
 import cachePlugin from "@/plugins/cachePlugin";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { checkUpdate } from "@/lib/pwa";
 
 const router = useRouter();
 
@@ -142,8 +143,6 @@ const init = async () => {
   };
 };
 init().then((ctx) => {
-  const {} = ctx;
-  console.log(ctx);
   webllmProvider.value = ctx.webllmProvider;
 });
 
@@ -153,7 +152,12 @@ const removeCache = () => {
     .then(cachePlugin.install.bind(cachePlugin))
     .then(() => {
       message.success("清除成功");
-      location.reload();
+      setTimeout(() => {
+        localStorage.clear();
+        checkUpdate();
+        // @ts-ignore
+        location.reload(true);
+      }, 2500);
     });
 };
 </script>

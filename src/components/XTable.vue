@@ -32,7 +32,7 @@
     <tbody
       class="w-full flex-1 divide-y divide-gray-200 overflow-auto bg-white"
     >
-      <x-empty v-if="props.data.length === 0" />
+      <x-result type="404" v-if="props.data.length === 0" />
       <tr
         v-for="(row, rowIndex) in data"
         :key="row.id"

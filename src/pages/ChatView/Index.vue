@@ -25,7 +25,7 @@
       <!-- 主界面 -->
       <div class="relative m-auto flex h-full w-full flex-col">
         <div>
-          <x-spin v-if="loading" class="mt-50" />
+          <x-spin v-if="loading" class="pt-50" />
 
           <chat-start
             class="mx-auto max-w-[800px]"
@@ -96,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick, computed } from "vue";
+import { ref, watch, nextTick, computed, onMounted } from "vue";
 import { useChatStore } from "@/store/chat";
 import ChatHeader from "./components/ChatHeader.vue";
 import ChatDrawer from "./components/ChatDrawer.vue";
@@ -119,8 +119,8 @@ const {
   onStopSend,
 } = chatStore.$service;
 
-init().then(() => {
-  console.log(chatStore.defaultCtx.conversation);
+onMounted(async () => {
+  await init();
   loading.value = false;
 });
 
@@ -150,6 +150,7 @@ watch(
         console.error("chat.use is not a function");
       }
     } catch (error) {
+      // @ts-ignore
       handleUIError(error);
     }
   },

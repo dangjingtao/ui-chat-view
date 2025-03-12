@@ -21,7 +21,8 @@
             }"
             class="auto-rows-[210px] grid-cols-1 justify-between gap-4 overflow-auto bg-gray-50 p-2.5 md:grid-cols-2 lg:grid-cols-3"
           >
-            <x-empty
+            <x-result
+              type="404"
               v-if="knowledgeBaseStore.knowledgeBases.length === 0"
               class="m-auto w-[100%] lg:w-[60%]"
             />

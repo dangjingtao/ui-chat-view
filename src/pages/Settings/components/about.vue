@@ -2,35 +2,10 @@
   <x-subpage-wrapper title="Change Log">
     <!-- <x-tab></x-tab> -->
     <template #content>
-      <x-result title="正在艰难翻越GFW..." v-if="loading" />
-      <x-markdown v-else="!loading" :content="content"></x-markdown>
-      <x-result :title="error.message" type="500" v-if="error" />
+      <x-markdown-page
+        markdown-url="https://raw.githubusercontent.com/dangjingtao/ui-chat-view/main/docs/CHANGELOG.md"
+      />
     </template>
   </x-subpage-wrapper>
 </template>
-<script setup lang="ts">
-import { ref, computed } from "vue";
-import request from "@/lib/request";
-import { AxiosError } from "axios";
-const content = ref("");
-const loading = ref(true);
-const error = ref<AxiosError | null>(null);
-
-request({
-  url: "https://raw.githubusercontent.com/dangjingtao/ui-chat-view/main/docs/CHANGELOG.md",
-  method: "get",
-  headers: {
-    Authorization: null,
-  },
-})
-  .then((res) => {
-    loading.value = false;
-
-    content.value = res.data;
-  })
-  .catch((err: AxiosError) => {
-    console.log(err);
-    loading.value = false;
-    error.value = err;
-  });
-</script>
+<script setup lang="ts"></script>

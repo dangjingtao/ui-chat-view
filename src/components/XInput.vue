@@ -6,7 +6,7 @@
       @input="onInput"
       @keydown.enter="onSearch"
       :placeholder="placeholder"
-      class="w-full rounded-md bg-gray-100 px-2 py-1.5 text-sm transition-all outline-none hover:bg-gray-50"
+      class="focus:outline-primary-4 w-full rounded-md bg-gray-100 px-2 py-1.5 text-sm transition-all hover:bg-gray-50 focus:bg-white"
     />
     <button
       v-if="type === 'search' && !inputValue"

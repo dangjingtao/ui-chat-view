@@ -54,11 +54,13 @@
     </template>
     <template #content>
       <x-menu
+        v-if="chatStore.conversations.length > 0"
         :selectedItem="chatStore.defaultCtx?.id"
         :menus="chatStore.conversations"
         @deleteMenuItem="onDeleteConversation"
         @changeMenuItem="onChangeConversation"
       />
+      <x-result class="pt-20" type="404" v-else />
     </template>
     <template #footer>
       <div class="flex gap-1">
