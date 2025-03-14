@@ -6,17 +6,52 @@
     <div
       @click="toggleDropdown"
       class="focus:shadow-outline transition-border block w-full cursor-pointer rounded border bg-white px-4 py-1 pr-8 text-sm leading-3.5 focus:outline-none"
-      :class="isOpen ? 'border-gray-300' : 'border-gray-100'"
+      :class="{
+        'cursor-not-allowed opacity-50': isLoading,
+        'border-primary-4': isOpen,
+        'border-gray-100': !isOpen,
+      }"
+      :aria-disabled="isLoading"
     >
       <span
-        class="inline-block max-w-full truncate overflow-hidden py-1 text-ellipsis whitespace-nowrap"
+        class="inline-block max-w-full truncate overflow-hidden py-1 text-ellipsis whitespace-nowrap text-gray-500"
         >{{ selectedName }}</span
       >
 
       <div
-        class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+        class="pointer-events-none absolute inset-y-0 right-0 flex max-h-[34px] items-center px-2 leading-[34px] text-gray-700"
       >
-        <img :src="arrowSvg" class="h-4 w-4 fill-current" alt="Arrow Icon" />
+        <svg
+          v-if="isLoading"
+          class="h-4 w-4 animate-spin"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="2"
+          ></circle>
+        </svg>
+        <svg
+          v-else
+          class="h-4 w-4 fill-current transition-transform duration-300"
+          :class="{ 'rotate-180': isOpen }"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
       </div>
     </div>
 
@@ -30,16 +65,17 @@
       leave-to-class="opacity-0"
     >
       <div
-        v-if="isOpen"
-        class="absolute z-10 mt-2 overflow-auto rounded bg-white text-sm shadow-lg transition-opacity"
+        v-if="isOpen && !isLoading"
+        class="absolute right-0 z-10 mt-1 overflow-auto rounded border border-gray-300/30 bg-white text-sm shadow-lg transition-opacity"
         :class="props.dropdownClass || 'w-full'"
       >
         <div
           v-for="option in props.options"
           :key="option.id"
           @click="selectOption(option.id)"
-          class="cursor-pointer px-4 py-1 hover:bg-gray-100"
-          :class="option.id === selectedValue ? 'bg-gray-200' : ''"
+          class="text-overflow:ellipsis w-full cursor-pointer overflow-hidden px-4 py-1 hover:bg-gray-100"
+          :title="option.name"
+          :class="option.id === selectedValue ? 'bg-primary-1' : ''"
         >
           {{ option.name }}
         </div>
@@ -50,7 +86,6 @@
 
 <script lang="ts" setup>
 import { ref, watch, onMounted, onBeforeUnmount, computed } from "vue";
-import arrowSvg from "@/assets/arrow.svg";
 
 interface Option {
   id: string;
@@ -61,6 +96,7 @@ const props = defineProps<{
   options: Option[];
   selectedValue: string;
   dropdownClass?: string;
+  isLoading?: boolean;
 }>();
 
 const emits = defineEmits<{
@@ -70,6 +106,7 @@ const emits = defineEmits<{
 const isOpen = ref(false);
 const selectedValue = ref(props.selectedValue || "");
 const dropdown = ref<HTMLElement | null>(null);
+const isLoading = computed(() => props.isLoading ?? true);
 
 watch(
   () => props.selectedValue,
@@ -79,13 +116,17 @@ watch(
 );
 
 const toggleDropdown = () => {
-  isOpen.value = !isOpen.value;
+  if (!isLoading.value) {
+    isOpen.value = !isOpen.value;
+  }
 };
 
 const selectOption = (option: string) => {
-  isOpen.value = false;
-  selectedValue.value = option;
-  emits("change", option);
+  if (!isLoading.value) {
+    isOpen.value = false;
+    selectedValue.value = option;
+    emits("change", option);
+  }
 };
 
 const selectedName = computed(() => {
@@ -109,3 +150,7 @@ onBeforeUnmount(() => {
   document.removeEventListener("click", handleClickOutside);
 });
 </script>
+
+<style scoped>
+/* 添加必要的样式 */
+</style>

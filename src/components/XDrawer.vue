@@ -10,7 +10,7 @@
   >
     <div
       v-show="props.menuOpen"
-      class="absolute inset-0 z-40 bg-black/50"
+      class="absolute inset-0 z-40 bg-black/50 dark:bg-black/10"
       @click="toggleMenu"
     ></div>
   </transition>

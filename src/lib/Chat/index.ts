@@ -29,6 +29,9 @@ import { SerpAPI } from "@langchain/community/tools/serpapi";
 import { initializeAgentExecutorWithOptions } from "langchain/agents";
 import webBrowserTool from "./tools/webBroswer";
 import createClient from "./utils/createClient";
+import { getLanguage } from "@/i18n";
+import { baseSystemPrompt, genConversationTitlePrompt } from "./prompts/system";
+import { defaultAdvanceOptions } from "@/plugins/cachePlugin/schema.ts"; // 绕过了协议
 
 type ProviderName =
   | "kimi"
@@ -87,16 +90,7 @@ class Chat {
     this.sendMessageController?.abort();
     this.sendMessageController = null;
   }
-  // const model = new OpenAI({ temperature: 0 });
-  //   const embeddings = new OpenAIEmbeddings();
-  //   const tools = [
-  //     new SerpAPI(process.env.SERPAPI_API_KEY, {
-  //       location: "Austin,Texas,United States",
-  //       hl: "en",
-  //       gl: "us",
-  //     }),
-  //     new Calculator(),
-  //     new WebBrowser({ model, embeddings }),
+
   async useTool() {
     const tools = [
       new Calculator(),
@@ -112,6 +106,7 @@ class Chat {
 
   useClient() {
     const { provider, model, baseURL, advanceOptions } = this.clientConfig;
+
     const client = createClient(provider, model, baseURL, advanceOptions);
     client.model = model;
 
@@ -119,48 +114,16 @@ class Chat {
   }
 
   init() {
-    const { provider, model, baseURL, apiKey, chatHistory, advanceOptions } =
-      this.clientConfig;
-    // console.log(advanceOptions);
+    const { chatHistory = [] } = this.clientConfig;
+    this.clientConfig.advanceOptions =
+      this.clientConfig.advanceOptions || defaultAdvanceOptions;
+
     this.validConfig();
-    this.chatHistory = chatHistory || [];
+    this.chatHistory = chatHistory;
 
     this.useClient();
-    // this.clientMap = this.clientMap || {};
-    // if (!this.clientMap[provider]) {
-    //   let client: any = null;
-    //   switch (provider) {
-    //     case "ollama":
-    //       client = new ChatOllama({
-    //         model: model,
-    //         streaming: true,
-    //         ...advanceOptions,
-    //       });
-    //       break;
-    //     case "groq":
-    //       client = new ChatGroq({
-    //         model,
-    //         baseUrl: baseURL,
-    //         apiKey: apiKey || "1234",
-    //         ...advanceOptions,
-    //       });
-    //       break;
-    //     default:
-    //       client = new ChatOpenAI({
-    //         configuration: {
-    //           baseURL: baseURL,
-    //         },
-    //         apiKey: apiKey,
-    //       });
-    //   }
-    //   client.model = model;
-    //   this.clientMap[provider] = client;
-    //   this.client = client;
-    // } else {
-    //   this.clientMap[provider].model = model;
-    //   this.client = this.clientMap[provider];
-    // }
     this.initChain();
+    //
     this.initMiniPermissionChain(this.client);
 
     return this;
@@ -174,11 +137,12 @@ class Chat {
     return this.chatHistory;
   }
 
-  // 微任务模型：生成标题，向量化
+  // 微任务模型：生成标题
   initMiniPermissionChain(client) {
     const systemMessage = SystemMessagePromptTemplate.fromTemplate(
-      "You are a useful assistant who is good at summarizing the current chat content in concise Chinese (no more than 20 words), and your reply only summarizes the user's chat content.",
+      genConversationTitlePrompt(),
     );
+
     const chatPrompt = ChatPromptTemplate.fromMessages([
       systemMessage,
       ["placeholder", "{messages}"],
@@ -192,7 +156,7 @@ class Chat {
   initChain() {
     const { client } = this;
     const systemMessage = SystemMessagePromptTemplate.fromTemplate(
-      "You are a helpful assistant. Answer all questions to the best of your ability in {language}. {userSystemMessage}",
+      `${baseSystemPrompt} {userSystemMessage}`,
     );
     const chatPrompt = ChatPromptTemplate.fromMessages([
       systemMessage,
@@ -219,7 +183,6 @@ class Chat {
   }
 
   formatChatHistory() {
-    console.log("chatHistory", this.chatHistory);
     return this.chatHistory.map((item) => {
       if (item.role === "assistant") {
         return new AIMessage(item.content || "");
@@ -240,7 +203,7 @@ class Chat {
 
   // 生成对话标题
   async generateTitle(chatContext) {
-    if (chatContext.messages.length > 0 && chatContext.messages.length < 2) {
+    if (chatContext.messages.length > 0 || chatContext.messages.length < 3) {
       // 生成对话标题
       return removeThinkContent(
         await this.miniApp.invoke({
@@ -290,17 +253,32 @@ class Chat {
   // 发消息，流式输出
   async sendMessage() {
     await this.beforeSendMessage();
+
+    // 打断发送
     const config = {
       signal: this.sendMessageController?.signal,
     };
+
     const lastUserMessage = this.getLastUserMessage();
     const { directive = [] } = lastUserMessage;
+
+    // 提示词修改逻辑
     const userSystemMessage = this.getSystemMessageFromDirective(directive);
+
+    // 最近的n条记录：
+    const recentChatHistory = this.chatHistory.slice(
+      -this.clientConfig.advanceOptions.context,
+    );
+
+    // this.miniApp
+
+    // 在发送之前设置消息修剪
+
     const chatContext = {
-      messages: this.chatHistory,
-      language: "Chinese",
+      messages: recentChatHistory,
       userSystemMessage,
     };
+
     const stream = await this.app.stream(chatContext, config);
     const title = await this.generateTitle(chatContext);
 

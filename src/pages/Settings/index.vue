@@ -1,33 +1,21 @@
 <template>
-  <div
-    class="relative m-auto flex h-full min-h-[400px] w-full flex-col bg-white px-3 sm:mt-1 sm:px-5 md:w-[80%]"
-  >
-    <x-button type="text" class="absolute top-1 right-0" @click="goBack">
-      <i-mdi-close class="text-bold text-xl text-gray-800" />
-    </x-button>
-    <div class="flex pt-8 pb-6 sm:pt-10">
-      <img :src="logo" class="w-30" alt="UI Chat" srcset="" />&nbsp;
-      <span class="text-geekblue-5 self-end leading-2 font-bold"
-        >v{{ version }}</span
-      >
-    </div>
-    <div class="flex-1 overflow-auto">
-      <system-setting />
-    </div>
-  </div>
+  <x-subpage-wrapper :title="$t('Settings')">
+    <template #content>
+      <div class="flex-1 overflow-auto pb-6">
+        <general-setting />
+        <conversation-and-task-setting />
+        <!-- <model-setting /> -->
+        <about-setting />
+      </div>
+    </template>
+  </x-subpage-wrapper>
 </template>
 <script lang="ts" setup>
-import { useRouter } from "vue-router";
-import logo from "@/assets/logo.png";
-import SystemSetting from "./components/SystemSetting.vue";
-
-declare const __APP_VERSION__: string;
-const version = __APP_VERSION__;
-
-const router = useRouter();
-
-const goBack = () => {
-  router.push("/");
-};
+// import SystemSetting from "./components/SystemSetting.vue";
+import AboutSetting from "./components//AboutSetting.vue";
+import GeneralSetting from "./components/GeneralSetting.vue";
+import ConversationAndTaskSetting from "./components/ConversationAndTaskSetting/index.vue";
+import { loadModuleTranslations } from "@/i18n";
+loadModuleTranslations("pages/Settings");
 </script>
 <style scoped></style>

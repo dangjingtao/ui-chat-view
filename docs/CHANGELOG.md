@@ -2,6 +2,35 @@
 
 
 
+## [0.0.24] - 2025-03-14
+
+用户设置支持，初步提示词工程。看了一篇文章，获益不少
+
+https://mp.weixin.qq.com/s?__biz=MzU4OTY4MDU4MQ==&mid=2247487639&idx=1&sn=118ecf6274c6174dfe5ca4462e0cfa20&chksm=fc6cc07952f43b778e3d3b3b1589ecca1bd83e3464e2fba423e8302ba2952be483ac8410883c#rd
+
+### Added
+
+- 配置任务LLM和embedding模型支持
+- 代理github api支持
+- 主题色支持
+- 暗黑模式支持
+- 国际化支持（含语言对话）
+- 裁剪上下文支持
+
+
+### Changed
+
+- 重写了设置界面
+- 部分暗黑模式下调整了部分组件（XSelect）
+- 移除一些不支持的高级设置，研究过大量聊天软件，大量的配置是令人困惑的
+
+### Fixed
+
+- 高级配置在初始对话不生效问题
+- 其它UI Bug
+
+
+
 ## [0.0.22] - 2025-03-12
 
 前端体验调整。通读了[Learn PWA](https://web.dev/learn/pwa/)。获益良多。

@@ -35,16 +35,24 @@ const chatService = {
   // 处理消息流
   async _processStream(stream, message, chatCtx) {
     let chunks = "";
+    const updateChatHistory = _.throttle(
+      (chunks: string, chatHistory: any[], message: any) => {
+        const updatedIndex = chatHistory.findIndex((x) => x.id === message.id);
+        if (updatedIndex !== -1) {
+          chatHistory[updatedIndex].content = chunks;
+        } else {
+          chatHistory.push({ ...message, content: chunks });
+        }
+      },
+      100,
+    ); // 每100ms更新一次
+
     for await (const chunk of stream) {
       chunks += chunk;
       const chatHistory = chatCtx.value.conversation.chatHistory;
-      const updatedIndex = chatHistory.findIndex((x) => x.id === message.id);
-      if (updatedIndex !== -1) {
-        chatHistory[updatedIndex].content = chunks;
-      } else {
-        chatHistory.push({ ...message, content: chunks });
-      }
+      updateChatHistory(chunks, chatHistory, message);
     }
+
     delete message.stream;
     const updatedConversation =
       await clientCache.addMessageToCurrentConversationHistory({
@@ -62,7 +70,7 @@ const chatService = {
     const { chatCtx, conversationConfig } = pageStateContext;
     const chatContext = await clientCache.getChatContext();
     // 在此检查数据一致性
-    console.log("init", chatCtx);
+    console.log("init", chatCtx, conversationConfig);
     chatCtx.value = chatContext;
 
     if (

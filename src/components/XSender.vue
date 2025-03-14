@@ -2,7 +2,7 @@
   <div
     :class="{
       'outline-none': !isFocused,
-      'outline-primary-light outline-2': isFocused,
+      'outline-primary-4 outline-2': isFocused,
     }"
     class="absolute right-0 bottom-5 left-0 z-20 m-auto flex w-[94%] max-w-[800px] flex-col items-end overflow-hidden rounded-lg border border-gray-200 bg-white p-0 shadow-lg md:w-full"
   >

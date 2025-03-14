@@ -43,7 +43,6 @@
               v-for="(globalInfo, index) in chatStore.globalInfoList"
               :key="index"
               :type="globalInfo.type"
-              dismissible
             >
               <template #default>
                 <p class="text-center">{{ globalInfo.content }}</p>
@@ -101,6 +100,10 @@ import { useChatStore } from "@/store/chat";
 import ChatHeader from "./components/ChatHeader.vue";
 import ChatDrawer from "./components/ChatDrawer.vue";
 import ChatStart from "./components/ChatStart.vue";
+
+import { loadModuleTranslations } from "@/i18n";
+loadModuleTranslations("pages/ChatView");
+
 const loading = ref(true);
 
 const chatContainer = ref<HTMLElement | null>(null);
@@ -141,11 +144,11 @@ watch(
 );
 
 watch(
-  () => chatStore.defaultCtx,
+  () => chatStore.chatCtx,
   async (newChatContext) => {
     try {
       if (chat && typeof (chat as any).use === "function") {
-        await (chat as any).use(newChatContext).init();
+        await (chat as any).use(newChatContext.conversation).init();
       } else {
         console.error("chat.use is not a function");
       }

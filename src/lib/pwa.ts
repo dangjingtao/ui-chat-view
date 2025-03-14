@@ -1,4 +1,5 @@
 import { registerSW } from "virtual:pwa-register";
+import { requestAppVersion } from "@/lib/requestGithub.ts";
 import { useRegisterSW } from "virtual:pwa-register/vue";
 import dialog from "./dialog.ts";
 import message from "./message.ts";
@@ -17,10 +18,12 @@ export const checkUpdate = registerSW({
       );
   },
   async onNeedRefresh() {
+    const json = await requestAppVersion();
+    console.error(json);
     // console.log("新版本可用，请刷新页面以更新。");
     const userConfirmed = await dialog.confirm({
       title: `检测到新版本 v${version}`,
-      message: `是否立即更新？`,
+      message: `当前版本是${version}，是否立即更新？`,
       type: "info",
     });
     // const userConfirmed = confirm("检测到新版本，是否立即刷新以应用更新？");

@@ -6,7 +6,7 @@
   >
     <template #content>
       <div class="flex h-full flex-col">
-        <div class="min-h-[114px] w-full p-1 shadow">
+        <div class="min-h-[114px] w-full p-1">
           <x-input type="search" @onSearch="onSearch" @onClear="onClear" />
           <div class="py-3">
             <x-ellipsis :lines="4">

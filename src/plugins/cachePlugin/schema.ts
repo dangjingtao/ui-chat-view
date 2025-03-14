@@ -62,13 +62,14 @@ const conversationsList: ConversationType[] = [];
 const characterList: CharacterType[] = [];
 const knowledgeBaseList: KnowledgeBaseType[] = [];
 
-const defaultAdvanceOptions: ConversationConfig = {
+export const defaultAdvanceOptions: ConversationConfig = {
   topK: 40,
   topP: 0.9,
   temperature: 0.8,
   frequencyPenalty: 1.1,
   presencePenalty: 1,
   systemPrompt: "",
+  context: 20,
 };
 
 export default {

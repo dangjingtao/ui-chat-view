@@ -26,6 +26,8 @@ export default class CachePlugin {
     if (!isInit) {
       await cache.initDatabase(schema);
       await cache.set("llm_provider_name", "groq");
+      await cache.set("task_llm_provider_name", "groq");
+      await cache.set("task_embed_provider_name", "cohere");
     }
   }
 

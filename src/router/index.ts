@@ -9,7 +9,7 @@ const Character = () => import("@/pages/ChatCharacters/index.vue");
 const KnowledgeHub = () => import("@/pages/KnowledgeHub/index.vue");
 const KnowledgeBase = () => import("@/pages/KnowledgeBase/index.vue");
 const ResultPage = () => import("@/pages/ResultPage/index.vue");
-const About = () => import("@/pages/Settings/components/about.vue");
+
 const ConversationAdvanceSetting = () =>
   import("@/pages/ConversationAdvanceSetting/index.vue");
 
@@ -20,7 +20,6 @@ const routes = [
     path: "/settings",
     component: Setting,
   },
-  { path: "/settings/about", component: About },
   { path: "/knowledge-hub", component: KnowledgeHub },
   {
     path: "/knowledge-base/:id",

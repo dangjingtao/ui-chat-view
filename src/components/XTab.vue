@@ -2,7 +2,7 @@
   <div class="flex h-full flex-col">
     <div class="pb-5">
       <div
-        class="bg-geekblue-1 relative flex justify-center rounded-md px-3 py-1"
+        class="bg-primary-1 relative flex justify-center rounded-md px-3 py-1"
       >
         <button
           v-for="(tab, index) in tabs"

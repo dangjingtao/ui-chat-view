@@ -1,9 +1,9 @@
 <template>
   <div
     :class="{
-      'md:w-[80%]': !isFullWidth,
+      'xl:mx-[15%]': !isFullWidth,
     }"
-    class="relative m-auto flex h-full min-h-[400px] w-full flex-col bg-white px-3 sm:px-5"
+    class="relative m-auto flex h-full min-h-[400px] flex-col bg-white px-0"
   >
     <x-button type="text" class="absolute top-0 right-0" @click="onClose">
       <i-mdi-close class="text-bold text-xl text-gray-800" />
@@ -15,7 +15,7 @@
         {{ title }}
       </h2>
     </div>
-    <div class="flex-1 overflow-auto">
+    <div class="flex-1 overflow-auto px-3 md:px-6">
       <slot name="content"></slot>
     </div>
   </div>

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <x-result title="正在艰难翻越GFW..." v-if="loading" /> -->
     <x-spin v-if="loading" class="pt-50" />
     <x-markdown
       class="p-5 px-6"
@@ -20,30 +19,37 @@
 import { ref } from "vue";
 import request from "@/lib/request";
 import { AxiosError } from "axios";
+import { requestGithubFileContent } from "@/lib/requestGithub";
 const content = ref("");
 const loading = ref(true);
 const error = ref<AxiosError | null>(null);
 
-// const markdownUrl =
 const props = defineProps<{
-  markdownUrl: string;
+  type?: "github";
+  markdownUrl?: string;
+  filePath?: string;
 }>();
 
-request({
-  // url: "https://raw.githubusercontent.com/dangjingtao/ui-chat-view/main/README.md",
-  url: props.markdownUrl,
-  method: "get",
-  headers: {
-    Authorization: null,
-  },
-})
-  .then((res) => {
+if (props.type === "github") {
+  requestGithubFileContent({ filePath: props.filePath }).then((res) => {
     loading.value = false;
-    content.value = res.data;
-  })
-  .catch((err: AxiosError) => {
-    console.log(err);
-    loading.value = false;
-    error.value = err;
+    content.value = res;
   });
+} else {
+  if (props.markdownUrl) {
+    request({
+      url: props.markdownUrl,
+      method: "get",
+    })
+      .then((res) => {
+        loading.value = false;
+        content.value = res.data;
+      })
+      .catch((err: AxiosError) => {
+        console.log(err);
+        loading.value = false;
+        error.value = err;
+      });
+  }
+}
 </script>
