@@ -6,7 +6,9 @@
     <div class="-ml-5 flex w-[80%] justify-center lg:w-[50%]">
       <div ref="lottieContainer" class="w-[45%]"></div>
 
-      <img class="mt-[20%] block h-fit w-[55%] flex-1" :src="logo" alt="logo" />
+      <div class="mt-[20%] flex-1">
+        <img class="block w-full" :src="logo" alt="logo" />
+      </div>
     </div>
     <p class="pt-1 pb-5 text-2xl font-semibold text-gray-500">
       {{ t("aiExperience") }}

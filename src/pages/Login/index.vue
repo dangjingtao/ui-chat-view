@@ -62,7 +62,7 @@ const loading = ref(false);
 const router = useRouter();
 const password = ref("");
 
-const handleSubmit = (event?) => {
+const handleSubmit = async (event?) => {
   event?.preventDefault();
   // // 处理登录逻辑
   // console.log("Email:", email.value);
@@ -82,11 +82,12 @@ const handleSubmit = (event?) => {
         localStorage.setItem("apiKey", password.value);
         router.push("/");
       } else {
-        message.error(`登录失败：${res.status}`);
+        message.error(`登录失败：${res}`);
         localStorage.clear();
       }
     })
     .catch((err) => {
+      console.error(err);
       loading.value = false;
     });
 };

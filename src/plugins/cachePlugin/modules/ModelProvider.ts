@@ -45,8 +45,6 @@ export default class extends Base {
       models_url = `${baseURL}/v1beta/openai/models`;
     }
 
-    try {
-    } catch (error) {}
     const { data } = await request({
       url: models_url,
       method: "GET",

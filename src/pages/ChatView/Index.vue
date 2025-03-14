@@ -1,8 +1,13 @@
 <template>
-  <div class="relative flex h-full w-full flex-col gap-0.5 bg-gray-50">
+  <div class="relative flex h-full w-full flex-col bg-gray-50">
     <chat-header />
 
-    <div class="flex h-[calc(100lvh-44px)] w-full flex-1">
+    <!-- <div class="h-11 bg-gray-100">
+
+    </div> -->
+
+    <div class="flex w-full flex-1">
+      <!-- <div class="h-full w-[60px] bg-gray-100"></div> -->
       <!-- 动态加载的侧边栏 -->
       <transition
         mode="out-in"
@@ -23,7 +28,9 @@
       </transition>
 
       <!-- 主界面 -->
-      <div class="relative m-auto flex h-full w-full flex-col">
+      <div
+        class="relative m-auto flex h-full w-full flex-col overflow-hidden rounded-tl-2xl border border-gray-300"
+      >
         <div>
           <x-spin v-if="loading" class="pt-50" />
 
@@ -32,6 +39,7 @@
             v-if="chatStore.defaultCtx.conversation === null && !loading"
           />
         </div>
+
         <div
           v-if="chatStore.defaultCtx.conversation !== null && !loading"
           ref="chatContainer"
@@ -144,11 +152,11 @@ watch(
 );
 
 watch(
-  () => chatStore.chatCtx,
+  () => chatStore.defaultCtx,
   async (newChatContext) => {
     try {
       if (chat && typeof (chat as any).use === "function") {
-        await (chat as any).use(newChatContext.conversation).init();
+        await (chat as any).use(newChatContext).init();
       } else {
         console.error("chat.use is not a function");
       }

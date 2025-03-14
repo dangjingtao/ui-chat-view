@@ -116,6 +116,7 @@ export default defineConfig({
     __APP_DESCRIPTION__: JSON.stringify(pkg.description),
   },
   server: {
+    allowedHosts: ["tavern.tomz.io"],
     port: 8461,
   },
   resolve: {

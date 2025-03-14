@@ -1,6 +1,8 @@
 import axios from "axios";
-import { setupCache, buildWebStorage } from "axios-cache-interceptor";
 import message from "./message";
+import RequestCache from "./requestCache";
+
+const requestCache = new RequestCache({ noCacheUrl: ["/login"] });
 
 // 创建 axios 实例
 const service = axios.create({
@@ -18,9 +20,10 @@ const service = axios.create({
 
 // 请求拦截器
 service.interceptors.request.use(
-  (config) => {
+  // @ts-ignore
+  async (config) => {
     // 在发送请求之前做些什么
-    return config;
+    return requestCache.$requestInterceptor(config);
   },
   (error) => {
     // 处理请求错误
@@ -38,18 +41,18 @@ service.interceptors.response.use(
         message.error("登录失败");
       }
     }
-    // 对响应数据做点什么
-    return response;
+
+    return requestCache.$responseInterceptor(response);
   },
   (error) => {
     // 处理响应错误
-    return Promise.reject(error);
+    return error.cached
+      ? requestCache.$getCache(error.key)
+      : Promise.reject(error);
   },
 );
 
 class Request {
-  private apiKey: null | string;
-
   constructor() {}
 
   request(config: {

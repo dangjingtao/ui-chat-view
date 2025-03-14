@@ -1,6 +1,6 @@
 <template>
   <div
-    class="safe-area h-full overflow-hidden"
+    class="safe-area overflow-hidden"
     :class="{
       'pt-[var(--tw-space-safe-top)]': top,
       'pb-[var(--tw-space-safe-bottom)]': bottom,
@@ -22,3 +22,8 @@ const props = defineProps({
   right: { type: Boolean, default: false },
 });
 </script>
+<style scoped>
+.safe-area {
+  height: calc(100 * var(--svh, 1vh));
+}
+</style>
