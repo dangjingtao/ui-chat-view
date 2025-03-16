@@ -80,15 +80,22 @@ const md = new MarkdownIt({
   html: true,
   linkify: true,
   typographer: true,
-  highlight: function (code, { language }) {
-    if (language && hljs.getLanguage(language)) {
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
       try {
-        return hljs.highlight(code, { language }).value;
+        return hljs.highlight(lang, str).value;
       } catch (__) {}
     }
 
     return ""; // 使用额外的默认转义
   },
+  // highlight: function (code, { language }) {
+  //   try {
+  //     return hljs.highlight(code, { language }).value;
+  //   } catch (__) {}
+
+  //   return ""; // 使用额外的默认转义
+  // },
 });
 
 // 计算最终要显示的 html 文本
@@ -98,10 +105,11 @@ const markdownContent = computed(() => {
 });
 </script>
 <style scoped>
+/* @import "@/styles/markdown.css"; */
 .markdown-body:not(.user-markdown) {
   box-sizing: border-box;
-  min-width: 200px;
-  max-width: 980px;
+  /* min-width: 200px; */
+  max-width: 900px;
   margin: 0 auto;
   padding: 45px;
 }

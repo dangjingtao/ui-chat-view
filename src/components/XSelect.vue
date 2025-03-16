@@ -5,11 +5,11 @@
   >
     <div
       @click="toggleDropdown"
-      class="focus:shadow-outline transition-border block w-full cursor-pointer rounded border bg-white px-4 py-1 pr-8 text-sm leading-3.5 focus:outline-none"
+      class="focus:shadow-outline transition-border focus:outline-primary block w-full cursor-pointer rounded border bg-white px-4 py-1 pr-8 text-sm leading-3.5"
       :class="{
         'cursor-not-allowed opacity-50': isLoading,
-        'border-primary-4': isOpen,
-        'border-gray-100': !isOpen,
+        'border-primary': isOpen,
+        'hover:border-primary-3 border-gray-100': !isOpen,
       }"
       :aria-disabled="isLoading"
     >

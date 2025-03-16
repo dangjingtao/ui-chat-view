@@ -2,7 +2,7 @@
   <div
     id="xChatView"
     ref="chatHistory"
-    class="mx-auto flex h-full w-[90%] max-w-[800px] flex-col py-2 text-sm"
+    class="mx-auto flex h-full w-[90%] max-w-[890px] flex-col py-2 text-sm"
   >
     <div class="flex-1">
       <div
@@ -47,11 +47,28 @@
                 v-if="!isUser(message.role)"
                 :content="removeThinkContent(message.content)"
               />
-              <x-markdown
-                class="user-markdown"
-                v-else
-                :content="formatContent(message.content)"
-              />
+
+              <!-- 用户消息 -->
+              <div v-else>
+                <div
+                  v-for="(file, index) in message.fileList || []"
+                  :key="index"
+                >
+                  <x-image-viewer v-if="file.isImage" :src="file.fileBase64">
+                    <img
+                      class="mb-2 max-h-[400px] max-w-[500px]"
+                      v-if="file.isImage"
+                      :src="file.fileBase64"
+                      alt="userImage"
+                      srcset=""
+                    />
+                  </x-image-viewer>
+                </div>
+                <x-markdown
+                  class="user-markdown"
+                  :content="formatContent(message.content)"
+                />
+              </div>
             </div>
             <div
               class="flex"
@@ -67,7 +84,7 @@
                 <i-mdi-content-copy class="text-[0.8rem] text-gray-500" />
               </x-button>
               <x-button
-                @click="emits('regenarate', message)"
+                @click="emits('regenerate', message)"
                 size="small"
                 v-if="!isUser(message.role)"
                 type="text"
@@ -87,13 +104,47 @@
       </div>
 
       <!-- 虚假的输入中 -->
-      <div v-if="isSending" class="chat-item mb-4">
+      <div v-if="props.isSending" class="chat-item mb-4">
         <div class="flex w-full items-end gap-2">
           <div class="w-8 min-w-8">
             <img src="@/assets/fmt.webp" alt="" srcset="" />
           </div>
-          <div class="w-full text-left text-xs leading-6 text-gray-500">
-            typing...
+          <div class="w-full pb-3 text-left text-xs text-gray-500">
+            <svg
+              width="24"
+              height="6"
+              viewBox="0 0 24 6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="currentColor"
+            >
+              <circle cx="3" cy="3" r="3">
+                <animate
+                  attributeName="opacity"
+                  values="0;1;0"
+                  dur="1s"
+                  repeatCount="indefinite"
+                  begin="0.1"
+                />
+              </circle>
+              <circle cx="12" cy="3" r="3">
+                <animate
+                  attributeName="opacity"
+                  values="0;1;0"
+                  dur="1s"
+                  repeatCount="indefinite"
+                  begin="0.2"
+                />
+              </circle>
+              <circle cx="21" cy="3" r="3">
+                <animate
+                  attributeName="opacity"
+                  values="0;1;0"
+                  dur="1s"
+                  repeatCount="indefinite"
+                  begin="0.3"
+                />
+              </circle>
+            </svg>
           </div>
         </div>
       </div>
@@ -134,12 +185,12 @@ const formateDate = (timeStamp: number | string) => {
   return dayjs(timeStamp).format("YYYY-MM-DD HH:mm:ss");
 };
 
-defineProps<{
+const props = defineProps<{
   messages: { role: string; content: string; timeStamp?: number | string }[];
   isSending: boolean;
 }>();
 
-const emits = defineEmits(["deleteMessage", "regenarate"]);
+const emits = defineEmits(["deleteMessage", "regenerate"]);
 
 onMounted(() => {
   checkScreenSize();

@@ -34,15 +34,17 @@ export default class extends Base {
     }
 
     const providerConfig = await this.getProviderConfigByName(provider_name);
-    const { baseURL } = providerConfig;
+    const { customerBaseURL, baseURL } = providerConfig;
 
-    let models_url = `${baseURL}/v1/models`;
+    const domain = customerBaseURL || baseURL;
+
+    let models_url = `${domain}/v1/models`;
     if (provider_name === "groq") {
-      models_url = `${baseURL}/openai/v1/models`;
+      models_url = `${domain}/openai/v1/models`;
     }
 
     if (provider_name === "gemini") {
-      models_url = `${baseURL}/v1beta/openai/models`;
+      models_url = `${domain}/v1beta/openai/models`;
     }
 
     const { data } = await request({
@@ -131,5 +133,39 @@ export default class extends Base {
   // 设置任务向量模型
   async setTaskEmbedModel(modelName: string) {
     await this.cache.set("task_embed_model_name", modelName);
+  }
+
+  // 设置自定义服务商
+  async setConversationLLMProviderDomain({
+    provider,
+    baseURL,
+    apiKey,
+  }: {
+    provider: string;
+    baseURL: string;
+    apiKey: string;
+  }) {
+    const { cache } = this;
+    const customerProviderSetting = (await cache.get("providersMap")) || {};
+    if (!customerProviderSetting[provider]) {
+      customerProviderSetting[provider] = {
+        provider,
+        baseURL,
+        apiKey,
+      };
+    } else {
+      customerProviderSetting[provider] = {
+        ...customerProviderSetting[provider],
+        customerBaseURL: baseURL,
+        apiKey,
+      };
+    }
+
+    await cache.set("providersMap", customerProviderSetting);
+  }
+
+  async getConversationLLMProviderSetting(provider) {
+    const { cache } = this;
+    return (await cache.get("providersMap"))[provider];
   }
 }

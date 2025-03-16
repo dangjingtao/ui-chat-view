@@ -1,5 +1,5 @@
 <template>
-  <x-subpage-wrapper :title="$t('Settings')">
+  <x-subpage-wrapper :title="t('settings')">
     <template #content>
       <div class="flex-1 overflow-auto pb-6">
         <general-setting />
@@ -15,7 +15,8 @@
 import AboutSetting from "./components//AboutSetting.vue";
 import GeneralSetting from "./components/GeneralSetting.vue";
 import ConversationAndTaskSetting from "./components/ConversationAndTaskSetting/index.vue";
-import { loadModuleTranslations } from "@/i18n";
+import { loadModuleTranslations, useNamespace } from "@/i18n";
 loadModuleTranslations("pages/Settings");
+const { t } = useNamespace("Settings.Index");
 </script>
 <style scoped></style>

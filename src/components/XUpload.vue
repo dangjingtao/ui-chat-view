@@ -1,22 +1,48 @@
 <template>
-  <div class="relative overflow-hidden">
+  <div
+    class="absolute top-0 right-0 bottom-0 left-0 z-10 h-full w-full overflow-hidden"
+  >
+    <slot></slot>
     <input
-      class="absolute top-0 right-0 bottom-0 left-0 cursor-pointer opacity-0"
+      class="absolute top-0 right-0 bottom-0 left-0 z-10 block h-full w-full cursor-pointer opacity-0"
       type="file"
       ref="fileInput"
       @change="UploadFlow"
+      :accept="accept"
     />
-    <slot></slot>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
+import Compressor from "compressorjs";
+
+const isImageFile = (file: File): boolean => {
+  return file.type.startsWith("image/");
+};
+
+const compressImage = (file) => {
+  return new Promise((resolve, reject) => {
+    new Compressor(file, {
+      maxWidth: 500,
+      maxHeight: 500,
+      quality: 0.3,
+      success(result) {
+        resolve(result);
+      },
+      error(err) {
+        console.error(err.message);
+        reject(err);
+      },
+    });
+  });
+};
 
 const props = defineProps<{
   onSuccess?: () => void;
   onUpload?: (data) => any;
   onFailed?: (error: string) => void;
+  accept?: string; // 新增的可选文件类型属性
 }>();
 
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -25,10 +51,14 @@ const fileType = ref<string | null>(null);
 const document = ref<File | null>(null);
 
 const onFileChange = async (event: Event) => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const target = event.target as HTMLInputElement;
-    const file = target.files ? target.files[0] : null;
+    let file = target.files ? target.files[0] : null;
     if (file) {
+      // 图片压缩处理
+      if (isImageFile(file)) {
+        file = await compressImage(file);
+      }
       fileType.value = file.type;
       document.value = file;
       const reader = new FileReader();

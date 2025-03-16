@@ -10,7 +10,7 @@ import { twMerge } from "tailwind-merge";
 
 const props = defineProps<{
   round?: boolean;
-  type?: "primarily" | "ghost" | "text";
+  type?: "primarily" | "ghost" | "text" | "base";
   size?: "small" | "default" | "large";
   disabled?: boolean;
   class?: string;
@@ -26,6 +26,7 @@ const handleClick = (event: Event) => {
 
 const buttonClass = computed(() => {
   const typeMap = {
+    base: "bg-white text-bg-gray-600 hover:border-gray-300 hover:bg-primary-1 border border-gray-200",
     primarily: "bg-primary-6 text-white hover:bg-primary-7",
     ghost:
       "bg-transparent border border-primary-6 text-primary-6 hover:bg-primary-1",
@@ -39,7 +40,7 @@ const buttonClass = computed(() => {
   };
 
   const classResult = [
-    "text-center leading-normal transition-colors duration-100 ease-in-out cursor-pointer",
+    "text-center leading-normal transition-colors duration-100 ease-in-out cursor-pointer focus:outline-primary",
     props.round ? "rounded-full" : "rounded-md",
     sizeMap[props.size || "default"],
     typeMap[props.type || "primarily"],

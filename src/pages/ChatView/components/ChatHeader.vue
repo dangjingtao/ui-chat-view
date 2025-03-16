@@ -13,12 +13,13 @@
         :selectedValue="chatStore.defaultCtx?.model"
       />
     </div>
-    <button
-      class="cursor-pointer px-1 py-1.5 text-gray-500 focus:outline-none"
+    <x-button
+      type="base"
+      class="cursor-pointer border-0 px-1 py-1.5 text-gray-500 focus:outline-none"
       @click="toggleDrawer"
     >
       <i-mdi-menu class="text-[1rem]" />
-    </button>
+    </x-button>
   </header>
 </template>
 

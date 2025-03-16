@@ -22,13 +22,14 @@
             </div>
 
             <div class="ml-auto flex w-full gap-2 sm:w-auto">
-              <x-upload
-                @success="onUploadSuccess"
-                @failed="onUploadFailed"
-                @upload="onUpload"
-              >
-                <x-button class="mt-1.5 h-8">上传</x-button>
-              </x-upload>
+              <x-button class="relative mt-1.5 h-8 w-12"
+                ><x-upload
+                  @success="onUploadSuccess"
+                  @failed="onUploadFailed"
+                  @upload="onUpload"
+                ></x-upload>
+                <div class="absolute top-1.5 left-2.5">上传</div>
+              </x-button>
 
               <!-- <x-button class="mt-1.5 h-8">上传</x-button> -->
               <div class="flex-1">

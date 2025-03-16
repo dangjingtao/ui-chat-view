@@ -48,6 +48,7 @@ interface ChatConfig {
   provider: ProviderName;
   systemPrompt: string;
   model: string;
+  customerBaseURL?: string; // Add this line
 }
 
 class Chat {
@@ -72,9 +73,13 @@ class Chat {
     if (!this.clientConfig) {
       throw new Error("Client not initialized");
     }
-    const { provider, model, baseURL } = this.clientConfig;
+    const { provider, model, baseURL, customerBaseURL } = this.clientConfig;
 
-    const requiredFields = { provider, model, baseURL };
+    const requiredFields = {
+      provider,
+      model,
+      baseURL: customerBaseURL || baseURL,
+    };
     for (const [key, value] of Object.entries(requiredFields)) {
       if (!value) {
         throw new CommonError(`Missing required field: ${key}`, {
@@ -105,9 +110,11 @@ class Chat {
   }
 
   useClient() {
-    const { provider, model, baseURL, advanceOptions } = this.clientConfig;
+    const { provider, model, baseURL, advanceOptions, customerBaseURL } =
+      this.clientConfig;
+    const domain = customerBaseURL || baseURL;
 
-    const client = createClient(provider, model, baseURL, advanceOptions);
+    const client = createClient(provider, model, domain, advanceOptions);
     client.model = model;
 
     this.client = client;
@@ -123,6 +130,7 @@ class Chat {
 
     this.useClient();
     this.initChain();
+    // this.chatHistory = this.formatChatHistory();
     //
     this.initMiniPermissionChain(this.client);
 
@@ -182,12 +190,44 @@ class Chat {
       .pipe(parser);
   }
 
-  formatChatHistory() {
-    return this.chatHistory.map((item) => {
+  formatChatHistory(chatHistory) {
+    return chatHistory.map((item) => {
       if (item.role === "assistant") {
         return new AIMessage(item.content || "");
       } else {
-        return new HumanMessage(item.content || "");
+        // groq不支持图片
+        if (this.clientConfig?.provider === "groq") {
+          return new HumanMessage(item.content || "");
+        }
+
+        // 发送图片
+        const userMessage: {
+          content: Array<{
+            type: string;
+            text?: string;
+            image_url?: { url: string };
+          }>;
+        } = {
+          content: [
+            {
+              type: "text",
+              text: item.content || "",
+            },
+          ],
+        };
+        const fileList = item.fileList || [];
+        // console.error("item", fileList);
+
+        if (fileList[0] && fileList[0]?.isImage) {
+          userMessage.content.push({
+            type: "image_url",
+            image_url: {
+              url: item.fileList[0].fileBase64,
+            },
+          });
+        }
+
+        return new HumanMessage(userMessage);
       }
     });
   }
@@ -203,7 +243,7 @@ class Chat {
 
   // 生成对话标题
   async generateTitle(chatContext) {
-    if (chatContext.messages.length > 0 || chatContext.messages.length < 3) {
+    if (chatContext.messages.length > 0 && chatContext.messages.length < 3) {
       // 生成对话标题
       return removeThinkContent(
         await this.miniApp.invoke({
@@ -262,7 +302,7 @@ class Chat {
     const lastUserMessage = this.getLastUserMessage();
     const { directive = [] } = lastUserMessage;
 
-    // 提示词修改逻辑
+    // 用户追加的提示词
     const userSystemMessage = this.getSystemMessageFromDirective(directive);
 
     // 最近的n条记录：
@@ -273,12 +313,14 @@ class Chat {
     // this.miniApp
 
     // 在发送之前设置消息修剪
+    // console.error("recentChatHistory", recentChatHistory);
 
     const chatContext = {
-      messages: recentChatHistory,
+      messages: this.formatChatHistory(recentChatHistory),
       userSystemMessage,
     };
 
+    // return;
     const stream = await this.app.stream(chatContext, config);
     const title = await this.generateTitle(chatContext);
 
@@ -306,5 +348,8 @@ export const extractThinkContent = (text: string): string[] => {
 };
 
 export const removeThinkContent = (content) => {
+  if (typeof content !== "string") {
+    return content;
+  }
   return content.replace(/<think>.*?<\/think>/gs, "");
 };

@@ -24,14 +24,13 @@
 
       <!-- 主界面 -->
       <div class="relative m-auto flex h-full w-full flex-col">
-        <div>
-          <x-spin v-if="loading" class="pt-50" />
+        <x-spin v-if="loading" class="pt-50" />
 
-          <chat-start
-            class="mx-auto max-w-[800px]"
-            v-if="chatStore.defaultCtx.conversation === null && !loading"
-          />
-        </div>
+        <chat-start
+          class="mx-auto max-w-[900px]"
+          v-if="chatStore.defaultCtx.conversation === null && !loading"
+        />
+
         <div
           v-if="chatStore.defaultCtx.conversation !== null && !loading"
           ref="chatContainer"
@@ -56,14 +55,14 @@
             v-else
             :isSending="chatStore.isSending"
             :messages="chatStore.chatHistory"
-            @regenarate="regenerate"
+            @regenerate="regenerate"
             @deleteMessage="deleteMessage"
           />
         </div>
 
         <div
           v-if="chatStore.defaultCtx.conversation !== null && !loading"
-          class="relative h-[100px]"
+          class="relative h-[110px] md:h-[126px]"
         >
           <x-sender
             :character="chatStore.defaultCtx?.character"

@@ -1,5 +1,8 @@
 export default {
   Settings: {
+    Index: {
+      settings: "Settings",
+    },
     GeneralSetting: {
       Settings: "Settings",
       general: "General",
@@ -18,6 +21,7 @@ export default {
     },
 
     WorkModelSetting: {
+      customerBaseURL: "Customer Provider Domain:",
       openProxyDescription:
         "* Service provided by Open Proxy API Deno, no need to configure API Key for the provider separately",
       workModelTitle: "Workspace",

@@ -1,13 +1,17 @@
 <template>
   <transition name="fade">
+    <div v-if="visible" class="fixed inset-0 z-10 bg-[rgba(0,0,0,0.5)]"></div>
+  </transition>
+
+  <transition>
     <div
       v-if="visible"
-      class="fixed inset-0 z-10 flex items-center justify-center bg-[rgba(0,0,0,0.5)] md:items-start"
+      class="fixed inset-0 z-10 flex items-center justify-center md:items-start"
     >
       <div
         :class="{
           'w-[90%] min-w-[350px] md:w-2/7': !!type,
-          'w-[90%] md:w-2/5': !type,
+          'w-[90%] min-w-[450px] md:w-2/8': !type,
         }"
         class="relative rounded-lg bg-white shadow-lg md:mt-[6%]"
       >
@@ -36,8 +40,10 @@
         </div>
         <div class="flex justify-end gap-2 px-4 py-2">
           <slot name="footer">
-            <x-button type="ghost" @click="onCancel">取消</x-button>
-            <x-button @click="onConfirm">确定</x-button>
+            <x-button type="ghost" @click="onCancel">{{
+              t(`cancel`)
+            }}</x-button>
+            <x-button @click="onConfirm">{{ t(`confirm`) }}</x-button>
           </slot>
         </div>
       </div>
@@ -47,6 +53,10 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { loadModuleTranslations, useNamespace } from "@/i18n";
+
+loadModuleTranslations("components");
+const { t } = useNamespace("Components");
 
 const props = defineProps<{
   message?: string;
@@ -86,11 +96,25 @@ const onCancel = async () => {
 </script>
 
 <style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition:
+    opacity 0.1s ease,
+    transform 0.1s;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.2s;
+  transition: opacity 0.2s ease;
 }
-.fade-enter,
+
+.fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }

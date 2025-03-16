@@ -2,7 +2,7 @@ import clientCache from "@/plugins/cachePlugin";
 import request from "@/lib/request";
 import Chat from "@/lib/Chat";
 import promptParser from "@/lib/textProcessor/answerParser";
-import { getScreen } from "@/lib/plateform";
+import { getScreen } from "@/lib/platform";
 import wrapWithTryCatch from "@/lib/wrapWithTryCatch";
 import message from "@/lib/message";
 import _ from "lodash";
@@ -159,8 +159,15 @@ const chatService = {
   // 添加新对话
   async onAddConversation(pageStateContext) {
     const { chatCtx } = pageStateContext;
-    const { model, provider, baseURL, apiKey, systemPrompt, characterId } =
-      chatCtx.value;
+    const {
+      model,
+      provider,
+      baseURL,
+      apiKey,
+      systemPrompt,
+      characterId,
+      // conversations,
+    } = chatCtx.value;
 
     const newConversation = {
       title: "New Conversation",
@@ -274,6 +281,7 @@ const chatService = {
   async onSend(pageStateContext, message) {
     const { chatCtx, globalInfoList, isSending } = pageStateContext;
     const hasError = globalInfoList.value.find((x) => x.type === "danger");
+
     if (!hasError) {
       isSending.value = true;
       const { content } = message;
@@ -283,6 +291,8 @@ const chatService = {
       const has_systemPrompt = result.infoArray.find(
         (info) => info.name === "system_prompt",
       );
+
+      // 通过指令的形式注入角色提示词
       if (!has_systemPrompt) {
         result.infoArray.push({
           name: "system_prompt",

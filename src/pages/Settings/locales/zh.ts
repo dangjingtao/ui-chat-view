@@ -1,5 +1,8 @@
 export default {
   Settings: {
+    Index: {
+      settings: "设置",
+    },
     GeneralSetting: {
       Settings: "设置",
       general: "通用",
@@ -17,6 +20,7 @@ export default {
     },
 
     WorkModelSetting: {
+      customerBaseURL: "自定义服务商域名:",
       openProxyDescription:
         "* 服务由 Open Proxy API Deno 提供，无需再为服务商单独配置 API Key",
       workModelTitle: "工作空间",

@@ -13,7 +13,7 @@
     leave-to-class="opacity-0 transform translate-y-[-20px]"
   >
     <div
-      class="m-auto mt-[20vh] flex w-[90%] max-w-[800px] min-w-[300px] flex-col gap-2 rounded-md bg-white p-8 shadow-sm sm:flex-row sm:items-center sm:gap-6 sm:py-4"
+      class="m-auto mt-[20vh] flex w-[90%] max-w-[900px] min-w-[300px] flex-col gap-2 rounded-md bg-white p-8 shadow-sm sm:flex-row sm:items-center sm:gap-6 sm:py-4"
     >
       <img
         class="mx-auto block h-16 rounded-full sm:mx-0 sm:shrink-0"

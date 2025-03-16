@@ -5,7 +5,7 @@
       v-model="value"
       @focus="handleFocus"
       @blur="handleBlur"
-      class="focus:outline-primary-4 w-full rounded-md bg-gray-100 px-2 py-1.5 text-sm transition-all hover:bg-gray-50 focus:bg-white"
+      class="focus:outline-primary-4 w-full rounded-md bg-gray-100 px-2 py-1.5 text-sm text-gray-700 transition-all hover:bg-gray-50 focus:bg-white"
       :placeholder="placeholder"
       :rows="props.rows"
     ></textarea>
