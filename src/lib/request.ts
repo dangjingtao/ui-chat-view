@@ -6,7 +6,7 @@ const requestCache = new RequestCache({ noCacheUrl: ["/login"] });
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: "https://ai-proxy.tomz.io",
+  baseURL: "https://ai-proxy.tomz.io/api",
   timeout: 30000, // 请求超时时间
   headers: {
     "Content-Type": "json/application",
@@ -63,11 +63,15 @@ class Request {
     params?: any;
   }) {
     const headers = { ...config.headers };
-    let flag = headers.Authorization === null;
     const apiKey = getAPIHeader();
-    headers.Authorization = headers.Authorization || `${apiKey}`;
-    if (flag) {
-      delete headers.Authorization;
+    const isCustomerUrl = !config.url.startsWith(
+      "https://ai-proxy.tomz.io/api",
+    );
+
+    if (isCustomerUrl) {
+      headers["x-token"] = undefined;
+    } else {
+      headers["x-token"] = headers["x-token"] || `${apiKey}`;
     }
 
     return service({
@@ -96,7 +100,7 @@ class Request {
 
 const getAPIHeader = () => {
   const apiKey = localStorage.getItem("apiKey"); // 从环境变量中获取 apiKey
-  return apiKey ? `Bearer ${apiKey}` : null;
+  return apiKey || null;
 };
 
 const requestInstance = new Request();

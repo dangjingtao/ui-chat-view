@@ -70,19 +70,19 @@ const handleSubmit = async (event?) => {
   loading.value = true;
   request({
     url: "/login",
-    method: "get",
-    headers: {
-      Authorization: `Bearer ${password.value}`,
+    method: "post",
+    data: {
+      invitationCode: password.value,
     },
   })
     .then((res) => {
       loading.value = false;
       if (res.status === 200) {
         message.success("登录成功");
-        localStorage.setItem("apiKey", password.value);
+        localStorage.setItem("apiKey", res?.data?.token);
         router.push("/");
       } else {
-        message.error(`登录失败：${res}`);
+        message.error(`登录失败：${res.error}`);
         localStorage.clear();
       }
     })

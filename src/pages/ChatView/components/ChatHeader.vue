@@ -1,10 +1,12 @@
 <template>
   <header
-    class="flex h-11 items-center justify-between gap-1 bg-white px-4 py-1.5 text-gray-500 shadow"
+    class="flex h-11 items-center bg-white px-4 py-1.5 text-gray-500 shadow"
   >
-    <div class="text-primary-7 flex-1 font-bold">
-      <img :src="logo" class="w-[80px]" alt="UI Chat" srcset="" />
+    <div class="flex flex-1 font-bold">
+      <img :src="logo" class="w-[32px]" alt="UI Chat" srcset="" />
+      <!-- <div class="text-3xl leading-8 text-gray-400">UI Chat</div> -->
     </div>
+
     <div v-if="!!chatStore.chatCtx.conversation">
       <x-select
         dropdownClass="right-[-45px] max-h-[500px] min-w-[400px]"
@@ -24,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import logo from "@/assets/logo.png";
+import logo from "@/assets/images/logoIcon-192.png";
 import { useChatStore } from "@/store/chat";
 
 const chatStore = useChatStore();

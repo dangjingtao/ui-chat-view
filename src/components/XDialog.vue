@@ -6,14 +6,10 @@
   <transition>
     <div
       v-if="visible"
-      class="fixed inset-0 z-10 flex items-center justify-center md:items-start"
+      class="fixed inset-0 z-10 flex items-start justify-center"
     >
       <div
-        :class="{
-          'w-[90%] min-w-[350px] md:w-2/7': !!type,
-          'w-[90%] min-w-[450px] md:w-2/8': !type,
-        }"
-        class="relative rounded-lg bg-white shadow-lg md:mt-[6%]"
+        class="relative w-[90%] min-w-[350px] translate-y-30 rounded-lg bg-white shadow-lg md:w-2/7"
       >
         <a
           href="javascript:;"
@@ -40,10 +36,8 @@
         </div>
         <div class="flex justify-end gap-2 px-4 py-2">
           <slot name="footer">
-            <x-button type="ghost" @click="onCancel">{{
-              t(`cancel`)
-            }}</x-button>
-            <x-button @click="onConfirm">{{ t(`confirm`) }}</x-button>
+            <x-button type="ghost" @click="onCancel">{{ t.cancel }}</x-button>
+            <x-button @click="onConfirm">{{ t.confirm }}</x-button>
           </slot>
         </div>
       </div>
@@ -53,10 +47,33 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { loadModuleTranslations, useNamespace } from "@/i18n";
 
-loadModuleTranslations("components");
-const { t } = useNamespace("Components");
+const lang = localStorage.getItem("locale") || "zh";
+
+const langMap = {
+  en: {
+    confirm: "Confirm",
+    cancel: "Cancel",
+    danger: "Danger",
+    alert: "Alert",
+    prompt: "Info",
+  },
+  zh: {
+    confirm: "确定",
+    cancel: "取消",
+    danger: "危险",
+    alert: "注意",
+    prompt: "消息",
+  },
+};
+
+const t = langMap[lang];
+// import { loadModuleTranslations, useNamespace } from "@/i18n";
+
+// loadModuleTranslations("components");
+// const { t } = useNamespace("Components");
+
+// console.error(t);
 
 const props = defineProps<{
   message?: string;
@@ -71,13 +88,13 @@ const displayTitle = computed(() => {
   }
   switch (props.type) {
     case "info":
-      return "确认";
+      return t.confirm;
     case "danger":
-      return "危险";
+      return t.danger;
     case "alert":
-      return "警告";
+      return t.alert;
     case "prompt":
-      return "提示";
+      return t.prompt;
     default:
       return "";
   }

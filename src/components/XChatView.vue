@@ -56,7 +56,7 @@
                 >
                   <x-image-viewer v-if="file.isImage" :src="file.fileBase64">
                     <img
-                      class="mb-2 max-h-[400px] max-w-[500px]"
+                      class="mb-2 max-h-[400px] max-w-full md:max-w-[500px]"
                       v-if="file.isImage"
                       :src="file.fileBase64"
                       alt="userImage"

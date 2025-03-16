@@ -29,23 +29,23 @@ const providersMap: ConfigMap = {
   },
   groq: {
     provider: "groq",
-    baseURL: "https://ai-proxy.tomz.io/groq",
+    baseURL: "https://ai-proxy.tomz.io/api/groq",
   },
   cohere: {
     provider: "cohere",
-    baseURL: "https://ai-proxy.tomz.io/cohere",
+    baseURL: "https://ai-proxy.tomz.io/api/cohere",
   },
   kimi: {
     provider: "kimi",
-    baseURL: "https://ai-proxy.tomz.io/kimi",
+    baseURL: "https://ai-proxy.tomz.io/api/kimi",
   },
   deepseek: {
     provider: "deepseek",
-    baseURL: "https://ai-proxy.tomz.io/deepseek",
+    baseURL: "https://ai-proxy.tomz.io/api/deepseek",
   },
   gemini: {
     provider: "gemini",
-    baseURL: "https://ai-proxy.tomz.io/gemini",
+    baseURL: "https://ai-proxy.tomz.io/api/gemini",
   },
 
   // qwen: {
