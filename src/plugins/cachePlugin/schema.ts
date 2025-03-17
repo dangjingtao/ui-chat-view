@@ -1,4 +1,5 @@
 import { ConversationConfig } from "./../../store/chat/index";
+import { BASE_URL } from "@/config/index";
 import {
   CharacterType,
   KnowledgeBaseType,
@@ -25,27 +26,27 @@ type ConfigMap = {
 const providersMap: ConfigMap = {
   ollama: {
     provider: "ollama",
-    baseURL: "http://127.0.0.1:11434",
+    baseURL: "http://127.0.0.1:11434", // 保留本地地址不变
   },
   groq: {
     provider: "groq",
-    baseURL: "https://ai-proxy.tomz.io/api/groq",
+    baseURL: `${BASE_URL}groq`, // 使用模板字符串拼接
   },
   cohere: {
     provider: "cohere",
-    baseURL: "https://ai-proxy.tomz.io/api/cohere",
+    baseURL: `${BASE_URL}cohere`,
   },
   kimi: {
     provider: "kimi",
-    baseURL: "https://ai-proxy.tomz.io/api/kimi",
+    baseURL: `${BASE_URL}kimi`,
   },
   deepseek: {
     provider: "deepseek",
-    baseURL: "https://ai-proxy.tomz.io/api/deepseek",
+    baseURL: `${BASE_URL}deepseek`,
   },
   gemini: {
     provider: "gemini",
-    baseURL: "https://ai-proxy.tomz.io/api/gemini",
+    baseURL: `${BASE_URL}gemini`,
   },
 
   // qwen: {

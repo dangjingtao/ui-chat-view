@@ -97,62 +97,74 @@
   --color-gray-900: oklch(0.968 0.007 247.896);
   --color-gray-950: oklch(0.984 0.003 247.858);
 
+  --color-slat-50: oklch(0.145 0 0);
+  --color-slate-100: oklch(0.205 0 0);
+  --color-slate-200: oklch(0.269 0 0);
+  --color-slate-300: oklch(0.37 0.013 285.805);
+  --color-slate-400: oklch(0.439 0 0);
+  --color-slate-500: oklch(0.556 0 0);
+  --color-slate-600: oklch(0.708 0 0);
+  --color-slate-700: oklch(0.87 0 0);
+  --color-slate-800: oklch(0.922 0 0);
+  --color-slate-900: oklch(0.967 0.001 286.375);
+  --color-slate-950: oklch(0.985 0 0);
 
 
-  --color-geekblue-1: #030852;
-  --color-geekblue-2: #061178;
-  --color-geekblue-3: #10239e;
-  --color-geekblue-4: #1d39c4;
-  --color-geekblue-5: #2f54eb;
-  --color-geekblue-6: #85a5ff;
-  --color-geekblue-7: #85a5ff;
-  --color-geekblue-8: #adc6ff;
-  --color-geekblue-9: #d6e4ff;
-  --color-geekblue-10: #f0f5ff;
 
-  --color-volcano-1: #610b00;
-  --color-volcano-2: #871400;
-  --color-volcano-3: #ad2102;
-  --color-volcano-4: #d4380d;
-  --color-volcano-5: #fa541c;
-  --color-volcano-6: #ff7a45;
-  --color-volcano-7: #ff9c6e;
-  --color-volcano-8: #ffbb96;
-  --color-volcano-9: #ffd8bf;
-  --color-volcano-10: #fff2e8;
+  --color-geekblue-1: #131629;
+  --color-geekblue-2: #161d40;
+  --color-geekblue-3: #1c2755;
+  --color-geekblue-4: #203175;
+  --color-geekblue-5: #263ea0;
+  --color-geekblue-6: #2b4acb;
+  --color-geekblue-7: #5273e0;
+  --color-geekblue-8: #7f9ef3;
+  --color-geekblue-9: #a8c1f8;
+  --color-geekblue-10: #d2e0fa;
 
-  --color-gaypurple-1: #0a0d26;
-  --color-gaypurple-2: #15194d;
-  --color-gaypurple-3: #262873;
+  --color-volcano-1: #2b1611;
+  --color-volcano-2: #441d12;
+  --color-volcano-3: #592716;
+  --color-volcano-4: #7c3118;
+  --color-volcano-5: #aa3e19;
+  --color-volcano-6: #d84a1b;
+  --color-volcano-7: #e87040;
+  --color-volcano-8: #f3956a;
+  --color-volcano-9: #f8b692;
+  --color-volcano-10: #fad4bc;
+
+  --color-gaypurple-1: #171722;
+  --color-gaypurple-2: #1e1e35;
+  --color-gaypurple-3: #282747;
   --color-gaypurple-4: #3a3a99;
-  --color-gaypurple-5: #5652bf;
-  --color-gaypurple-6: #7e78cc;
-  --color-gaypurple-7: #a8a3d9;
-  --color-gaypurple-8: #d4d1e6;
-  --color-gaypurple-9: #e6e4f2;
-  --color-gaypurple-10: #f3f0ff;
+  --color-gaypurple-5: #323061;
+  --color-gaypurple-6: #3f3c83;
+  --color-gaypurple-7: #736eba;
+  --color-gaypurple-8: #a19ccf;
+  --color-gaypurple-9: #cecbe0;
+  --color-gaypurple-10: #e2e0ee;
 
-  --color-hatgreen-1: #061f17;
-  --color-hatgreen-2: #0e4532;
-  --color-hatgreen-3: #1c6b4d;
-  --color-hatgreen-4: #2d9168;
-  --color-hatgreen-5: #42b883;
-  --color-hatgreen-6: #66c497;
-  --color-hatgreen-7: #8ed1af;
-  --color-hatgreen-8: #badeca;
-  --color-hatgreen-9: #ddebe2;
-  --color-hatgreen-10: #e9f7ee;
+  --color-hatgreen-1: #15211c;
+  --color-hatgreen-2: #1a3329;
+  --color-hatgreen-3: #224535;
+  --color-hatgreen-4: #285e46;
+  --color-hatgreen-5: #317f5c;
+  --color-hatgreen-6: #3a9f72;
+  --color-hatgreen-7: #5cb289;
+  --color-hatgreen-8: #86c8a5;
+  --color-hatgreen-9: #b3d8c4;
+  --color-hatgreen-10: #d9e7de;
 
-  --color-magenta-1: #520339;
-  --color-magenta-2: #780650;
-  --color-magenta-3: #9e1068;
-  --color-magenta-4: #c41d7f;
-  --color-magenta-5: #eb2f96;
-  --color-magenta-6: #f759ab;
-  --color-magenta-7: #ff85c0;
-  --color-magenta-8: #ffadd2;
-  --color-magenta-9: #ffd6e7;
-  --color-magenta-10: #fff0f6;
+  --color-magenta-1: #291321;
+  --color-magenta-2: #40162f;
+  --color-magenta-3: #551c3b;
+  --color-magenta-4: #75204f;
+  --color-magenta-5: #a02669;
+  --color-magenta-6: #cb2b83;
+  --color-magenta-7: #e0529c;
+  --color-magenta-8: #f37fb7;
+  --color-magenta-9: #f8a8cc;
+  --color-magenta-10: #fad2e3;
 }
 
 .theme-geekblue {

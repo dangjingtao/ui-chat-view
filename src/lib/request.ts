@@ -1,12 +1,13 @@
 import axios from "axios";
 import message from "./message";
 import RequestCache from "./requestCache";
+import { BASE_URL } from "@/config";
 
 const requestCache = new RequestCache({ noCacheUrl: ["/login"] });
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: "https://ai-proxy.tomz.io/api",
+  baseURL: BASE_URL,
   timeout: 30000, // 请求超时时间
   headers: {
     "Content-Type": "json/application",
@@ -35,11 +36,12 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     if (response.status === 401) {
-      if (location.pathname !== "/login") {
-        location.href = "/login";
-      } else {
-        message.error("登录失败");
-      }
+      // if (location.pathname !== "/login") {
+      //   location.href = "/login";
+      // } else {
+      //   message.error("登录失败");
+      // }
+      message.error("登录失败");
     }
 
     return requestCache.$responseInterceptor(response);
@@ -64,15 +66,15 @@ class Request {
   }) {
     const headers = { ...config.headers };
     const apiKey = getAPIHeader();
-    const isCustomerUrl = !config.url.startsWith(
-      "https://ai-proxy.tomz.io/api",
-    );
+    const isCustomerUrl = !config.url.startsWith(BASE_URL);
 
-    if (isCustomerUrl) {
-      headers["x-token"] = undefined;
-    } else {
-      headers["x-token"] = headers["x-token"] || `${apiKey}`;
-    }
+    headers["x-token"] = headers["x-token"] || `${apiKey}`;
+
+    // if (isCustomerUrl) {
+    //   headers["x-token"] = undefined;
+    // } else {
+    //   headers["x-token"] = headers["x-token"] || `${apiKey}`;
+    // }
 
     return service({
       url: config.url,

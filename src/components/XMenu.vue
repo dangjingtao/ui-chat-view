@@ -2,7 +2,7 @@
   <div class="h-full w-full text-gray-700">
     <ul class="flex flex-col gap-3 text-sm">
       <li v-for="(group, date) in groupedMenus" :key="date">
-        <div class="bg-primary-1 mb-2 rounded p-2 font-bold text-gray-500">
+        <div class="mb-2 border-b border-gray-300 p-2 font-bold text-gray-500">
           {{ date }}
         </div>
         <ul class="flex flex-col gap-2">
@@ -10,9 +10,9 @@
             v-for="item in group"
             :key="item.id"
             :class="[
-              'flex cursor-pointer gap-2 rounded-md px-2 py-1.5 leading-6 hover:bg-gray-100',
+              'flex cursor-pointer gap-2 rounded-md px-2 py-1.5 leading-6 transition-all hover:bg-slate-200',
               {
-                'bg-gray-100': selectedIndex === item.id,
+                'bg-slate-200': selectedIndex === item.id,
               },
             ]"
             @click="selectItem(item.id)"
@@ -25,7 +25,7 @@
             <div
               @click.stop="onDeleteMenuItem(item.id)"
               :class="[
-                'ml-auto flex w-6 cursor-pointer rounded-full hover:bg-gray-200',
+                'ml-auto flex w-6 cursor-pointer rounded-full hover:bg-gray-300',
               ]"
             >
               <i-mdi-close class="m-auto block text-xs leading-6" />

@@ -3,7 +3,7 @@
     class="overflow-hidden"
     :class="{
       'pt-[var(--tw-space-safe-top)]': top,
-      'pb-[var(--tw-space-safe-bottom)]': bottom,
+      'pb-[var(--tw-space-safe-bottom)]': isIOS ? 20 : bottom,
       'pl-[var(--tw-space-safe-left)]': left,
       'pr-[var(--tw-space-safe-right)]': right,
       'h-[100svh]': isIOS,

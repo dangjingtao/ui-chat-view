@@ -2,21 +2,22 @@
   <div
     id="xChatView"
     ref="chatHistory"
-    class="mx-auto flex h-full w-[90%] max-w-[890px] flex-col py-2 text-sm"
+    class="mx-auto flex h-full w-full flex-col py-2 text-sm"
   >
-    <div class="flex-1">
+    <div class="m-auto w-[90%] flex-1">
       <div
         v-for="(message, index) in messages"
         :key="index"
         class="chat-item mb-4"
       >
         <div
+          class="w-full"
           :class="{
             'flex justify-end': isUser(message.role),
             'flex justify-start gap-2': !isUser(message.role),
           }"
         >
-          <div class="flex max-w-[100%] flex-col gap-1">
+          <div class="flex w-full flex-col gap-1">
             <div class="flex w-full items-end gap-2">
               <div v-if="message.role !== 'user'" class="w-8 min-w-8">
                 <img src="@/assets/fmt.webp" alt="" srcset="" />
@@ -34,9 +35,11 @@
             <div
               :class="{
                 'bg-primary-2 ml-auto': isUser(message.role),
-                'bg-white': !isUser(message.role),
+                'max-w-max border border-gray-200 bg-white': !isUser(
+                  message.role,
+                ),
               }"
-              class="inline-block w-max max-w-full flex-auto rounded-lg px-4 py-3"
+              class="inline-block flex-auto rounded-lg px-4 py-3"
             >
               <x-think
                 v-if="hasThinkContent(message.content)"

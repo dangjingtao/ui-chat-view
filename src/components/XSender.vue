@@ -4,7 +4,7 @@
       'outline-none': !isFocused,
       'outline-primary-5 outline-1': isFocused,
     }"
-    class="absolute right-0 bottom-0 left-0 z-10 m-auto flex w-full max-w-[900px] flex-col items-end overflow-hidden rounded-lg border border-gray-200 bg-white p-0 shadow-lg transition-all duration-300 ease-in-out sm:w-full md:bottom-6"
+    class="absolute right-0 bottom-0 left-0 z-10 m-auto flex w-full flex-col items-end overflow-hidden rounded-lg border border-gray-300 bg-white p-0 transition-all duration-300 ease-in-out sm:w-full md:bottom-6 md:w-[90%]"
   >
     <div v-if="fileList.length > 0" class="m-auto h-20 w-full rounded bg-white">
       <div class="mx-2 flex gap-2">
@@ -93,6 +93,9 @@
 <script setup lang="ts">
 import message from "@/lib/message";
 import { ref, watchEffect, nextTick, computed, toRaw } from "vue";
+import { getOperatingSystem } from "@/lib/platform";
+
+const isIOS = getOperatingSystem() === "iOS";
 interface FileItem {
   isImage: boolean;
   fileBase64: string;

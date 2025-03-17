@@ -1,6 +1,6 @@
 export default {
   ConversationAdvanceSetting: {
-    dialogAdvancedSettings: "Advanced Conversation Settings",
+    dialogAdvancedSettings: "Advanced Settings",
     systemPrompt: "System Prompt",
     systemPromptPlaceholder:
       "If a role card is used in the current conversation, editing the system prompt will override the prompt of the current role card.",

@@ -109,7 +109,7 @@ const markdownContent = computed(() => {
 .markdown-body:not(.user-markdown) {
   box-sizing: border-box;
   /* min-width: 200px; */
-  max-width: 900px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 45px;
 }

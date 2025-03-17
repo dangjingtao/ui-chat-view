@@ -138,7 +138,7 @@ const openChangeLog = () => {
 };
 
 const openWebSite = () => {
-  window.open("https://www.ui-chat.com");
+  window.open("https://docs.uichat.tomz.io");
 };
 
 const openGithub = () => {

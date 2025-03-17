@@ -26,7 +26,7 @@ const handleClick = (event: Event) => {
 
 const buttonClass = computed(() => {
   const typeMap = {
-    base: "bg-white text-bg-gray-600 hover:border-gray-300 hover:bg-primary-1 border border-gray-200",
+    base: "bg-white text-bg-gray-600 hover:border-primary-5 hover:text-primary-5 border border-gray-200",
     primarily: "bg-primary-6 text-white hover:bg-primary-7",
     ghost:
       "bg-transparent border border-primary-6 text-primary-6 hover:bg-primary-1",

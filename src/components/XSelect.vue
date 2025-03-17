@@ -1,15 +1,16 @@
 <template>
   <div
-    class="relative inline-block w-full max-w-[200px] min-w-[120px]"
+    class="relative inline-block h-8.5 w-full max-w-[200px] min-w-[120px]"
     ref="dropdown"
   >
     <div
       @click="toggleDropdown"
-      class="focus:shadow-outline transition-border focus:outline-primary block w-full cursor-pointer rounded border bg-white px-4 py-1 pr-8 text-sm leading-3.5"
+      tabindex="0"
+      class="focus:shadow-outline transition-border focus:outline-primary block w-full cursor-pointer rounded border border-gray-100 bg-white px-4 py-1 pr-8 text-sm leading-3.5"
       :class="{
         'cursor-not-allowed opacity-50': isLoading,
         'border-primary': isOpen,
-        'hover:border-primary-3 border-gray-100': !isOpen,
+        'hover:border-primary-3 border-gray-200': !isOpen,
       }"
       :aria-disabled="isLoading"
     >
@@ -73,11 +74,15 @@
           v-for="option in props.options"
           :key="option.id"
           @click="selectOption(option.id)"
-          class="text-overflow:ellipsis w-full cursor-pointer overflow-hidden px-4 py-1 hover:bg-gray-100"
+          class="text-overflow:ellipsis w-full cursor-pointer overflow-hidden px-4 py-2 hover:bg-gray-100 md:py-1.5"
           :title="option.name"
           :class="option.id === selectedValue ? 'bg-primary-1' : ''"
         >
           {{ option.name }}
+        </div>
+
+        <div v-if="!props.options || !props.options.length">
+          <x-result type="404" />
         </div>
       </div>
     </transition>

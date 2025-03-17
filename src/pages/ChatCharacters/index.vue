@@ -1,13 +1,18 @@
 <template>
   <x-subpage-wrapper
-    title="角色卡"
+    :title="t('title')"
     :isFullWidth="props.isFullWidth"
     @onClose="props.onClose"
   >
     <template #content>
       <div class="flex h-full flex-col">
         <div class="min-h-[114px] w-full p-1">
-          <x-input type="search" @onSearch="onSearch" @onClear="onClear" />
+          <x-input
+            type="search"
+            :placeholder="t('searchPlaceholder')"
+            @onSearch="onSearch"
+            @onClear="onClear"
+          />
           <div class="py-3">
             <x-ellipsis :lines="4">
               <template #visible>
@@ -39,7 +44,11 @@
             </x-ellipsis>
           </div>
         </div>
-        <x-result type="404" v-if="characters.length === 0" />
+        <x-result
+          type="404"
+          v-if="characters.length === 0"
+          :text="t('noResults')"
+        />
         <div class="flex flex-1 flex-wrap gap-3 overflow-auto px-2">
           <div class="mt-1"></div>
           <x-card
@@ -72,7 +81,7 @@
                 size="small"
                 @click="() => useCharacter({ id, zh, tags })"
               >
-                一键应用
+                {{ t("applyButton") }}
               </x-button>
             </template>
           </x-card>
@@ -82,6 +91,7 @@
     </template>
   </x-subpage-wrapper>
 </template>
+
 <script lang="ts" setup>
 import { ref } from "vue";
 import prompts from "@/dataSet/prompts.json";
@@ -89,6 +99,9 @@ import introduce from "@/dataSet/character_introduce.json";
 import { searchCharacter } from "@/lib/searchCharacter";
 import copy from "@/lib/textProcessor/copy";
 import { useChatStore } from "@/store/chat";
+import { loadModuleTranslations, useNamespace } from "@/i18n";
+loadModuleTranslations("pages/ChatCharacters");
+const { t } = useNamespace("ChatCharacters");
 
 const chatStore = useChatStore();
 
@@ -114,4 +127,5 @@ const onClear = () => {
 
 const { useCharacter } = chatStore.$service;
 </script>
+
 <style scoped></style>

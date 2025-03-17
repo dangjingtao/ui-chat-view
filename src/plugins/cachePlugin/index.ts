@@ -8,7 +8,6 @@ import type { ModelController } from "./types";
 
 // 实际上这个文件不该再出现this.cache等调用
 class CachePlugin extends Base {}
-
 class Controller extends applyMixins(CachePlugin, [
   KnowledgeBase,
   Character,

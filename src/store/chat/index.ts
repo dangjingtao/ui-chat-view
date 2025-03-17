@@ -50,6 +50,8 @@ export const useChatStore = defineStore("chat", () => {
   const isSending = ref(false);
   // 系统消息列表
   const globalInfoList = ref<Message[]>([]);
+  // 页面loading
+  const pageLoading = ref(true);
 
   // 这不是一个响应式对象
   const conversationConfig = computed(() => {
@@ -114,6 +116,7 @@ export const useChatStore = defineStore("chat", () => {
     router,
     isDrawerOpen,
     conversationConfig,
+    pageLoading,
   };
 
   // 批量注入状态到方法，不用再把所有方法显式声明一次了。
@@ -136,6 +139,7 @@ export const useChatStore = defineStore("chat", () => {
     chatHistory,
     currentComponent,
     conversationConfig,
+    pageLoading,
     $service,
   };
 });

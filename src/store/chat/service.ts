@@ -1,5 +1,4 @@
 import clientCache from "@/plugins/cachePlugin";
-import request from "@/lib/request";
 import Chat from "@/lib/Chat";
 import promptParser from "@/lib/textProcessor/answerParser";
 import { getScreen } from "@/lib/platform";
@@ -9,6 +8,8 @@ import _ from "lodash";
 import { toRaw } from "vue";
 
 const chatService = {
+  chat: new Chat(),
+
   // 更新聊天上下文
   _updateChatContext(chatCtx, updatedConversation, newConversations = null) {
     chatCtx.value = {
@@ -62,12 +63,10 @@ const chatService = {
     this._updateChatContext(chatCtx, updatedConversation);
   },
 
-  chat: new Chat(),
-
   // 初始化聊天服务
   async init(pageStateContext) {
     //  前端初始化的状态，无任何参考价值
-    const { chatCtx, conversationConfig } = pageStateContext;
+    const { chatCtx, conversationConfig, pageLoading } = pageStateContext;
     const chatContext = await clientCache.getChatContext();
     // 在此检查数据一致性
     console.log("init", chatCtx, conversationConfig);
@@ -92,6 +91,7 @@ const chatService = {
         ...post,
       });
     }
+    pageLoading.value = false;
   },
 
   // 处理初始化错误
@@ -116,6 +116,13 @@ const chatService = {
         type: "danger",
       });
     }
+  },
+
+  removeGlobalInfo(pageStateContext, index) {
+    const { globalInfoList } = pageStateContext;
+    globalInfoList.value = globalInfoList.value.filter(
+      (item, i) => i !== index,
+    );
   },
 
   // 选择模型
@@ -347,17 +354,10 @@ const chatService = {
 
   // 应用角色
   async useCharacter(pageStateContext, character) {
-    const { chatCtx, conversationConfig } = pageStateContext;
+    const { chatCtx } = pageStateContext;
     const newConversation = await clientCache.updateCharacter(character);
 
-    if (!newConversation) {
-      chatCtx.value = {
-        ...chatCtx.value,
-        character,
-      };
-    } else {
-      this._updateChatContext(chatCtx, newConversation);
-    }
+    this._updateChatContext(chatCtx, newConversation);
 
     message.success("success");
   },
