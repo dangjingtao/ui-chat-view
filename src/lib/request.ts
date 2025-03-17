@@ -70,11 +70,11 @@ class Request {
 
     headers["x-token"] = headers["x-token"] || `${apiKey}`;
 
-    // if (isCustomerUrl) {
-    //   headers["x-token"] = undefined;
-    // } else {
-    //   headers["x-token"] = headers["x-token"] || `${apiKey}`;
-    // }
+    if (isCustomerUrl) {
+      headers["x-token"] = undefined;
+    } else {
+      headers["x-token"] = headers["x-token"] || `${apiKey}`;
+    }
 
     return service({
       url: config.url,
