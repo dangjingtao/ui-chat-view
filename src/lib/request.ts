@@ -68,9 +68,9 @@ class Request {
     const isCustomerUrl = !config.url.startsWith(BASE_URL);
 
     if (isCustomerUrl) {
-      headers["x-token"] = undefined;
+      headers["Authorization"] = undefined;
     } else {
-      headers["x-token"] = headers["x-token"] || `${apiKey}`;
+      headers["Authorization"] = headers["Authorization"] || `Bearer ${apiKey}`;
     }
 
     return service({
