@@ -6,7 +6,7 @@ export async function requestGithubFileContent({
   branch = "main",
   filePath,
 }) {
-  const url = `/api/github-api/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`;
+  const url = `/github-api/repos/${owner}/${repo}/contents/${filePath}?ref=${branch}`;
 
   const headers = {
     Accept: "application/vnd.github.v3+json",
