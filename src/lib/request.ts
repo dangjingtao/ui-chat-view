@@ -36,12 +36,11 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     if (response.status === 401) {
-      // if (location.pathname !== "/login") {
-      //   location.href = "/login";
-      // } else {
-      //   message.error("登录失败");
-      // }
-      message.error("登录失败");
+      if (location.pathname !== "/login") {
+        location.href = "/login";
+      } else {
+        message.error("登录失败");
+      }
     }
 
     return requestCache.$responseInterceptor(response);
@@ -67,8 +66,6 @@ class Request {
     const headers = { ...config.headers };
     const apiKey = getAPIHeader();
     const isCustomerUrl = !config.url.startsWith(BASE_URL);
-
-    headers["x-token"] = headers["x-token"] || `${apiKey}`;
 
     if (isCustomerUrl) {
       headers["x-token"] = undefined;

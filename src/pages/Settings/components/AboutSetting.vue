@@ -160,6 +160,11 @@ const removeCache = async () => {
       .clearAllCache()
       .then(cachePlugin.install.bind(cachePlugin))
       .then(() => {
+        caches.keys().then((cacheNames) => {
+          cacheNames.forEach((cacheName) => {
+            caches.delete(cacheName);
+          });
+        });
         message.success(t("clearSuccess"));
         setTimeout(() => {
           localStorage.clear();
