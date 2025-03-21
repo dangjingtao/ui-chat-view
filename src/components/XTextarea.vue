@@ -1,15 +1,24 @@
 <template>
-  <div class="relative">
-    <textarea
-      ref="textarea"
-      v-model="value"
-      @focus="handleFocus"
-      @blur="handleBlur"
-      class="focus:outline-primary-4 w-full rounded-md bg-gray-100 px-2 py-1.5 text-sm text-gray-700 transition-all hover:bg-gray-50 focus:bg-white"
-      :placeholder="placeholder"
-      :rows="props.rows"
-    ></textarea>
-  </div>
+  <textarea
+    ref="textarea"
+    v-model="value"
+    @focus="handleFocus"
+    @blur="handleBlur"
+    class="focus:outline-primary-4 w-full rounded-md bg-gray-100 px-2 py-1.5 text-sm text-gray-700 transition-all hover:bg-gray-50 focus:bg-white"
+    :class="[
+      {
+        'cursor-not-allowed bg-gray-200 text-gray-400 hover:bg-gray-200 focus:bg-gray-200':
+          props.disabled,
+      },
+      props.resize === 'none' ? 'resize-none' : '',
+      props.resize === 'both' ? 'resize' : '',
+      props.resize === 'horizontal' ? 'resize-x' : '',
+      props.resize === 'vertical' ? 'resize-y' : '',
+    ]"
+    :placeholder="placeholder"
+    :rows="props.rows"
+    :disabled="props.disabled"
+  ></textarea>
 </template>
 
 <script setup lang="ts">
@@ -17,9 +26,17 @@ import { ref, watch } from "vue";
 
 const props = defineProps({
   placeholder: String,
+  resize: {
+    type: String,
+    default: "vertical",
+  },
   rows: {
     type: Number,
     default: 3,
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 });
 

@@ -165,6 +165,12 @@
   --color-magenta-8: #f37fb7;
   --color-magenta-9: #f8a8cc;
   --color-magenta-10: #fad2e3;
+
+}
+
+.dark .vjs-key,
+.dark .vjs-tree-brackets {
+  color: var(--color-primary-10) !important;
 }
 
 .theme-geekblue {

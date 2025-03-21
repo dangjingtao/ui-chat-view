@@ -9,7 +9,6 @@ import Components from "unplugin-vue-components/vite";
 import dynamicImport from "vite-plugin-dynamic-import";
 import cdn from "vite-plugin-cdn-import";
 import { VitePWA } from "vite-plugin-pwa";
-
 import { readFileSync } from "fs";
 import { resolve } from "path";
 

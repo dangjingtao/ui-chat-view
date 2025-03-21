@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{
-      'xl:mx-[15%]': !isFullWidth,
+      'm-auto max-w-[1440px]': !isFullWidth,
     }"
     class="relative m-auto flex h-full min-h-[400px] flex-col bg-white px-0"
   >

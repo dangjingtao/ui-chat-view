@@ -6,7 +6,7 @@
     <div
       @click="toggleDropdown"
       tabindex="0"
-      class="focus:shadow-outline transition-border focus:outline-primary block w-full cursor-pointer rounded border border-gray-100 bg-white px-4 py-1 pr-8 text-sm leading-3.5"
+      class="focus:shadow-outline transition-border focus:outline-primary block w-full cursor-pointer rounded border border-gray-100 bg-white px-4 py-1 pr-8 text-sm leading-3.5 dark:border-slate-300"
       :class="{
         'cursor-not-allowed opacity-50': isLoading,
         'border-primary': isOpen,
@@ -74,9 +74,11 @@
           v-for="option in props.options"
           :key="option.id"
           @click="selectOption(option.id)"
-          class="text-overflow:ellipsis w-full cursor-pointer overflow-hidden px-4 py-2 hover:bg-gray-100 md:py-1.5"
+          class="text-overflow:ellipsis w-full cursor-pointer overflow-hidden px-4 py-2 hover:bg-gray-100 md:py-1.5 dark:bg-slate-100 dark:text-slate-500 dark:hover:text-slate-600"
           :title="option.name"
-          :class="option.id === selectedValue ? 'bg-primary-1' : ''"
+          :class="
+            option.id === selectedValue ? 'bg-primary-1 text-primary' : ''
+          "
         >
           {{ option.name }}
         </div>

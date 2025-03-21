@@ -9,6 +9,9 @@ const Character = () => import("@/pages/ChatCharacters/index.vue");
 const KnowledgeHub = () => import("@/pages/KnowledgeHub/index.vue");
 const KnowledgeBase = () => import("@/pages/KnowledgeBase/index.vue");
 const ResultPage = () => import("@/pages/ResultPage/index.vue");
+const MicroApps = () => import("@/pages/MicroAppsHub/index.vue");
+const Plugins = () => import("@/pages/Plugins/index.vue");
+const PluginsDetail = () => import("@/pages/Plugins/components/index.vue");
 
 const ConversationAdvanceSetting = () =>
   import("@/pages/ConversationAdvanceSetting/index.vue");
@@ -54,6 +57,19 @@ const routes = [
     path: "/login",
     component: Login,
   },
+  {
+    path: "/plugins",
+    component: Plugins,
+  },
+  {
+    path: "/plugins/:id",
+    component: PluginsDetail,
+  },
+  {
+    path: "/micro-apps",
+    component: MicroApps,
+  },
+  { path: "/:pathMatch(.*)*", component: ResultPage },
 ];
 
 const router = createRouter({

@@ -32,7 +32,10 @@
         </div>
         <div class="px-4 py-2">
           <slot v-if="!type" name="body"></slot>
-          <div v-else class="text-sm">{{ props.message }}</div>
+          <div v-else-if="!props.injectHtml" class="text-sm">
+            {{ props.message }}
+          </div>
+          <div v-else class="text-sm" v-html="props.message"></div>
         </div>
         <div class="flex justify-end gap-2 px-4 py-2">
           <slot name="footer">
@@ -80,6 +83,7 @@ const props = defineProps<{
   visible: Boolean;
   type?: "info" | "danger" | "alert" | "prompt";
   title?: string;
+  injectHtml?: boolean;
 }>();
 
 const displayTitle = computed(() => {

@@ -10,6 +10,7 @@ export default {
       settings: "Settings",
       knowledgeHub: "Knowledge Hub",
       microApps: "Micro Apps",
+      plugins: "Plugins",
     },
     ChatSender: {
       advanced: "🪄 Advanced",
