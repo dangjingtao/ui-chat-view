@@ -9,5 +9,8 @@ export default {
     context: "上下文",
     contextTooltip:
       "要保留在上下文中的消息数量，数值越大，上下文越长，消耗的 token 越多。普通聊天建议 5-10",
+    plugins: "调用插件",
+    pluginsTooltip:
+      "插件的设置会在首页左下角-插件看到,你选择的模型需要支持function Call",
   },
 };

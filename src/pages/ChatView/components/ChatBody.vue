@@ -27,6 +27,7 @@
       :messages="chatStore.chatHistory"
       @regenerate="regenerate"
       @deleteMessage="deleteMessage"
+      @saveToNotion="saveToNotion"
     />
   </div>
 </template>
@@ -39,7 +40,8 @@ import { useChatStore } from "@/store/chat";
 
 const chatContainer = ref<HTMLElement | null>(null);
 const chatStore = useChatStore();
-const { regenerate, deleteMessage, removeGlobalInfo } = chatStore.$service;
+const { regenerate, deleteMessage, removeGlobalInfo, saveToNotion } =
+  chatStore.$service;
 
 watch(
   () => chatStore.chatHistory,

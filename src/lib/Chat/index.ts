@@ -11,8 +11,6 @@ import { StringOutputParser } from "@langchain/core/output_parsers";
 import { v4 as uuid } from "uuid";
 import prompts from "@/dataSet/prompts.json";
 // 工具
-import { Calculator } from "@langchain/community/tools/calculator";
-// todo import webBrowserTool from "./tools/webBroswer";
 import createClient from "./utils/createClient";
 
 import { baseSystemPrompt, genConversationTitlePrompt } from "./prompts/system";
@@ -21,7 +19,11 @@ import { joke } from "./structured/test";
 import TavilySearchTool from "./tools/TavilySearchTool";
 import { RunnableLambda } from "@langchain/core/runnables";
 import formatChatHistory from "./utils/formatChatHistory";
+import createEmbeddingClient from "./utils/createEmbedding";
 import { getLanguage } from "@/i18n";
+import { removeThinkContent } from "@/lib/textProcessor/answerParser";
+import { getTools } from "./utils/tools";
+import cachePlugin from "@/plugins/cachePlugin";
 
 type ProviderName =
   | "kimi"
@@ -49,13 +51,10 @@ class Chat {
   private app: any;
   private miniApp: any;
   private sendMessageController?: AbortController | null;
+  private embeddingClient?: any;
+  private tools: any[] = [];
 
   constructor() {}
-
-  use(config: any) {
-    this.clientConfig = config;
-    return this;
-  }
 
   // 抛错模块，用于检查是否有必要的配置
   private validConfig() {
@@ -80,34 +79,13 @@ class Chat {
     }
   }
 
-  abort() {
-    this.sendMessageController?.abort();
-    this.sendMessageController = null;
-  }
-
-  async useTool(tools) {
-    this.client = this.client?.bindTools(tools);
-    this.tools = tools;
-  }
-
-  useClient() {
-    const { provider, model, baseURL, advanceOptions, customerBaseURL } =
-      this.clientConfig;
-    const domain = customerBaseURL || baseURL;
-
-    const client = createClient(provider, model, domain, advanceOptions);
-    client.model = model;
-
-    this.client = client;
-  }
-
-  useStructuredModel() {
-    // console.error(this.client);
-    // this.client = this.client.withStructuredOutput(joke);
+  use(config: any) {
+    this.clientConfig = config;
+    this.init();
   }
 
   init() {
-    const { chatHistory = [] } = this.clientConfig;
+    const { chatHistory = [], tools = [] } = this.clientConfig;
     this.clientConfig.advanceOptions =
       this.clientConfig.advanceOptions || defaultAdvanceOptions;
 
@@ -115,7 +93,7 @@ class Chat {
     this.chatHistory = chatHistory;
 
     this.useClient();
-    this.useTool([new Calculator(), TavilySearchTool]);
+    this.useTools(tools);
     this.useStructuredModel();
     this.initChain();
 
@@ -126,12 +104,70 @@ class Chat {
     return this;
   }
 
+  /**
+   * 工具
+   * @param inputTools
+   * @returns
+   */
+  async useTools(inputTools) {
+    if (!inputTools || !inputTools?.length) {
+      return;
+    }
+
+    const tools = getTools({
+      client: this.client,
+      embeddingClient: this.embeddingClient,
+      inputTools,
+    });
+
+    this.client = this.client?.bindTools(tools) as
+      | ChatOpenAI
+      | ChatOllama
+      | ChatGroq
+      | null;
+    this.tools = tools;
+  }
+
+  async useClient() {
+    // 创建主聊天模型
+    const { provider, model, baseURL, advanceOptions, customerBaseURL } =
+      this.clientConfig;
+    const domain = customerBaseURL || baseURL;
+
+    const client = createClient(provider, model, domain, advanceOptions);
+    client.model = model;
+    this.client = client;
+
+    // 创建向量模型
+    const taskEmbeddingProvider = await cachePlugin.getTaskEmbedProvider();
+    const taskEmbeddingModel = await cachePlugin.getTaskEmbedModel();
+    const embedModelConfig = await cachePlugin.getProviderConfigByName(
+      taskEmbeddingProvider,
+    );
+
+    this.embeddingClient = createEmbeddingClient(
+      taskEmbeddingProvider,
+      taskEmbeddingModel,
+      (embedModelConfig as { baseURL: string }).baseURL,
+    );
+  }
+
+  useStructuredModel() {
+    // console.error(this.client);
+    // this.client = this.client.withStructuredOutput(joke);
+  }
+
   clearHistory() {
     this.chatHistory = [];
   }
 
   getHistory() {
     return this.chatHistory;
+  }
+
+  abort() {
+    this.sendMessageController?.abort();
+    this.sendMessageController = null;
   }
 
   // 微任务模型：生成标题

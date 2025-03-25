@@ -1,6 +1,6 @@
 import { shallowRef } from "vue";
 
-export default function useDynamicComponent(props) {
+export default function useDynamicComponent(props?) {
   const onError = props?.onError;
   const componentCache = new WeakMap(); // 使用 WeakMap 缓存组件
   const currentComponent = shallowRef(null); // 使用 shallowRef 存储当前组件

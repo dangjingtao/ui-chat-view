@@ -2,6 +2,7 @@ import {
   HumanMessage,
   SystemMessage,
   AIMessage,
+  ToolMessage,
   trimMessages,
 } from "@langchain/core/messages";
 import { tiktokenCounter } from "./tokenCounter";

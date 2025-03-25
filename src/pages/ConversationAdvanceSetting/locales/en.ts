@@ -9,5 +9,7 @@ export default {
       "The model's temperature. Increasing the temperature will make the model's responses more creative.",
     context: "Context",
     contextTooltip: "The number of previous messages to keep in the context.",
+    plugins: "Plugin Call",
+    pluginsTooltip: "插件的设置会在首页左下角-插件看到",
   },
 };

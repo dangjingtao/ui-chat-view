@@ -6,6 +6,8 @@ import wrapWithTryCatch from "@/lib/wrapWithTryCatch";
 import message from "@/lib/message";
 import _ from "lodash";
 import { toRaw } from "vue";
+import { createPageWithContent, getBot } from "@/pages/Plugins/apis/notion.api";
+import dayjs from "dayjs";
 
 const chatService = {
   chat: new Chat(),
@@ -372,6 +374,7 @@ const chatService = {
   },
 
   // 对话高级参数更新
+  // + 包括其它工具
   async updateConversationAdvanceSetting(pageStateContext, data) {
     const { chatCtx } = pageStateContext;
     if (!chatCtx.value.conversation) {
@@ -379,10 +382,62 @@ const chatService = {
       return;
     } else {
       data = toRaw(data);
+      data.conversationPluginSettings = toRaw(data.conversationPluginSettings);
       const newConversation =
         await clientCache.updateConversationAdvanceSetting(data);
       this._updateChatContext(chatCtx, newConversation);
-      message.success("更新成功");
+    }
+  },
+  // 帮我用markdown写一个表格。表格里包含服务商，时间
+  async saveToNotion(pageStateContext, data) {
+    try {
+      const { chatCtx } = pageStateContext;
+      if (!chatCtx.value.conversation) {
+        message.error("未创建对话");
+        return;
+      } else {
+        const notionData = await getBot();
+        const { timeStamp, content } = data;
+
+        const conversation = chatCtx.value.conversation;
+
+        const {
+          title,
+          id,
+          chatHistory,
+          model,
+          provider,
+          createTime,
+          character,
+        } = conversation;
+
+        let lastUserMessage = "";
+        const lastUserMessageIndex =
+          chatHistory.findIndex((message) => message.id === data.id) - 1;
+
+        if (lastUserMessageIndex >= 0) {
+          lastUserMessage = chatHistory[lastUserMessageIndex]?.content;
+        }
+
+        const pageTitle = `[UIChat] ${title || id}`;
+
+        const stringTemplate = `
+| 服务商 | 所用模型 | 对话创建时间 | 回复生成时间 | 角色卡[${character?.zh?.title || "无"}]附加的系统提示词 |
+| ------ | -------- | -------- | -------- | ------ |
+| ${provider} | ${model} | ${dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")} | ${dayjs(data?.timeStamp).format("YYYY-MM-DD HH:mm:ss")} | ${character?.zh?.prompt || "-"} |
+
+**## [用户]：${lastUserMessage}**
+
+${data.content}
+`;
+        await createPageWithContent(pageTitle, stringTemplate);
+        message.success("你的文档片段已成功发送到notion");
+        console.log(stringTemplate);
+      }
+      // createPageWithContent()
+    } catch (error) {
+      message.error(error.message);
+      return;
     }
   },
 };

@@ -89,6 +89,27 @@ export type TavilySearchAPIRetrieverFields = ToolParams & {
    * @default 3
    */
   days?: number;
+
+  /**
+   * 成功
+   * @param result
+   * @returns
+   */
+  onSuccess?: (result: string) => void;
+
+  /**
+   * 失败
+   * @param error
+   * @returns
+   */
+  onFailed?: (error: Error) => void;
+
+  /**
+   *
+   * @param
+   * @returns
+   */
+  onCreated: () => void;
 };
 
 /**
@@ -224,6 +245,12 @@ export class TavilySearchResults extends Tool {
 
   protected days?: number;
 
+  protected onCreated: () => void;
+
+  protected onSuccess: (result: string) => void;
+
+  protected onFailed: (error: Error) => void;
+
   constructor(fields?: TavilySearchAPIRetrieverFields) {
     super(fields);
     this.maxResults = fields?.maxResults ?? this.maxResults;
@@ -240,6 +267,9 @@ export class TavilySearchResults extends Tool {
     this.searchDepth = fields?.searchDepth ?? this.searchDepth;
     this.topic = fields?.topic ?? this.topic;
     this.days = fields?.days ?? this.days;
+    this.onSuccess = fields?.onSuccess ?? (() => {});
+    this.onFailed = fields?.onFailed ?? (() => {});
+    this.onCreated = fields?.onCreated ?? (() => {});
 
     if (this.apiKey === undefined) {
       throw new Error(
@@ -252,6 +282,8 @@ export class TavilySearchResults extends Tool {
     input: string,
     _runManager?: CallbackManagerForToolRun,
   ): Promise<string> {
+    this.onCreated();
+
     const body: Record<string, unknown> = {
       query: input,
       max_results: this.maxResults,
@@ -269,15 +301,27 @@ export class TavilySearchResults extends Tool {
 
     const baseUrl = `${BASE_URL}tavily` || "https://api.tavily.com";
 
-    const { data: json } = await request({
-      url: `${baseUrl}/search`,
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      data: { ...body, ...this.kwargs },
-    });
-    console.error(json);
+    try {
+      const { data: json } = await request({
+        url: `${baseUrl}/search`,
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        data: { ...body, ...this.kwargs },
+      });
+
+      this.onSuccess({
+        response: json,
+      });
+
+      return JSON.stringify(json.results);
+    } catch (error: unknown) {
+      this.onFailed(error as Error);
+      return "";
+    }
+
+    // onSuccess(json.results);
     // const json = await fakeRequest();
 
     // return response.results;
@@ -301,6 +345,5 @@ export class TavilySearchResults extends Tool {
     // }
 
     // console.error(json.results);
-    return JSON.stringify(json.results);
   }
 }

@@ -45,7 +45,7 @@
               </div>
             </template>
             <template #body>
-              <p class="line-clamp-3 leading-6 text-gray-600">
+              <p class="line-clamp-2 leading-6 text-gray-600">
                 {{ plugin.description }}
               </p>
             </template>
