@@ -4,9 +4,6 @@
       <div>
         <h3 class="mt-1.5 flex gap-1 text-sm leading-8 text-gray-700">
           <div class="mb-1">{{ t("url") }}</div>
-          <!-- <x-tooltip position="right" class="flex items-center" :text="t('url')"
-            ><i-mdi-help-circle-outline
-          /></x-tooltip> -->
         </h3>
         <x-input v-model="url" placeholder="input URL" />
       </div>
@@ -23,7 +20,9 @@
       </div>
     </template>
     <template #pluginConsoleOperation>
-      <x-button @click="execute" class="w-full">执行</x-button>
+      <x-button :disabled="loading" @click="execute" class="w-full"
+        >执行</x-button
+      >
     </template>
 
     <template #pluginDebugger>
@@ -41,10 +40,9 @@
             :placeholder="url"
             class="mb-1 border-gray-300"
           />
-
           <div class="mt-1 w-full flex-1 overflow-y-auto p-2">
             <x-markdown :content="webBrowserContent" />
-            <x-spin v-if="loading" class="pt-50" />
+            <x-spin v-if="webLoading" class="pt-50" />
           </div>
         </main>
       </div>
@@ -84,7 +82,6 @@ function stringToBase64(str: string): string {
 const webLoading = ref(false);
 const loader = async () => {
   const res = await microChat.invoke({
-    // url: `${PROXY_WEBSITE_URL}?${new URLSearchParams({ targetUrl: url.value }).toString()}`,
     url: `${PROXY_WEBSITE_URL}?${stringToBase64(url.value)}`,
     content: userQuestion.value,
   });
@@ -92,23 +89,12 @@ const loader = async () => {
   result.value = res.result;
 };
 const webBrowserContent = ref("");
-const reader = async () => {
-  webLoading.value = true;
-  const response = await fetch(`https://s.jina.ai/${url.value}`, {
-    headers: {
-      Authorization:
-        "Bearer jina_8002b360094d44a7b48703b604e23613wYkidSHUd3OtLqIOVAVz9lTE6yW7",
-    },
-  });
-
-  const data = await response.text();
-  webBrowserContent.value = data;
-  webLoading.value = false;
-};
 
 const execute = async () => {
   loading.value = true;
-  await Promise.allSettled([reader(), loader()]);
+  webLoading.value = true;
+  webBrowserContent.value = "";
+  await loader();
   loading.value = false;
 };
 
@@ -119,9 +105,23 @@ microChat.usePlugin({
   systemMessageTemplate,
   userMessageTemplate,
   advanceOptions: {
-    maxTokens: 4096,
+    maxTokens: 8192,
     temperature: 0,
   },
+  tools: [
+    {
+      name: "WebBrowser",
+      version: "1.0.0",
+      props: {
+        onSuccess: (data) => {
+          console.log("web browser success", data);
+          const { context } = data;
+          webBrowserContent.value = context;
+          webLoading.value = false;
+        },
+      },
+    },
+  ],
   onError: (error) => {
     console.error(error);
   },

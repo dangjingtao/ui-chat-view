@@ -22,7 +22,6 @@
           @click="onOpenConversationAdvanceSettingSidebar"
           :text="t('advanced')"
         />
-        <x-clickable-tag :text="t('network')" />
       </template>
     </x-sender>
   </div>

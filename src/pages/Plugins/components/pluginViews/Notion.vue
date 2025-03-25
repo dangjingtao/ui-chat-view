@@ -71,12 +71,12 @@
 
         <div
           :class="{
-            'flex-1 p-16': !!pageContent,
+            'flex-1 p-10': !!pageContent,
             'h-0': !pageContent,
           }"
-          class="w-full overflow-auto rounded-md border border-gray-300 transition-all duration-300 ease-in-out"
+          class="w-full max-w-full overflow-auto rounded-md border border-gray-300 transition-all duration-300 ease-in-out"
         >
-          <x-markdown :content="pageContent" />
+          <x-markdown class="max-w-[790px]" :content="pageContent" />
         </div>
       </div>
     </template>

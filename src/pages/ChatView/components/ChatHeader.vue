@@ -1,6 +1,6 @@
 <template>
   <header
-    class="flex h-11 border-b border-gray-100 bg-white px-4 text-gray-500 md:h-16"
+    class="flex h-11 border-b border-gray-100 bg-white px-4 text-gray-500 md:h-14"
   >
     <div class="m-auto flex h-full w-full items-center md:w-[1440px]">
       <div class="flex flex-1 font-bold">

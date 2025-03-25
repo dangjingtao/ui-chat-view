@@ -32,7 +32,11 @@
               </div>
             </div>
 
+            <!-- <div class="pl-1 text-gray-400">正在搜索中...</div> -->
+
             <div
+              @mouseover="showButtons = true"
+              @mouseleave="showButtons = false"
               :class="{
                 'bg-primary-2 ml-auto': isUser(message.role),
                 'max-w-max border border-gray-200 bg-white': !isUser(
@@ -46,7 +50,6 @@
                 :text="message.content"
               />
               <x-markdown
-                :show-cursor="true"
                 v-if="!isUser(message.role)"
                 :content="removeThinkContent(message.content)"
               />
@@ -73,6 +76,8 @@
                 />
               </div>
             </div>
+
+            <!-- 操作按钮组 -->
             <div
               class="flex"
               :class="{
@@ -94,6 +99,18 @@
               >
                 <i-mdi-replay class="text-[1rem] text-gray-500" />
               </x-button>
+
+              <x-button
+                v-if="!isUser(message.role)"
+                @click="emits('saveToNotion', message)"
+                size="small"
+                type="text"
+              >
+                <i-mdi-account-file-text-outline
+                  class="text-[1rem] text-gray-500"
+                />
+              </x-button>
+
               <x-button
                 @click="emits('deleteMessage', message)"
                 size="small"
@@ -183,7 +200,7 @@ const props = defineProps<{
   isSending: boolean;
 }>();
 
-const emits = defineEmits(["deleteMessage", "regenerate"]);
+const emits = defineEmits(["deleteMessage", "regenerate", "saveToNotion"]);
 
 onMounted(() => {
   checkScreenSize();

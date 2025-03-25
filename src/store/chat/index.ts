@@ -17,6 +17,12 @@ interface GlobalContext extends ChatContext {
   models: Option[];
 }
 
+interface ToolsCallSetting {
+  comfyUI: boolean;
+  tavilySearch: boolean;
+  notion: boolean;
+}
+
 export type ConversationConfig = {
   topK?: number; // 0~100 step 0.5
   topP?: number; // 0~1 /0.01
@@ -25,6 +31,8 @@ export type ConversationConfig = {
   presencePenalty?: number; // 存在惩罚 -2~2
   systemPrompt?: string;
   context?: number; // 0~2048
+
+  conversationPluginSettings: any;
 
   // repeatPenalty?: number; //重复惩罚
   // numPredict?: number; //此选项设置了模型在回答中可以生成的最大 Token 数。增加这个限制可以让模型提供更长的答案，但也可能增加生成无用或不相关内容的可能性。 (默认值：128）
@@ -53,6 +61,16 @@ export const useChatStore = defineStore("chat", () => {
   // 页面loading
   const pageLoading = ref(true);
 
+  const defaultConversationPluginSettings = {
+    comfyUI: false,
+    tavilySearch: false,
+    notion: true,
+  };
+
+  // const conversationPluginSettings = ref<ToolsCallSetting>(
+  //   defaultConversationPluginSettings,
+  // );
+
   // 这不是一个响应式对象
   const conversationConfig = computed(() => {
     return {
@@ -62,6 +80,9 @@ export const useChatStore = defineStore("chat", () => {
         chatCtx.value.conversation?.advanceOptions?.systemPrompt ||
         chatCtx.value.conversation?.character?.zh?.prompt ||
         chatCtx.value.defaultAdvanceOptions?.systemPrompt,
+      conversationPluginSettings:
+        chatCtx.value.conversation?.advanceOptions
+          ?.conversationPluginSettings || defaultConversationPluginSettings,
     };
   });
 
@@ -140,6 +161,7 @@ export const useChatStore = defineStore("chat", () => {
     currentComponent,
     conversationConfig,
     pageLoading,
+    // conversationPluginSettings,
     $service,
   };
 });

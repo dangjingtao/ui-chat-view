@@ -6,11 +6,12 @@
     class="relative m-auto flex h-full min-h-[400px] flex-col bg-white px-0"
   >
     <x-dropdown
+      v-if="!isFullWidth"
       :menu-items="[
-        { name: 'UI Chat', path: '/' },
-        { name: 'Character', path: '/characters' },
-        { name: 'Plugins', path: '/Plugins' },
-        { name: 'Settings', path: '/settings' },
+        { name: t('uichat'), path: '/' },
+        { name: t('character'), path: '/characters' },
+        { name: t('plugins'), path: '/Plugins' },
+        { name: t('settings'), path: '/settings' },
       ]"
       class="absolute top-0 left-0"
     />
@@ -33,6 +34,11 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import { useRouter } from "vue-router";
+import { loadModuleTranslations, useNamespace } from "@/i18n";
+
+loadModuleTranslations("components");
+
+const { t } = useNamespace("Components.XSubpageWrapper");
 
 const props = defineProps<{
   title?: string;

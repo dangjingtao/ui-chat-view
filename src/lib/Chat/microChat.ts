@@ -14,8 +14,8 @@ import message from "../message";
 import type { AdvanceOptions } from "@/plugins/cachePlugin/types";
 import { v4 as uuid } from "uuid";
 import createEmbeddingClient from "./utils/createEmbedding";
-import { WebBrowser } from "langchain/tools/webbrowser";
 import { RunnableLambda } from "@langchain/core/runnables";
+import { getTools } from "./utils/tools";
 
 // “微”任务模型，与状态解耦,与db直接交互
 interface ClientConfig {
@@ -25,6 +25,7 @@ interface ClientConfig {
   systemMessage?: string;
   advanceOptions: AdvanceOptions;
   memory: boolean | number;
+  tools?: any[];
   userMessageTemplate: (any) => string;
   systemMessageTemplate?: (any) => string;
   onError?: (errorMessage: string, error) => void;
@@ -37,6 +38,7 @@ class MicroChat {
   private app: any;
   private embeddingClient?: any;
   private sendMessageController?: AbortController | null;
+  private tools: any[] = [];
 
   constructor() {
     this.clientConfig = {} as ClientConfig;
@@ -112,7 +114,7 @@ class MicroChat {
     this.validConfig(config);
     this.clientConfig = config;
     await this.useClient(config);
-    await this.useTool();
+    await this.useTools(config.tools);
     this.initChain();
   }
 
@@ -121,10 +123,13 @@ class MicroChat {
     this.sendMessageController = null;
   }
 
-  async useTool() {
-    const tools = [
-      new WebBrowser({ model: this.client, embeddings: this.embeddingClient }),
-    ];
+  async useTools(inputTools) {
+    // 创建 Function 实例
+    const tools = getTools({
+      client: this.client,
+      embeddingClient: this.embeddingClient,
+      inputTools,
+    });
 
     this.client = this.client?.bindTools(tools);
     //除了要绑定工具，还要绑定工具到this
@@ -195,7 +200,11 @@ class MicroChat {
                 chatHistory.push(...fulfilledToolMessages);
                 return await client?.invoke(chatHistory);
               } catch (error) {
-                message.error(`Failed to invoke tool: ${error.message}`);
+                if (error instanceof Error) {
+                  message.error(`Failed to invoke tool: ${error.message}`);
+                } else {
+                  message.error("Failed to invoke tool: Unknown error");
+                }
                 return state;
               }
             }
@@ -219,7 +228,7 @@ class MicroChat {
   // 参数是未格式化的聊天记录
   async getFormatChatHistory(originalChatHistory?) {
     const { provider, advanceOptions = {} } = this.clientConfig;
-    const { maxTokens = 8000 } = advanceOptions;
+    const { maxTokens = 8192 } = advanceOptions;
     const chatHistory = originalChatHistory || this.chatHistory;
 
     return await formatChatHistory({

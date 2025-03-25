@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    IMdiAccountFileTextOutline: typeof import('~icons/mdi/account-file-text-outline')['default']
     IMdiAutorenew: typeof import('~icons/mdi/autorenew')['default']
     IMdiBookmarkBoxMultipleOutline: typeof import('~icons/mdi/bookmark-box-multiple-outline')['default']
     IMdiBullhornOutline: typeof import('~icons/mdi/bullhorn-outline')['default']

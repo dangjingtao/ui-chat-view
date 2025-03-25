@@ -19,8 +19,12 @@ export const getBot = async () => {
         method: "GET",
         noCache: true,
       });
-      localStorage.setItem("notionBot", JSON.stringify(data));
-      return data;
+      if (!data.error) {
+        localStorage.setItem("notionBot", JSON.stringify(data));
+        return data;
+      } else {
+        throw new Error(data.error);
+      }
     }
   } catch (error) {
     errorHandler(error);
