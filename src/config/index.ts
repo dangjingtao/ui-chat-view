@@ -1,2 +1,6 @@
-export const BASE_URL = "https://ai-proxy.tomz.io/api/";
-// export const BASE_URL = "http://127.0.0.1:8787/api/";
+declare const __APP_BASE_DOMAIN__: string;
+export const BASE_DOMAIN = __APP_BASE_DOMAIN__;
+console.error("BASE_DOMAIN", BASE_DOMAIN);
+
+export const BASE_URL = `${BASE_DOMAIN}/api/`;
+export const PROXY_WEBSITE_URL = `${BASE_DOMAIN}/proxy/website`;

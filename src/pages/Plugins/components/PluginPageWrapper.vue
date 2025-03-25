@@ -4,9 +4,9 @@
   >
     <div class="relative flex w-full flex-col py-4 md:mb-0 md:w-[500px]">
       <div
-        class="flex h-full w-full flex-col rounded-lg border border-gray-300 bg-gray-50 p-3"
+        class="flex h-full w-full flex-col rounded-lg border border-gray-300 bg-gray-50 p-4"
       >
-        <div class="my-4 mt-1">
+        <div class="my-4 mt-1 px-0.5">
           <h2
             class="flex items-center justify-between text-lg leading-12 font-bold text-gray-700"
           >
@@ -30,11 +30,11 @@
           <p class="leader-8 text-sm text-gray-600">{{ plugin.description }}</p>
         </div>
 
-        <div class="flex-1 overflow-auto">
+        <div class="flex-1 overflow-auto px-0.5">
           <slot name="pluginConsole"></slot>
         </div>
 
-        <div>
+        <div class="px-0.5">
           <slot name="pluginConsoleOperation"></slot>
         </div>
       </div>

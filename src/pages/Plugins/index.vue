@@ -6,6 +6,9 @@
   >
     <template #content>
       <div class="flex h-full flex-col p-4">
+        <div class="pb-2 text-gray-700">
+          每一个插件，本身都是一个工具(tool), 也是微应用制作器（写太累了）
+        </div>
         <div class="mb-4 flex items-center justify-between gap-3">
           <x-input
             type="search"
@@ -42,7 +45,9 @@
               </div>
             </template>
             <template #body>
-              <p class="text-gray-600">{{ plugin.description }}</p>
+              <p class="line-clamp-3 leading-6 text-gray-600">
+                {{ plugin.description }}
+              </p>
             </template>
             <template #footer>
               <div class="flex w-full justify-end gap-4">

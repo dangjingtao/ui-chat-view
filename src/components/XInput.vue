@@ -13,7 +13,7 @@
         'text-gray-400': disabled,
         'hover:bg-gray-50': !disabled,
       }"
-      class="focus:outline-primary-4 w-full rounded-md bg-gray-100 px-2 py-1.5 text-sm placeholder-gray-400 transition-all focus:bg-white dark:text-gray-600 dark:placeholder-gray-500"
+      class="focus:outline-primary-4 w-full rounded-md border border-gray-200 bg-gray-100 px-2 py-1.5 text-sm placeholder-gray-400 transition-all focus:bg-white dark:text-gray-600 dark:placeholder-gray-500"
     />
     <button
       v-if="type === 'search' && !inputValue"

@@ -24,5 +24,21 @@ export default {
         "The model's temperature. Increasing the temperature will make the model's responses more creative.",
       anyLanguage: "Any Language",
     },
+    ComfyUI: {
+      reset: "Reset",
+      save: "Save",
+      domainSettingsTooltip:
+        "For security reasons, it is generally recommended to use the default value (i.e., the local ComfyUI service) unless you are doing external network mapping.",
+      domainSettings: "Domain",
+      upload: "Upload",
+      workflow: "Workflow",
+      jsonMode: "JSON Preview",
+      editMode: "Edit Mode",
+      execute: "Execute",
+    },
+    WebReader: {
+      question: "Question",
+      url: "URL",
+    },
   },
 };

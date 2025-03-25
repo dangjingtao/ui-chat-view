@@ -22,10 +22,10 @@ const formatChatHistory = async ({
   }>;
   maxTokens?: number;
 }) => {
-  const formatChatHistory = chatHistory.map((item) => {
+  const formattedChatHistory = chatHistory.map((item) => {
     if (item.role === "assistant") {
       return new AIMessage(item.content || "");
-    } else {
+    } else if (item.role === "user") {
       // groq不支持图片
       if (provider === "groq") {
         return new HumanMessage(item.content || "");
@@ -59,11 +59,15 @@ const formatChatHistory = async ({
       }
 
       return new HumanMessage(userMessage);
+    } else {
+      return item;
     }
   });
 
-  const trimmedChatHistory = await trimMessages(formatChatHistory, {
-    maxTokens: maxTokens || 4096,
+  return formattedChatHistory;
+
+  const trimmedChatHistory = await trimMessages(formattedChatHistory, {
+    maxTokens: maxTokens || 8000,
     strategy: "last",
     tokenCounter: tiktokenCounter,
   });

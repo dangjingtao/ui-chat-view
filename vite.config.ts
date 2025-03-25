@@ -11,16 +11,26 @@ import cdn from "vite-plugin-cdn-import";
 import { VitePWA } from "vite-plugin-pwa";
 import { readFileSync } from "fs";
 import { resolve } from "path";
+import Markdown from "vite-plugin-md";
+import rawPlugin from "vite-raw-plugin";
 
 // 读取 package.json 文件
 const pkg = JSON.parse(
   readFileSync(resolve(__dirname, "package.json"), "utf-8"),
 );
 
+const BASE_DOMAIN = process.env.VITE_BASE_DOMAIN || "https://ai-proxy.tomz.io";
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      include: [/\.vue$/, /\.md$/], // 支持 .vue 和 .md 文件
+    }),
+    Markdown(),
+    rawPlugin({
+      fileRegex: /\.md$/,
+    }),
     dynamicImport({
       loose: true, // 更接近 Webpack 的行为
     }),
@@ -33,6 +43,7 @@ export default defineConfig({
     }),
     Icons(),
     VitePWA({
+      mode: "production",
       // registerType: "autoUpdate", // 自动更新 Service Worker 并刷新页面
       registerType: "prompt",
       injectRegister: "auto",
@@ -51,12 +62,10 @@ export default defineConfig({
         "**/*.otf",
       ],
       workbox: {
-        globPatterns: [
-          "**/*.{js,css,html,png,jpg,gif,svg,woff,ttf,otf,woff2,webp}",
-        ],
+        globPatterns: ["**/*.{js,css,html,png,jpg,gif,svg,woff,ttf,otf,woff2}"],
         runtimeCaching: [
           {
-            urlPattern: /\.(png|jpg|jpeg|svg|gif|woff|ttf|otf|woff2|webp)$/,
+            urlPattern: /\.(png|jpg|jpeg|svg|gif|woff|ttf|otf|woff2)$/,
             handler: "CacheFirst", // 优先从缓存中查找响应
           },
           {
@@ -113,6 +122,7 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(pkg.version),
     __APP_NAME__: JSON.stringify(pkg.name),
     __APP_DESCRIPTION__: JSON.stringify(pkg.description),
+    __APP_BASE_DOMAIN__: JSON.stringify(BASE_DOMAIN),
   },
   server: {
     allowedHosts: ["tavern.tomz.io"],

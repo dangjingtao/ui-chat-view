@@ -10,7 +10,7 @@
           :class="[
             'flex-1 cursor-pointer rounded-lg px-2 py-0.5 text-center text-sm text-gray-700 transition-all duration-100',
             selectedTab === index
-              ? 'text-primary bg-white shadow-xs'
+              ? 'text-primary dark:bg-primary-8 bg-white shadow-xs dark:text-white'
               : 'bg-transparent',
           ]"
           @click="selectTab(index)"
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 
 const props = defineProps<{
   tabs: string[];

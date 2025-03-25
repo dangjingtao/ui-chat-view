@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.0.40] - 2025-03-25
+
+埋头写了近一周后，让我怀着~~毫不负责~~激动的心情，向你介绍UIChat 的0.40版本：
+
+### Added
+
+- 聊天界面支持网络搜索
+
+- 上线插件功能。新增4个插件
+  - 慌译（any language to any language）
+  - Comfy UI （随便把远程电脑搞炸）
+  - webReader (搭配自研的反人类在web请求服务)
+  - Notion 支持
+- 内部支持token计算（没显示）
+
+### Changed
+
+- UI微调
+
+### Fixed
+
+- 其它UI Bug
+
 ## [0.0.27] - 2025-03-18
 
 ### Added

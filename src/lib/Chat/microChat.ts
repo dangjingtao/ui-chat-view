@@ -5,7 +5,6 @@ import {
   SystemMessagePromptTemplate,
 } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
-import { v4 as uuid } from "uuid";
 import createClient from "./utils/createClient";
 import { baseSystemPrompt } from "./prompts/system";
 import type { ChatClient, ProviderName } from "./types";
@@ -13,6 +12,10 @@ import formatChatHistory from "./utils/formatChatHistory";
 import cachePlugin from "@/plugins/cachePlugin";
 import message from "../message";
 import type { AdvanceOptions } from "@/plugins/cachePlugin/types";
+import { v4 as uuid } from "uuid";
+import createEmbeddingClient from "./utils/createEmbedding";
+import { WebBrowser } from "langchain/tools/webbrowser";
+import { RunnableLambda } from "@langchain/core/runnables";
 
 // “微”任务模型，与状态解耦,与db直接交互
 interface ClientConfig {
@@ -22,8 +25,8 @@ interface ClientConfig {
   systemMessage?: string;
   advanceOptions: AdvanceOptions;
   memory: boolean | number;
-  userMessageTemplate: (userMessage: string) => string;
-  systemMessageTemplate?: (systemMessage: string) => string;
+  userMessageTemplate: (any) => string;
+  systemMessageTemplate?: (any) => string;
   onError?: (errorMessage: string, error) => void;
 }
 
@@ -32,6 +35,7 @@ class MicroChat {
   private clientConfig: ClientConfig;
   private chatHistory: any[] = [];
   private app: any;
+  private embeddingClient?: any;
   private sendMessageController?: AbortController | null;
 
   constructor() {
@@ -78,9 +82,22 @@ class MicroChat {
           (modelConfig as { baseURL: string }).baseURL,
           advanceOptions,
         );
+
         this.clientConfig.provider = provider;
         this.clientConfig.model = model;
-        // this.useConfig(config);
+
+        // 创建向量模型
+        const taskEmbeddingProvider = await cachePlugin.getTaskEmbedProvider();
+        const taskEmbeddingModel = await cachePlugin.getTaskEmbedModel();
+        const embedModelConfig = await cachePlugin.getProviderConfigByName(
+          taskEmbeddingProvider,
+        );
+
+        this.embeddingClient = createEmbeddingClient(
+          taskEmbeddingProvider,
+          taskEmbeddingModel,
+          (embedModelConfig as { baseURL: string }).baseURL,
+        );
       } else {
         // todo
         // 如果不是default，那么就使用自定义的任务模型
@@ -95,6 +112,7 @@ class MicroChat {
     this.validConfig(config);
     this.clientConfig = config;
     await this.useClient(config);
+    await this.useTool();
     this.initChain();
   }
 
@@ -103,7 +121,15 @@ class MicroChat {
     this.sendMessageController = null;
   }
 
-  async useTool() {}
+  async useTool() {
+    const tools = [
+      new WebBrowser({ model: this.client, embeddings: this.embeddingClient }),
+    ];
+
+    this.client = this.client?.bindTools(tools);
+    //除了要绑定工具，还要绑定工具到this
+    this.tools = tools;
+  }
 
   clearHistory() {
     this.chatHistory = [];
@@ -133,16 +159,51 @@ class MicroChat {
 
     const parser = new StringOutputParser();
 
+    // console.error("this.client", this.client);
     this.app = chatPrompt
       .pipe(client)
-      // .pipe(
-      //   new RunnableLambda({
-      //     func(state) {
-      //       console.log("state", state, this);
-      //       return state;
-      //     },
-      //   }),
-      // )
+      .pipe(
+        new RunnableLambda({
+          func: async (state, ...args) => {
+            const { tool_calls = [] } = state;
+            if (tool_calls.length) {
+              try {
+                // 使用 Promise.allSettled 并行处理工具调用
+                const toolMessages = await Promise.allSettled(
+                  tool_calls.map(async (toolCall) => {
+                    const selectedTool = this.tools.find(
+                      (item) => item.name === toolCall.name,
+                    );
+                    if (selectedTool) {
+                      return selectedTool.invoke(toolCall);
+                    } else {
+                      message.error(`Tool not found: ${toolCall.name}`);
+                      throw new Error(`Tool not found: ${toolCall.name}`);
+                    }
+                  }),
+                );
+
+                // 处理工具调用结果
+                const fulfilledToolMessages = toolMessages
+                  .filter((result) => result.status === "fulfilled")
+                  .map(
+                    (result) => (result as PromiseFulfilledResult<any>).value,
+                  );
+
+                const chatHistory = await this.getFormatChatHistory();
+                chatHistory.push(state);
+                chatHistory.push(...fulfilledToolMessages);
+                return await client?.invoke(chatHistory);
+              } catch (error) {
+                message.error(`Failed to invoke tool: ${error.message}`);
+                return state;
+              }
+            }
+
+            return state;
+          },
+        }),
+      )
       .pipe(parser);
   }
 
@@ -155,14 +216,23 @@ class MicroChat {
     this.sendMessageController = new AbortController();
   }
 
+  // 参数是未格式化的聊天记录
+  async getFormatChatHistory(originalChatHistory?) {
+    const { provider, advanceOptions = {} } = this.clientConfig;
+    const { maxTokens = 8000 } = advanceOptions;
+    const chatHistory = originalChatHistory || this.chatHistory;
+
+    return await formatChatHistory({
+      provider,
+      maxTokens,
+      chatHistory,
+    });
+  }
+
   // 更新聊天历史
   async updateChatHistory(userTemplateConfig) {
     // 用户消息格式化并push
     const { userMessageTemplate, memory } = this.clientConfig;
-
-    if (!memory) {
-      this.clearHistory();
-    }
 
     const formateUserMessage = userMessageTemplate(userTemplateConfig);
     this.chatHistory.push({
@@ -170,25 +240,25 @@ class MicroChat {
       content: formateUserMessage,
     });
 
-    if (typeof memory === "number") {
-      this.chatHistory = this.chatHistory.slice(-memory);
+    if (!memory) {
+      return await this.getFormatChatHistory();
     }
 
-    // console.error("this.chatHistory", this.clientConfig);
-    // 根据maxTokens 截断历史
-    const messages = await formatChatHistory({
-      provider: this.clientConfig?.provider,
-      chatHistory: this.chatHistory,
-      maxTokens: this.clientConfig?.advanceOptions?.maxTokens,
-    });
+    if (typeof memory === "number") {
+      const slicedChatHistory = this.chatHistory.slice(-memory);
+      const messages = await this.getFormatChatHistory(slicedChatHistory);
+      return messages;
+    }
 
-    return messages;
+    // todo
   }
 
   // 发消息，流式输出
   async invoke(userTemplateConfig) {
     const messages = await this.updateChatHistory(userTemplateConfig);
     this.beforeInvoke();
+    // console.error(messages);
+    // return;
 
     // 打断发送
     const config = {
@@ -199,10 +269,14 @@ class MicroChat {
       messages,
     };
 
+    let result = "";
     // return;
-    const result = await this.app.invoke(chatContext, config);
+    try {
+      result = await this.app.invoke(chatContext, config);
+    } catch (error) {
+      message.error(`Failed to invoke: ${error.message}`);
+    }
     this.chatHistory.push({ role: "assistant", content: result });
-    // console.error("result", result);
 
     return {
       role: "assistant",

@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { extractThinkContent } from "@/lib/Chat";
+import { extractThinkContent } from "@/lib/textProcessor/answerParser";
 
 const props = defineProps<{ text: string }>();
 const thinkContents = ref<string[]>([]);

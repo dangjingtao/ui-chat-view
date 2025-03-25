@@ -448,6 +448,10 @@
   padding-left: 2em
 }
 
+.markdown-body ol {
+  list-style-type: decimal !important
+}
+
 .markdown-body ol ol,
 .markdown-body ul ol {
   list-style-type: lower-roman

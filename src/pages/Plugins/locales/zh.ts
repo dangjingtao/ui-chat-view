@@ -39,9 +39,14 @@ export default {
       domainSettings: "域名",
       upload: "上传",
       workflow: "工作流",
-      jsonMode: "JSON 模式",
-      editMode: "可视化",
+      jsonMode: "JSON 预览",
+      editMode: "编辑模式",
       execute: "执行",
+    },
+
+    WebReader: {
+      question: "问题",
+      url: "网址",
     },
   },
 };
