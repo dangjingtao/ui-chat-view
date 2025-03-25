@@ -1,7 +1,7 @@
 {
   "name": "ui-chat-view",
   "private": true,
-  "version": "0.0.40",
+  "version": "0.0.41",
   "type": "module",
   "scripts": {
     "dev:local": "cross-env VITE_BASE_DOMAIN=http://127.0.0.1:8787 vite --mode development",
