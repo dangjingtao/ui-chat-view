@@ -22,6 +22,7 @@ import TavilySearchTool from "./tools/TavilySearchTool";
 import { RunnableLambda } from "@langchain/core/runnables";
 import formatChatHistory from "./utils/formatChatHistory";
 import { getLanguage } from "@/i18n";
+import { removeThinkContent } from "@/lib/textProcessor/answerParser";
 
 type ProviderName =
   | "kimi"
