@@ -2,14 +2,14 @@
   <x-drawer :menuOpen="chatStore.isDrawerOpen" :toggleMenu="toggleDrawer">
     <template #header>
       <div class="flex items-center gap-2 p-2 pt-0">
-        <div class="w-[45%]">
+        <!-- <div class="w-[45%]">
           <img
             class="flex-1"
             src="@/assets/images/STORE.png"
             alt=""
             srcset=""
           />
-        </div>
+        </div> -->
         <div class="mt-1 flex flex-row">
           <chat-entrance :isPC="false" />
         </div>

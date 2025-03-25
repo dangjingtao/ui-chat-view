@@ -53,20 +53,35 @@ function createDeepSeekClient(
   });
 }
 
-function createGeminiClient(baseURL: string, apiKey: string): ChatOpenAI {
+function createGeminiClient(
+  commonOptions: object,
+  baseUrl: string,
+  apiKey: string,
+): ChatGoogleGenerativeAI {
+  // return new ChatGoogleGenerativeAI({
+  //   ...commonOptions,
+  //   baseUrl,
+  //   apiKey,
+  // });
   return new ChatOpenAI({
+    model: commonOptions.model,
     configuration: {
-      baseURL: baseURL + "/v1beta/openai",
+      baseURL: baseUrl + "/v1beta/openai",
     },
     apiKey,
   });
 }
 
-function createDefaultClient(baseURL: string, apiKey: string): ChatOpenAI {
+function createDefaultClient(
+  commonOptions,
+  baseURL: string,
+  apiKey: string,
+): ChatOpenAI {
   return new ChatOpenAI({
     configuration: {
       baseURL: baseURL + "/v1",
     },
+    model: commonOptions.model,
     apiKey,
   });
 }
@@ -82,7 +97,7 @@ export default function createClient(
 
   switch (provider) {
     case "ollama":
-      return createOllamaClient(commonOptions);
+      return createOllamaClient(commonOptions, baseURL, apiKey);
     case "groq":
       return createGroqClient(commonOptions, baseURL, apiKey);
     case "cohere":
@@ -90,8 +105,8 @@ export default function createClient(
     case "deepseek":
       return createDeepSeekClient(commonOptions, baseURL, apiKey);
     case "gemini":
-      return createGeminiClient(baseURL, apiKey);
+      return createGeminiClient(commonOptions, baseURL, apiKey);
     default:
-      return createDefaultClient(baseURL, apiKey);
+      return createDefaultClient(commonOptions, baseURL, apiKey);
   }
 }

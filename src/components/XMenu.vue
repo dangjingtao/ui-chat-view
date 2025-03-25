@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineProps, defineEmits, watch, computed } from "vue";
+import { ref, watch, computed } from "vue";
 
 interface MenuItem {
   id: string;

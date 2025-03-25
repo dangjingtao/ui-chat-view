@@ -1,16 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
-import { ChatOllama, Ollama } from "@langchain/ollama";
-import { ChatCohere } from "@langchain/cohere";
-import { ChatDeepSeek } from "@langchain/deepseek";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { ChatOllama } from "@langchain/ollama";
 import { ChatGroq } from "@langchain/groq";
-import { CohereClient } from "cohere-ai";
 import _ from "lodash";
-import {
-  HumanMessage,
-  SystemMessage,
-  AIMessage,
-} from "@langchain/core/messages";
 import CommonError from "@/lib/CommonError";
 import {
   ChatPromptTemplate,
@@ -18,20 +9,19 @@ import {
 } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { v4 as uuid } from "uuid";
-import { RunnableSequence, RunnableLambda } from "@langchain/core/runnables";
-import promptParser from "@/lib/textProcessor/promptParser";
 import prompts from "@/dataSet/prompts.json";
 // 工具
-import calculatorTool from "./tools/calculator";
 import { Calculator } from "@langchain/community/tools/calculator";
-import { WebBrowser } from "langchain/tools/webbrowser";
-import { SerpAPI } from "@langchain/community/tools/serpapi";
-import { initializeAgentExecutorWithOptions } from "langchain/agents";
-import webBrowserTool from "./tools/webBroswer";
+// todo import webBrowserTool from "./tools/webBroswer";
 import createClient from "./utils/createClient";
-import { getLanguage } from "@/i18n";
+
 import { baseSystemPrompt, genConversationTitlePrompt } from "./prompts/system";
 import { defaultAdvanceOptions } from "@/plugins/cachePlugin/schema.ts"; // 绕过了协议
+import { joke } from "./structured/test";
+import TavilySearchTool from "./tools/TavilySearchTool";
+import { RunnableLambda } from "@langchain/core/runnables";
+import formatChatHistory from "./utils/formatChatHistory";
+import { getLanguage } from "@/i18n";
 
 type ProviderName =
   | "kimi"
@@ -58,7 +48,6 @@ class Chat {
   private chatHistory: any[] = [];
   private app: any;
   private miniApp: any;
-  private clientMap: any;
   private sendMessageController?: AbortController | null;
 
   constructor() {}
@@ -96,17 +85,9 @@ class Chat {
     this.sendMessageController = null;
   }
 
-  async useTool() {
-    const tools = [
-      new Calculator(),
-      webBrowserTool(this.client, "nomic-embed-text:v1.5"),
-    ];
-    this.client?.bindTools(tools);
-
-    initializeAgentExecutorWithOptions(tools, model, {
-      agentType: "zero-shot-react-description",
-      verbose: true,
-    });
+  async useTool(tools) {
+    this.client = this.client?.bindTools(tools);
+    this.tools = tools;
   }
 
   useClient() {
@@ -120,6 +101,11 @@ class Chat {
     this.client = client;
   }
 
+  useStructuredModel() {
+    // console.error(this.client);
+    // this.client = this.client.withStructuredOutput(joke);
+  }
+
   init() {
     const { chatHistory = [] } = this.clientConfig;
     this.clientConfig.advanceOptions =
@@ -129,7 +115,10 @@ class Chat {
     this.chatHistory = chatHistory;
 
     this.useClient();
+    this.useTool([new Calculator(), TavilySearchTool]);
+    this.useStructuredModel();
     this.initChain();
+
     // this.chatHistory = this.formatChatHistory();
     //
     this.initMiniPermissionChain(this.client);
@@ -161,6 +150,19 @@ class Chat {
     this.miniApp = chatPrompt.pipe(client).pipe(parser);
   }
 
+  // 参数是未格式化的聊天记录
+  async getFormatChatHistory(originalChatHistory?) {
+    const { provider, advanceOptions = {} } = this.clientConfig;
+    const { maxTokens = 8000 } = advanceOptions;
+    const chatHistory = originalChatHistory || this.chatHistory;
+
+    return await formatChatHistory({
+      provider,
+      maxTokens,
+      chatHistory,
+    });
+  }
+
   initChain() {
     const { client } = this;
     const systemMessage = SystemMessagePromptTemplate.fromTemplate(
@@ -179,57 +181,49 @@ class Chat {
 
     this.app = chatPrompt
       .pipe(client)
-      // .pipe(
-      //   new RunnableLambda({
-      //     func(state) {
-      //       console.log("state", state, this);
-      //       return state;
-      //     },
-      //   }),
-      // )
+      // 工具调用
+      .pipe(
+        new RunnableLambda({
+          func: async (state, ...args) => {
+            const { tool_calls = [] } = state;
+            if (tool_calls.length) {
+              try {
+                // 使用 Promise.allSettled 并行处理工具调用
+                const toolMessages = await Promise.allSettled(
+                  tool_calls.map(async (toolCall) => {
+                    const selectedTool = this.tools.find(
+                      (item) => item.name === toolCall.name,
+                    );
+                    if (selectedTool) {
+                      return selectedTool.invoke(toolCall);
+                    } else {
+                      throw new CommonError(`Tool not found: ${toolCall.name}`);
+                    }
+                  }),
+                );
+
+                // 处理工具调用结果
+                const fulfilledToolMessages = toolMessages
+                  .filter((result) => result.status === "fulfilled")
+                  .map(
+                    (result) => (result as PromiseFulfilledResult<any>).value,
+                  );
+
+                const chatHistory = await this.getFormatChatHistory();
+                chatHistory.push(state);
+                chatHistory.push(...fulfilledToolMessages);
+                return await client?.invoke(chatHistory);
+              } catch (error) {
+                // message.error(`Failed to invoke tool: ${error.message}`);
+                return state;
+              }
+            }
+
+            return state;
+          },
+        }),
+      )
       .pipe(parser);
-  }
-
-  formatChatHistory(chatHistory) {
-    return chatHistory.map((item) => {
-      if (item.role === "assistant") {
-        return new AIMessage(item.content || "");
-      } else {
-        // groq不支持图片
-        if (this.clientConfig?.provider === "groq") {
-          return new HumanMessage(item.content || "");
-        }
-
-        // 发送图片
-        const userMessage: {
-          content: Array<{
-            type: string;
-            text?: string;
-            image_url?: { url: string };
-          }>;
-        } = {
-          content: [
-            {
-              type: "text",
-              text: item.content || "",
-            },
-          ],
-        };
-        const fileList = item.fileList || [];
-        // console.error("item", fileList);
-
-        if (fileList[0] && fileList[0]?.isImage) {
-          userMessage.content.push({
-            type: "image_url",
-            image_url: {
-              url: item.fileList[0].fileBase64,
-            },
-          });
-        }
-
-        return new HumanMessage(userMessage);
-      }
-    });
   }
 
   // 获取最近一条用户信息
@@ -314,14 +308,15 @@ class Chat {
 
     // 在发送之前设置消息修剪
     // console.error("recentChatHistory", recentChatHistory);
+    const messages = await this.getFormatChatHistory(recentChatHistory);
 
     const chatContext = {
-      messages: this.formatChatHistory(recentChatHistory),
+      messages,
       userSystemMessage,
     };
 
     // return;
-    const stream = await this.app.stream(chatContext, config);
+    const stream = await this.app.invoke(chatContext, config);
     const title = await this.generateTitle(chatContext);
 
     return {
@@ -336,20 +331,3 @@ class Chat {
 }
 
 export default Chat;
-
-export const extractThinkContent = (text: string): string[] => {
-  const regex = /<think>(.*?)<\/think>/gs;
-  const matches: string[] = [];
-  let match;
-  while ((match = regex.exec(text)) !== null) {
-    matches.push(match[1]);
-  }
-  return matches;
-};
-
-export const removeThinkContent = (content) => {
-  if (typeof content !== "string") {
-    return content;
-  }
-  return content.replace(/<think>.*?<\/think>/gs, "");
-};

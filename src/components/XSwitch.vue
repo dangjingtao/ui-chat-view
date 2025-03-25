@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300',
+      'relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors duration-300',
       { 'bg-gray-200': !isChecked, 'bg-primary': isChecked },
     ]"
     @click="toggleSwitch"

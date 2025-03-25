@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, defineProps } from "vue";
+import { computed, ref } from "vue";
 
 type MessageType = {
   type?: "success" | "danger" | "warning" | "info" | undefined;

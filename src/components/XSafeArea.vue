@@ -3,7 +3,7 @@
     class="overflow-hidden"
     :class="{
       'pt-[var(--tw-space-safe-top)]': top,
-      'pb-[var(--tw-space-safe-bottom)]': isIOS ? 20 : bottom,
+      'pb-[var(--tw-space-safe-bottom)]': isIOS ? 'pb-[25px]' : bottom,
       'pl-[var(--tw-space-safe-left)]': left,
       'pr-[var(--tw-space-safe-right)]': right,
       'h-[100svh]': isIOS,
@@ -15,7 +15,6 @@
 </template>
 
 <script setup>
-import { defineProps } from "vue";
 import { getOperatingSystem } from "@/lib/platform";
 
 const isIOS = getOperatingSystem() === "iOS";

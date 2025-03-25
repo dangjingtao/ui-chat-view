@@ -1,11 +1,12 @@
 <template>
   <div
+    class="w-full"
     :class="{
       'cursor-pointer': !isViewerOpen,
       'cursor-default': isViewerOpen,
     }"
   >
-    <div @click="openViewer">
+    <div class="w-full" @click="openViewer">
       <slot></slot>
     </div>
     <transition>

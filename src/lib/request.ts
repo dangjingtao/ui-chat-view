@@ -8,7 +8,7 @@ const requestCache = new RequestCache({ noCacheUrl: ["/login"] });
 // 创建 axios 实例
 const service = axios.create({
   baseURL: BASE_URL,
-  timeout: 30000, // 请求超时时间
+  timeout: 60000, // 请求超时时间
   headers: {
     "Content-Type": "json/application",
   },
@@ -65,9 +65,11 @@ class Request {
   }) {
     const headers = { ...config.headers };
     const apiKey = getAPIHeader();
+    const isRelativeUrl = !/^(?:[a-z]+:)?\/\//i.test(config.url);
     const isCustomerUrl = !config.url.startsWith(BASE_URL);
+    console.log("isCustomerUrl", isCustomerUrl, config.url);
 
-    if (isCustomerUrl) {
+    if (isCustomerUrl && !isRelativeUrl) {
       headers["Authorization"] = undefined;
     } else {
       headers["Authorization"] = headers["Authorization"] || `Bearer ${apiKey}`;
@@ -110,6 +112,7 @@ const request = (config: {
   headers?: any;
   data?: any;
   params?: any;
+  noCache?: boolean;
 }) => {
   return requestInstance.request(config);
 };

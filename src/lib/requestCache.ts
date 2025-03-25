@@ -137,6 +137,11 @@ class RequestCache {
   public $requestInterceptor(
     config: AxiosRequestConfig,
   ): Promise<AxiosRequestConfig> {
+    const { noCache } = config;
+    this.noCache = noCache;
+    if (noCache) {
+      return Promise.resolve(config);
+    }
     if (this.hasCache(config)) {
       return Promise.reject({
         cached: true,
@@ -153,7 +158,8 @@ class RequestCache {
    * @returns 响应数据
    */
   public $responseInterceptor(response: AxiosResponse): AxiosResponse {
-    const needCache = !this.noCacheUrl.includes(response.config.url!);
+    const needCache =
+      !this.noCacheUrl.includes(response.config.url!) && !this.noCache;
     if (needCache) {
       this.setCache(response.config, response);
     }

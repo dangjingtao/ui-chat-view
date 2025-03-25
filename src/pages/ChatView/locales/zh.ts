@@ -10,6 +10,7 @@ export default {
       settings: "设置",
       knowledgeHub: "知识库",
       microApps: "微应用",
+      plugins: "插件",
     },
     ChatSender: {
       advanced: "🪄 高级",

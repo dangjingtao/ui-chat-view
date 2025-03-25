@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits, computed } from "vue";
+import { computed } from "vue";
 import { twMerge } from "tailwind-merge";
 
 const props = defineProps<{
@@ -26,8 +26,8 @@ const handleClick = (event: Event) => {
 
 const buttonClass = computed(() => {
   const typeMap = {
-    base: "bg-white text-bg-gray-600 hover:border-primary-5 hover:text-primary-5 border border-gray-200",
-    primarily: "bg-primary-6 text-white hover:bg-primary-7",
+    base: "bg-white text-bg-gray-600 hover:border-primary hover:text-primary dark:text-primary-8 border border-gray-200",
+    primarily: "bg-primary-6 text-slate-50 hover:bg-primary-7 ",
     ghost:
       "bg-transparent border border-primary-6 text-primary-6 hover:bg-primary-1",
     text: "bg-transparent text-primary-6 hover:bg-primary-1",

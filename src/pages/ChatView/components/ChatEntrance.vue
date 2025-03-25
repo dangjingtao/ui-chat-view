@@ -14,12 +14,6 @@
     </x-button>
   </x-tooltip>
 
-  <x-tooltip :position="position" :text="t('settings')">
-    <x-button type="text" class="w-full py-2" size="small" @click="toSettings">
-      <i-mdi-cog-outline class="text-lg" />
-    </x-button>
-  </x-tooltip>
-
   <x-tooltip :position="position" :text="t('knowledgeHub')">
     <x-button
       type="text"
@@ -31,14 +25,21 @@
     </x-button>
   </x-tooltip>
 
+  <x-tooltip :position="position" :text="t('plugins')">
+    <x-button type="text" class="w-full py-2" size="small" @click="toPlugins">
+      <i-mdi-hammer-wrench class="text-lg" />
+    </x-button>
+  </x-tooltip>
+
   <x-tooltip :position="position" :text="t('microApps')">
-    <x-button
-      type="text"
-      class="w-full py-2"
-      size="small"
-      @click="toKnowledgeHub"
-    >
-      <i-mdi-bookmark-box-multiple-outline class="text-lg" />
+    <x-button type="text" class="w-full py-2" size="small" @click="toMicroApps">
+      <i-mdi-hubspot class="text-lg" />
+    </x-button>
+  </x-tooltip>
+
+  <x-tooltip :position="position" :text="t('settings')">
+    <x-button type="text" class="w-full py-2" size="small" @click="toSettings">
+      <i-mdi-cog-outline class="text-lg" />
     </x-button>
   </x-tooltip>
 </template>
@@ -69,5 +70,13 @@ const toSettings = () => {
 
 const toKnowledgeHub = () => {
   router.push("/knowledge-hub");
+};
+
+const toPlugins = () => {
+  router.push("/plugins");
+};
+
+const toMicroApps = () => {
+  router.push("/micro-apps");
 };
 </script>

@@ -1,10 +1,20 @@
 <template>
   <div
     :class="{
-      'xl:mx-[15%]': !isFullWidth,
+      'm-auto max-w-[1440px]': !isFullWidth,
     }"
     class="relative m-auto flex h-full min-h-[400px] flex-col bg-white px-0"
   >
+    <x-dropdown
+      :menu-items="[
+        { name: 'UI Chat', path: '/' },
+        { name: 'Character', path: '/characters' },
+        { name: 'Plugins', path: '/Plugins' },
+        { name: 'Settings', path: '/settings' },
+      ]"
+      class="absolute top-0 left-0"
+    />
+
     <x-button type="text" class="absolute top-0 right-0" @click="onClose">
       <i-mdi-close class="text-bold text-xl text-gray-800" />
     </x-button>
