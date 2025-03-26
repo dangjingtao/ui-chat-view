@@ -12,7 +12,7 @@ export const getTools = ({ client, embeddingClient, inputTools }) => {
     const { name, Function, inputSchema } = item;
     if (name === "WebBrowser") {
       const inputTool = inputTools.find((tool) => tool.name === name);
-      const { onSuccess } = inputTool.props;
+      const { onSuccess, onCreated, onFailed } = inputTool.props;
       if (!client) {
         throw new Error("Client not initialized");
       }
@@ -20,6 +20,8 @@ export const getTools = ({ client, embeddingClient, inputTools }) => {
         model: client,
         embeddings: embeddingClient,
         onSuccess,
+        onCreated,
+        onFailed,
       });
     }
 

@@ -28,7 +28,7 @@ const formatChatHistory = async ({
       return new AIMessage(item.content || "");
     } else if (item.role === "user") {
       // groq不支持图片
-      if (provider === "groq") {
+      if (provider === "groq" || provider === "cloudflare") {
         return new HumanMessage(item.content || "");
       }
 

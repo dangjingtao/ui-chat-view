@@ -27,7 +27,7 @@ export default class CachePlugin {
       await cache.initDatabase(schema);
       await cache.set("llm_provider_name", "groq");
       await cache.set("task_llm_provider_name", "groq");
-      await cache.set("task_embed_provider_name", "cohere");
+      await cache.set("task_embed_provider_name", "cloudflare");
     }
   }
 

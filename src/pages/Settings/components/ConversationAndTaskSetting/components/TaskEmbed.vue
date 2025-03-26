@@ -8,7 +8,7 @@
     <template #formItem>
       <x-select
         class="mt-2"
-        :options="props.providers"
+        :options="providers"
         @change="setEmbeddingTaskProvider"
         :selectedValue="embedTaskProvider"
       />
@@ -40,6 +40,13 @@ const loading = ref(false);
 const props = defineProps<{
   providers: { id: string; name: string }[];
 }>();
+
+// 没有那么多服务商支持向量化模型，cohere也只是摆设。请用cloudflare
+
+const providers = [
+  { id: "cloudflare", name: "Cloudflare" },
+  { id: "cohere", name: "Cohere" },
+];
 
 const embedTaskProvider = ref("");
 const embedTaskModel = ref("");

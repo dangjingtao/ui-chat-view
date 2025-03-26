@@ -5,6 +5,7 @@ import { ChatDeepSeek } from "@langchain/deepseek";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatGroq } from "@langchain/groq";
 import { CohereClient } from "cohere-ai";
+import { ChatCloudflareWorkersAI } from "@langchain/cloudflare";
 
 function createOllamaClient(commonOptions: object): ChatOllama {
   return new ChatOllama({
@@ -72,6 +73,26 @@ function createGeminiClient(
   });
 }
 
+function createCloudflareClient(
+  commonOptions: object,
+  baseURL: string,
+  apiKey: string,
+): ChatOpenAI {
+  // return new ChatCloudflareWorkersAI({
+  //   ...commonOptions,
+  //   baseUrl: baseURL,
+  //   cloudflareAccountId: "aaa",
+  //   cloudflareApiToken: localStorage.getItem("apiKey"),
+  // });
+  return new ChatOpenAI({
+    ...commonOptions,
+    configuration: {
+      baseURL: baseURL + "/v1",
+    },
+    apiKey,
+  });
+}
+
 function createDefaultClient(
   commonOptions,
   baseURL: string,
@@ -106,6 +127,8 @@ export default function createClient(
       return createDeepSeekClient(commonOptions, baseURL, apiKey);
     case "gemini":
       return createGeminiClient(commonOptions, baseURL, apiKey);
+    case "cloudflare":
+      return createCloudflareClient(commonOptions, baseURL, apiKey);
     default:
       return createDefaultClient(commonOptions, baseURL, apiKey);
   }

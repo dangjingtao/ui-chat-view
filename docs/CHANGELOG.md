@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.0.43] - 2025-03-26
+
+### Added
+
+- 接入互联网善人Cloudflare，缓解embedding焦虑
+
+### Changed
+
+- 嵌入模型只提供cloudflare 和 cohere选择 
+
+
+### Fixed
+
+- webReader 阅读器体验优化
+
+- Comfy UI 线上支持
+
 
 ## [0.0.42] - 2025-03-26
 

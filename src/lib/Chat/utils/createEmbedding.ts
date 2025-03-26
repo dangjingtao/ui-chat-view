@@ -3,6 +3,7 @@ import { OllamaEmbeddings } from "@langchain/ollama";
 import { CohereEmbeddings } from "@langchain/cohere";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { CohereClient } from "cohere-ai";
+import CloudflareEmbeddings from "./CloudflareEmbeddings";
 
 function createOllamaClient({ model, baseURL, apiKey }): OllamaEmbeddings {
   return new OllamaEmbeddings({
@@ -17,6 +18,13 @@ function createCohereClient({ model, baseURL, apiKey }): CohereEmbeddings {
       environment: baseURL,
       token: apiKey,
     }),
+  });
+}
+
+function createCloudflareClient({ model, baseURL }): CloudflareEmbeddings {
+  return new CloudflareEmbeddings({
+    model,
+    baseUrl: baseURL,
   });
 }
 
@@ -45,6 +53,8 @@ export default function createEmbeddingClient(
       return createOllamaClient(commonOptions);
     case "cohere":
       return createCohereClient(commonOptions);
+    case "cloudflare":
+      return createCloudflareClient(commonOptions);
     default:
       return createDefaultClient(commonOptions);
   }

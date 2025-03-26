@@ -17,7 +17,8 @@ export type ProviderName =
   | "ollama"
   | "openAI"
   | "cohere"
-  | "gemini";
+  | "gemini"
+  | "cloudflare";
 
 type Models = {
   chatConfig: any;
