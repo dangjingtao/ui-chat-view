@@ -9,7 +9,8 @@ export type ProviderName =
   | "groq"
   | "ollama"
   | "openai"
-  | "";
+  | ""
+  | "cloudflare";
 export type Provider = ChatOpenAI | ChatOllama | ChatGroq;
 export interface ChatConfig {
   provider: ProviderName;

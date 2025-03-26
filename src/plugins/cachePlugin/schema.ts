@@ -48,6 +48,10 @@ const providersMap: ConfigMap = {
     provider: "gemini",
     baseURL: `${BASE_URL}gemini`,
   },
+  cloudflare: {
+    provider: "cloudflare",
+    baseURL: `${BASE_URL}cloudflare`,
+  },
 
   // qwen: {
   //   provider: "qwen",

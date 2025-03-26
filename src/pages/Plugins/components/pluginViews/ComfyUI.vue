@@ -151,7 +151,7 @@ const onUpload = ({ fileBase64: base64String }) => {
   }
 };
 
-const comfyUI_API_URL = ref("127.0.0.1:8188");
+const comfyUI_API_URL = ref("tavern.tomz.io:8188");
 
 const comfyUI = computed(() => {
   return new ComfyUI({

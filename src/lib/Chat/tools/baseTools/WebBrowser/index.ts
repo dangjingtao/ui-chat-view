@@ -249,6 +249,7 @@ export class WebBrowser extends Tool {
         chunkOverlap: 200,
       });
     const emptyFunctionCall = () => {};
+    //@ts-ignore
     this.onSuccess = onSuccess || emptyFunctionCall;
     this.onCreated = onCreated || emptyFunctionCall;
     this.onFailed = onFailed || emptyFunctionCall;
@@ -256,7 +257,9 @@ export class WebBrowser extends Tool {
 
   /** @ignore */
   async _call(inputs: string, runManager?: CallbackManagerForToolRun) {
+    this.onCreated();
     const [baseUrl, task] = parseInputs(inputs);
+
     const doSummary = !task;
 
     let text;
@@ -264,9 +267,15 @@ export class WebBrowser extends Tool {
       const html = await getHtml(baseUrl, this.headers, this.axiosConfig);
       text = getText(html, baseUrl, doSummary);
     } catch (e) {
+      this.onFailed(
+        e instanceof Error
+          ? e
+          : new Error("There was a problem connecting to the site"),
+      );
       if (e) {
         return e.toString();
       }
+
       return "There was a problem connecting to the site";
     }
 
@@ -286,11 +295,11 @@ export class WebBrowser extends Tool {
             metadata: [],
           }),
       );
-
       const vectorStore = await MemoryVectorStore.fromDocuments(
         docs,
         this.embeddings,
       );
+
       const results = await vectorStore.similaritySearch(
         task,
         4,
@@ -300,7 +309,7 @@ export class WebBrowser extends Tool {
       context = formatDocumentsAsString(results);
     }
 
-    this.onSuccess({ context });
+    this.onSuccess({ context: context || texts.join("\n") });
 
     const input = `Text:${context}\n\nI need ${
       doSummary ? "a summary" : task

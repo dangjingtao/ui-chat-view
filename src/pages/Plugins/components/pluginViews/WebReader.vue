@@ -71,9 +71,9 @@ const userMessageTemplate = ({ url, content }) =>
   `Based on the content you read using the web-browser tool at the web address [${url}], please answer the following question: ${content}.`;
 // `根据你在网页地址${url}读取到的内容，回答我这个问题：${content}。请注意，你只能根据你读取到的内容进行回答，不能添加任何额外的信息。如果你无法回答这个问题，请告诉我你无法回答。 (${url})`;
 
-const userQuestion = ref("CVE-2025-29927 的漏洞表现具体来说是什么");
+const userQuestion = ref("中国黑客具体是做了什么事，请详细分析");
 const url = ref(
-  "https://thehackernews.com/2025/03/critical-nextjs-vulnerability-allows.html",
+  "https://thehackernews.com/2025/03/chinese-hackers-breach-asian-telecom.html",
 );
 
 function stringToBase64(str: string): string {
@@ -92,7 +92,6 @@ const webBrowserContent = ref("");
 
 const execute = async () => {
   loading.value = true;
-  webLoading.value = true;
   webBrowserContent.value = "";
   await loader();
   loading.value = false;
@@ -113,10 +112,17 @@ microChat.usePlugin({
       name: "WebBrowser",
       version: "1.0.0",
       props: {
+        onCreated: () => {
+          webLoading.value = true;
+        },
         onSuccess: (data) => {
           console.log("web browser success", data);
           const { context } = data;
           webBrowserContent.value = context;
+          webLoading.value = false;
+        },
+        onFailed: (error) => {
+          console.error("web browser failed", error);
           webLoading.value = false;
         },
       },

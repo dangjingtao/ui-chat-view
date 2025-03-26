@@ -1,5 +1,18 @@
 import Base from "./Base";
 
+type ProviderType = "task_llm" | "task_embed" | "llm";
+
+interface ProviderConfig {
+  customerBaseURL?: string;
+  baseURL: string;
+}
+
+interface Model {
+  id: string;
+  name: string;
+  [key: string]: any;
+}
+
 export default class extends Base {
   [x: string]: any;
 
@@ -10,7 +23,7 @@ export default class extends Base {
     return Object.entries(modelsMap).map(([_key, value]) => value);
   }
 
-  async getProviderConfigByName(provider_name) {
+  async getProviderConfigByName(provider_name: string) {
     const providerConfigs = await this.getProviders();
 
     const providerConfig = providerConfigs.find(
@@ -20,46 +33,75 @@ export default class extends Base {
     return providerConfig;
   }
 
-  // 网络请求，根据服务商找模型 ，此方法需要重构。需要确定检索依据是llm 还是embedding,是task还是对话,因此这是一个桥接方法！
+  // 网络请求，根据服务商找模型
   async getModelsByProvider({
     type,
   }: {
-    type: "task_llm" | "task_embed" | "llm";
-  }) {
-    const { cache, request, CommonError } = this;
+    type: ProviderType;
+  }): Promise<Model[]> {
+    const provider_name = await this.getProviderNameFromCache(type);
+    const providerConfig = await this.getProviderConfigByName(provider_name);
+    const modelsUrl = this.getModelsUrl(provider_name, providerConfig, type);
+
+    const data = await this.fetchModels(modelsUrl);
+    return this.formatModels(data, provider_name);
+  }
+
+  // 从缓存中获取 provider_name
+  private async getProviderNameFromCache(type: ProviderType): Promise<string> {
+    const { cache, CommonError } = this;
     const provider_name = await cache.get(`${type}_provider_name`);
     if (!provider_name) {
       console.warn("provider_name not set in cache");
       throw new CommonError("provider_name not set in cache");
     }
+    return provider_name;
+  }
 
-    const providerConfig = await this.getProviderConfigByName(provider_name);
-    const { customerBaseURL, baseURL } = providerConfig;
-
+  // 根据服务商名称和配置生成模型 URL
+  private getModelsUrl(
+    provider_name: string,
+    config: ProviderConfig,
+    type,
+  ): string {
+    const { customerBaseURL, baseURL } = config;
     const domain = customerBaseURL || baseURL;
 
-    let models_url = `${domain}/v1/models`;
-    if (provider_name === "groq") {
-      models_url = `${domain}/openai/v1/models`;
+    const providerUrls: Record<string, string> = {
+      groq: `${domain}/openai/v1/models`,
+      cloudflare: `${domain}/models/search?per_page=100&task=${type === "task_embed" ? "Text+Embeddings" : "Text+Generation"}`,
+      gemini: `${domain}/v1beta/openai/models`,
+    };
+
+    return providerUrls[provider_name] || `${domain}/v1/models`;
+  }
+
+  // 发起网络请求获取模型数据
+  private async fetchModels(url: string): Promise<any> {
+    const { request, CommonError } = this;
+    try {
+      const { data } = await request({
+        url,
+        method: "GET",
+      });
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch models:", error);
+      throw new CommonError("Failed to fetch models");
+    }
+  }
+
+  // 格式化模型数据
+  private formatModels(data: any, provider_name: string): Model[] {
+    let result = data.data || data.models || [];
+    if (provider_name === "cloudflare") {
+      result = data.result || [];
     }
 
-    if (provider_name === "gemini") {
-      models_url = `${domain}/v1beta/openai/models`;
-    }
-
-    const { data } = await request({
-      url: models_url,
-      method: "GET",
-    });
-
-    const { models } = data;
-    let result = data.data;
-    if (provider_name === "cohere" && !!models) {
-      result = models;
-    }
-    return result.map((item) => ({
+    return result.map((item: any) => ({
       ...item,
-      id: item.id || item.name,
+      _id: item.id,
+      id: item.name || item.id,
       name: item.name || item.id,
     }));
   }
@@ -77,30 +119,25 @@ export default class extends Base {
   }
 
   /************** LLM 任务模型 ************* */
-  // [封装]获取任务LLM模型提供商列表
   async getTaskLLMModels() {
     return await this.getModelsByProvider({ type: "task_llm" });
   }
 
-  // 设置LLM任务模型供应商
   async setTaskLLMProvider(providerName: string) {
     const { cache } = this;
     await cache.set("task_llm_provider_name", providerName);
   }
 
-  // 获取LLM任务服务商
   async getTaskLLMProvider() {
     const { cache } = this;
     return await cache.get("task_llm_provider_name");
   }
 
-  // 获取LLM任务服模型（选中）
   async getTaskLLMModel() {
     const { cache } = this;
     return await cache.get("task_llm_model_name");
   }
 
-  // 设置LLM任务模型
   async setTaskLLMModel(modelName: string) {
     const { cache } = this;
     return await cache.set("task_llm_model_name", modelName);
@@ -108,29 +145,24 @@ export default class extends Base {
 
   /************** Embed 任务模型 **************/
 
-  // 【封装]获取任务向量模型提供商列表
   async getTaskEmbedModels() {
     return await this.getModelsByProvider({ type: "task_embed" });
   }
 
-  // 获取任务向量模型供应商
   async getTaskEmbedProvider() {
     const { cache } = this;
     return await cache.get("task_embed_provider_name");
   }
 
-  // 设置任务向量模型供应商
   async setTaskEmbedProvider(providerName: string) {
     const { cache } = this;
     await cache.set("task_embed_provider_name", providerName);
   }
 
-  // 获取任务向量模型
   async getTaskEmbedModel() {
     return await this.cache.get("task_embed_model_name");
   }
 
-  // 设置任务向量模型
   async setTaskEmbedModel(modelName: string) {
     await this.cache.set("task_embed_model_name", modelName);
   }
@@ -164,7 +196,7 @@ export default class extends Base {
     await cache.set("providersMap", customerProviderSetting);
   }
 
-  async getConversationLLMProviderSetting(provider) {
+  async getConversationLLMProviderSetting(provider: string) {
     const { cache } = this;
     return (await cache.get("providersMap"))[provider];
   }

@@ -7,11 +7,20 @@ export default class ComfyUI {
   terminalRef: any;
   ws: WebSocket | null;
   shouldReconnect: boolean = false;
+  wsProtocol: string; // Added declaration for wsProtocol
+  httpProtocol: string; // Added declaration for httpProtocol
 
   constructor({ api_url, terminalRef }) {
     this.terminalRef = terminalRef;
     this.api_url = api_url;
     this.ws = null;
+
+    // 判断是否是生产环境
+    const isProduction = import.meta.env.PROD;
+
+    // 根据环境设置协议
+    this.httpProtocol = isProduction ? "https://" : "http://";
+    this.wsProtocol = isProduction ? "wss://" : "ws://";
   }
 
   // 格式化系统信息
@@ -103,7 +112,9 @@ export default class ComfyUI {
     onSuccess = (_data) => {},
     onError = (_data) => {},
   }) {
-    this.ws = new WebSocket(`ws://${this.api_url}/ws?clientId=${client_id}`);
+    this.ws = new WebSocket(
+      `${this.wsProtocol}${this.api_url}/ws?clientId=${client_id}`,
+    );
     // 重连flag
     this.shouldReconnect = true;
     this.ws.onopen = () => {
@@ -181,7 +192,7 @@ export default class ComfyUI {
         onSuccess: async (data) => {
           const { prompt_id } = data;
           const { data: result } = await request({
-            url: `http://${this.api_url}/history/${prompt_id}`,
+            url: `${this.httpProtocol}${this.api_url}/history/${prompt_id}`,
             method: "GET",
             noCache: true,
           });
@@ -197,7 +208,7 @@ export default class ComfyUI {
 
       try {
         const { data } = await request({
-          url: `http://${this.api_url}/prompt`,
+          url: `${this.httpProtocol}${this.api_url}/prompt`,
           method: "POST",
           noCache: true,
           data: {
@@ -225,20 +236,23 @@ export default class ComfyUI {
 
   images(imageItems) {
     const params = new URLSearchParams(imageItems).toString();
-    return `http://${this.api_url}/view?${params}`;
+    return `${this.httpProtocol}${this.api_url}/view?${params}`;
   }
 
   async checkState() {
     try {
       const { data } = await request({
-        url: `http://${this.api_url}/system_stats`,
+        url: `${this.httpProtocol}${this.api_url}/system_stats`,
         method: "GET",
         noCache: true,
       });
 
       return this.formatSystemStats(data);
     } catch (error) {
-      message.error("连接服务器失败: " + error.message);
+      message.error(
+        "连接服务器失败: " +
+          (error instanceof Error ? error.message : String(error)),
+      );
       return null;
     }
   }
