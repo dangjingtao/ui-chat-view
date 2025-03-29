@@ -11,7 +11,7 @@
         :key="index"
         :type="globalInfo.type"
         :dismissible="true"
-        @close="removeGlobalInfo(index)"
+        @close="removeGlobalInfo"
       >
         <template #default>
           <p class="text-center">{{ globalInfo.content }}</p>

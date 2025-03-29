@@ -6,7 +6,7 @@
       class="flex h-[calc(100%-44px)] w-full flex-1 transition-all md:h-[calc(100%-56px)]"
     >
       <div
-        class="m-auto flex h-full w-full bg-gray-50 transition-all md:w-[1440px]"
+        class="m-auto flex h-full w-full bg-gray-50 transition-all md:w-[1440px] md:max-w-[1440px]"
       >
         <div
           class="hidden h-full w-[240px] bg-gray-100 px-2 py-5 pb-2 md:block"
@@ -16,7 +16,7 @@
 
         <!-- 主界面 -->
         <div
-          class="relative flex h-full flex-1 flex-col transition-all duration-200 ease-in-out"
+          class="relative flex h-full flex-1 flex-col overflow-auto transition-all duration-200 ease-in-out"
         >
           <x-spin v-if="chatStore.pageLoading" class="pt-50" />
 
@@ -36,8 +36,8 @@
         <!-- 动态加载的侧边栏 -->
         <transition name="slide-fade">
           <div
-            v-show="chatStore.isSideBarOpen"
-            class="h-full w-[400px] overflow-hidden"
+            v-if="chatStore.isSideBarOpen"
+            class="h-full w-[340px] overflow-hidden"
           >
             <component
               :onClose="closeSideBar"
@@ -134,17 +134,18 @@ watch(
 </script>
 
 <style scoped>
-.slide-fade-enter-active {
-  transition: width transform 0.2s;
-}
-
+.slide-fade-enter-active,
 .slide-fade-leave-active {
-  transition: width transform 0.2s;
+  transition: all 0.1s ease;
 }
-
 .slide-fade-enter-from,
 .slide-fade-leave-to {
-  transform: translateX(100px);
+  transform: translateX(100%);
   opacity: 0;
+}
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  transform: translateX(0);
+  opacity: 1;
 }
 </style>

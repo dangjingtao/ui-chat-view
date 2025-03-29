@@ -58,7 +58,7 @@ const handleUpdateTaskModel = async () => {
 
     if (
       !dataBaseLLMTaskModelList.find(
-        (model) => model.name === dataBaseLLMTaskModel,
+        (model) => model.id === dataBaseLLMTaskModel,
       )
     ) {
       await cachePlugin.setTaskLLMModel("");

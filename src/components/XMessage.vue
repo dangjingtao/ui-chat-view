@@ -3,6 +3,7 @@
     <div v-if="isVisible" :class="alertClasses" role="alert">
       <slot></slot>
       <a
+        v-if="dismissible"
         type="text"
         size="small"
         class="ml-auto h-5 w-5 cursor-pointer rounded-full p-0 text-center text-lg leading-4 text-red-600 hover:bg-red-200"
@@ -33,7 +34,8 @@ const emits = defineEmits(["close"]);
 const isVisible = ref(true);
 
 const alertClasses = computed(() => {
-  const baseClasses = "flex w-full items-center py-2 px-4 text-sm rounded-md";
+  const baseClasses =
+    "flex w-full items-center py-2 px-4 text-sm rounded-md origin-top-left transition-all";
   const typeClasses = {
     success: "bg-green-100 text-green-700 border border-green-200",
     danger: "bg-red-100 text-red-700 border border-red-200",

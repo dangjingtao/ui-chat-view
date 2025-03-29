@@ -8,7 +8,7 @@ export default {
       settings: "设置",
       plugins: "插件",
       character: "角色卡",
-      KnowledgeHub: "知识库",
+      knowledgeHub: "知识库",
     },
   },
 };

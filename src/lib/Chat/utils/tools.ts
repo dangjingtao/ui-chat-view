@@ -10,8 +10,9 @@ export const getTools = ({ client, embeddingClient, inputTools }) => {
   // 创建 Function 实例
   const tools = commonItems.map((item) => {
     const { name, Function, inputSchema } = item;
+    const inputTool = inputTools.find((tool) => tool.name === name);
+
     if (name === "WebBrowser") {
-      const inputTool = inputTools.find((tool) => tool.name === name);
       const { onSuccess, onCreated, onFailed } = inputTool.props;
       if (!client) {
         throw new Error("Client not initialized");
@@ -26,7 +27,6 @@ export const getTools = ({ client, embeddingClient, inputTools }) => {
     }
 
     if (name === "TavilySearch") {
-      const inputTool = inputTools.find((tool) => tool.name === name);
       const { onSuccess, onCreated, onFailed } = inputTool.props;
       if (!client) {
         throw new Error("Client not initialized");
@@ -39,7 +39,21 @@ export const getTools = ({ client, embeddingClient, inputTools }) => {
         onFailed,
       });
     }
-    return new Function(inputSchema);
+
+    if (name === "MCPTestTool") {
+      const { onSuccess, onCreated, onFailed } = inputTool.props;
+      if (!client) {
+        throw new Error("Client not initialized");
+      }
+      return new Function({
+        apiKey: "",
+        onSuccess,
+        onCreated,
+        onFailed,
+      });
+    }
+
+    return new Function({});
   });
 
   return tools;

@@ -15,8 +15,6 @@ import createClient from "./utils/createClient";
 
 import { baseSystemPrompt, genConversationTitlePrompt } from "./prompts/system";
 import { defaultAdvanceOptions } from "@/plugins/cachePlugin/schema.ts"; // 绕过了协议
-import { joke } from "./structured/test";
-import TavilySearchTool from "./tools/TavilySearchTool";
 import { RunnableLambda } from "@langchain/core/runnables";
 import formatChatHistory from "./utils/formatChatHistory";
 import createEmbeddingClient from "./utils/createEmbedding";
@@ -110,6 +108,7 @@ class Chat {
    * @returns
    */
   async useTools(inputTools) {
+    //!
     if (!inputTools || !inputTools?.length) {
       return;
     }
@@ -189,7 +188,7 @@ class Chat {
   // 参数是未格式化的聊天记录
   async getFormatChatHistory(originalChatHistory?) {
     const { provider, advanceOptions = {} } = this.clientConfig;
-    const { maxTokens = 8000 } = advanceOptions;
+    const { maxTokens = 8192 } = advanceOptions;
     const chatHistory = originalChatHistory || this.chatHistory;
 
     return await formatChatHistory({
@@ -221,6 +220,7 @@ class Chat {
       .pipe(
         new RunnableLambda({
           func: async (state, ...args) => {
+            console.log("state", state);
             const { tool_calls = [] } = state;
             if (tool_calls.length) {
               try {
@@ -231,6 +231,7 @@ class Chat {
                       (item) => item.name === toolCall.name,
                     );
                     if (selectedTool) {
+                      console.log("selectedTool", selectedTool);
                       return selectedTool.invoke(toolCall);
                     } else {
                       throw new CommonError(`Tool not found: ${toolCall.name}`);

@@ -67,7 +67,6 @@ class Request {
     const apiKey = getAPIHeader();
     const isRelativeUrl = !/^(?:[a-z]+:)?\/\//i.test(config.url);
     const isCustomerUrl = !config.url.startsWith(BASE_URL);
-    console.log("isCustomerUrl", isCustomerUrl, config.url);
 
     if (isCustomerUrl && !isRelativeUrl) {
       headers["Authorization"] = undefined;

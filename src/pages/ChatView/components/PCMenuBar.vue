@@ -3,7 +3,7 @@
     <div class="px-2">
       <x-button
         type="ghost"
-        class="text-md mb-4 w-full py-1"
+        class="mb-4 w-full text-sm"
         size="small"
         @click="onAddConversation"
       >

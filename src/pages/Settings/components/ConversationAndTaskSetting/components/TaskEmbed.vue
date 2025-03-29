@@ -54,6 +54,7 @@ const embedTaskModelList = ref<{ id: string; name: string }[]>([]);
 
 const handleUpdateTaskModel = async () => {
   loading.value = true;
+
   try {
     const dataBaseEmbedTaskModelList = await cachePlugin.getTaskEmbedModels();
     embedTaskModelList.value = dataBaseEmbedTaskModelList;
@@ -62,7 +63,7 @@ const handleUpdateTaskModel = async () => {
 
     if (
       !dataBaseEmbedTaskModelList.find(
-        (model) => model.name === dataBaseEmbedTaskModel,
+        (model) => model.id === dataBaseEmbedTaskModel,
       )
     ) {
       await cachePlugin.setTaskEmbedModel("");
@@ -81,6 +82,7 @@ const handleUpdateTaskModel = async () => {
 const init = async () => {
   try {
     embedTaskProvider.value = await cachePlugin.getTaskEmbedProvider();
+
     await handleUpdateTaskModel();
   } catch (error) {
     message.error(t("initFailed"));

@@ -59,46 +59,14 @@
         v-if="hasThinkContent(message.content)"
         :text="message.content"
       /> -->
-      <x-markdown @render-complete="onRenderComplete" :content="showContent" />
+      <x-markdown :use-typed="true" :content="message" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import Typed from "typed.js";
-const showContent = ref("");
 const props = defineProps<{
   inputting: boolean;
   message: string;
 }>();
-const typed = ref<Typed | null>(null);
-const initTyped = () => {
-  if (typed.value) {
-    typed.value.destroy();
-  }
-  window.setTimeout(() => {
-    typed.value = new Typed(container.value!, {
-      strings: [props.message],
-      typeSpeed: 10,
-      showCursor: false,
-    });
-  }, 0);
-};
-
-const container = ref<HTMLElement | null>(null);
-const onRenderComplete = (el: HTMLElement | null) => {
-  container.value = el;
-  initTyped();
-};
-
-watch(
-  () => props.message,
-  () => {
-    if (typed.value) {
-      typed.value.destroy();
-    }
-    showContent.value = "";
-  },
-);
 </script>

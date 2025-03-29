@@ -6,43 +6,13 @@
   >
     <template #content>
       <div class="flex h-full flex-col">
-        <div class="min-h-[114px] w-full p-1">
+        <div class="w-full py-2">
           <x-input
             type="search"
             :placeholder="t('searchPlaceholder')"
             @onSearch="onSearch"
             @onClear="onClear"
           />
-          <div class="py-3">
-            <x-ellipsis :lines="4">
-              <template #visible>
-                <span class="pt-2 text-sm leading-6 text-gray-600">
-                  {{ introduce.content }}
-                </span>
-              </template>
-              <template #hidden>
-                <ul class="list-disc pt-3 pl-5">
-                  <li
-                    class="mb-2"
-                    v-for="item in introduce.desc"
-                    :key="item.title"
-                  >
-                    <div class="flex items-center justify-between">
-                      <div class="">
-                        <strong class="text-sm text-gray-800">{{
-                          item.title
-                        }}</strong
-                        >&nbsp;
-                        <span class="text-sm text-gray-400">{{
-                          item.content
-                        }}</span>
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </template>
-            </x-ellipsis>
-          </div>
         </div>
         <x-result
           type="404"
@@ -95,7 +65,6 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import prompts from "@/dataSet/prompts.json";
-import introduce from "@/dataSet/character_introduce.json";
 import { searchCharacter } from "@/lib/searchCharacter";
 import copy from "@/lib/textProcessor/copy";
 import { useChatStore } from "@/store/chat";
