@@ -3,7 +3,7 @@ import { ChatOllama } from "@langchain/ollama";
 
 // IMPORTANT - Add your API keys here. Be careful not to publish them.
 process.env.OPENAI_API_KEY = "1234";
-const TAVILY_API_KEY = "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";
+const TAVILY_API_KEY = "xxxxxxxxxxxxxxx";
 
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 

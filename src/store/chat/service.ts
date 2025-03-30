@@ -70,8 +70,6 @@ const chatService = {
     //  前端初始化的状态，无任何参考价值
     const { chatCtx, conversationConfig, pageLoading } = pageStateContext;
     const chatContext = await clientCache.getChatContext();
-    // 在此检查数据一致性
-    console.log("init", chatCtx, conversationConfig);
     chatCtx.value = chatContext;
 
     if (
@@ -388,7 +386,7 @@ const chatService = {
       this._updateChatContext(chatCtx, newConversation);
     }
   },
-  // 帮我用markdown写一个表格。表格里包含服务商，时间
+
   async saveToNotion(pageStateContext, data) {
     try {
       const { chatCtx } = pageStateContext;
@@ -426,13 +424,12 @@ const chatService = {
 | ------ | -------- | -------- | -------- | ------ |
 | ${provider} | ${model} | ${dayjs(createTime).format("YYYY-MM-DD HH:mm:ss")} | ${dayjs(data?.timeStamp).format("YYYY-MM-DD HH:mm:ss")} | ${character?.zh?.prompt || "-"} |
 
-**## [用户]：${lastUserMessage}**
+## **[用户]：${lastUserMessage}**
 
 ${data.content}
 `;
         await createPageWithContent(pageTitle, stringTemplate);
         message.success("你的文档片段已成功发送到notion");
-        console.log(stringTemplate);
       }
       // createPageWithContent()
     } catch (error) {

@@ -11,7 +11,7 @@
     <div class="flex-1 overflow-auto px-4 py-1 text-sm text-gray-600 md:px-6">
       <slot name="body"> </slot>
     </div>
-    <div class="mt-auto flex gap-1 px-6 py-3">
+    <div class="mt-auto flex gap-1 px-4 py-3">
       <slot name="footer"></slot>
     </div>
   </div>

@@ -98,6 +98,20 @@ export default class extends Base {
       result = data.result || [];
     }
 
+    if (provider_name === "openrouter") {
+      // 只要免费
+      result = result.filter((item) => {
+        const { pricing } = item;
+
+        if (pricing && typeof pricing === "object") {
+          return Object.values(pricing).every((x) => x === "0");
+        }
+        return false;
+      });
+
+      return result;
+    }
+
     return result.map((item: any) => ({
       ...item,
       _id: item.id,

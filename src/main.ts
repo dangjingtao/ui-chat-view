@@ -8,6 +8,9 @@ import cachePlugin from "@/plugins/cachePlugin/index";
 import App from "./App.vue";
 import "./styles/index.css";
 import { checkUpdate } from "@/lib/pwa";
+// import { UIChatShadow } from "@/plugins/WebContainer";
+
+// const _UIChatShadow = new UIChatShadow({});
 
 checkUpdate();
 

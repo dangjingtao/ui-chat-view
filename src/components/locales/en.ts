@@ -8,7 +8,7 @@ export default {
       settings: "Settings",
       plugins: "Plugins",
       character: "Character",
-      KnowledgeHub: "Knowledge Hub",
+      knowledgeHub: "Knowledge Hub",
     },
   },
 };

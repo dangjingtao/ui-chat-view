@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.0.45] - 2025-03-29
+
+> "用 LangChain 适配某个模型时，反而比直接调用 API 更麻烦。"
+
+### Added
+
+- 接入Openrouter, 过滤使用里面所有免费高性能模型。但在langchain 下 Function Call 没解决
+
+
+### Changed
+
+- 改了Notion Page 界面，更友好一点
+
+- 优化了XSelect 的组件体验
+
+### Fixed
+
+- x-robot组件可正常显示markdown
+
+- 设置界面模型选项反复被重置的问题
+
+- 聊天主界面丢失侧边栏宽度
+
+
 ## [0.0.43] - 2025-03-26
 
 ### Added

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full overflow-hidden rounded-lg border border-gray-300 bg-white"
+    class="w-full overflow-hidden rounded-md border border-gray-300 bg-white"
   >
     <div
       ref="header"
@@ -10,12 +10,12 @@
           !!props.title,
       }"
     >
-      <h2 class="text-lg leading-tight text-gray-800">
+      <h2 class="text-md leading-tight text-gray-800">
         {{ props.title }}
       </h2>
     </div>
     <ul :style="{ maxHeight: ulMaxHeight + 'px' }" class="overflow-y-auto">
-      <x-result v-if="props.items.length === 0" class="w-[30%]" type="404" />
+      <x-result v-if="props.items.length === 0" class="w-[50%]" type="404" />
       <li
         v-for="item in props.items"
         :key="item.id"
@@ -26,7 +26,14 @@
         }"
         class="cursor-pointer border-t border-gray-200 px-4 py-2 text-sm leading-tight text-gray-700 dark:border-gray-300"
       >
-        {{ item.name }}
+        <slot
+          name="item"
+          :item="item"
+          :selected="selectedItem && selectedItem.id === item.id"
+        >
+          <!-- 默认内容 -->
+          {{ item.name }}
+        </slot>
       </li>
     </ul>
   </div>

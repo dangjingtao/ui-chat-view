@@ -10,6 +10,7 @@
       :menu-items="[
         { name: t('uichat'), path: '/' },
         { name: t('character'), path: '/characters' },
+        { name: t('knowledgeHub'), path: '/knowledge-hub' },
         { name: t('plugins'), path: '/Plugins' },
         { name: t('settings'), path: '/settings' },
       ]"
@@ -26,7 +27,13 @@
         {{ title }}
       </h2>
     </div>
-    <div class="flex-1 overflow-auto px-3 md:px-6">
+    <div
+      :class="{
+        'md:px-4': isFullWidth,
+        'md:px-6': !isFullWidth,
+      }"
+      class="flex-1 overflow-auto px-3"
+    >
       <slot name="content"></slot>
     </div>
   </div>

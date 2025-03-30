@@ -2,6 +2,7 @@ import { z } from "zod";
 import calculatorTool from "./calculator";
 import { TavilySearchResults } from "./baseTools/TavilySearch";
 import { WebBrowser } from "./baseTools/WebBrowser";
+import MCPTestTool from "./MCPTools/TestTool";
 
 // 写一套模拟MCP协议
 export default [
@@ -32,6 +33,20 @@ export default [
         maxResults: { type: "number" },
       },
       required: ["maxResults"],
+    },
+  },
+  {
+    name: "MCPTestTool",
+    version: "1.0.0",
+    Function: MCPTestTool,
+    inputSchema: {
+      type: "object",
+      properties: {
+        onCreated: { type: "function" },
+        onSuccess: { type: "function" },
+        onError: { type: "function" },
+      },
+      required: ["a", "b"],
     },
   },
 ];

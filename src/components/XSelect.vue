@@ -56,18 +56,10 @@
       </div>
     </div>
 
-    <transition
-      :duration="{ enter: 50, leave: 50 }"
-      enter-active-class="transition-opacity"
-      enter-from-class="opacity-0"
-      enter-to-class="opacity-100"
-      leave-active-class="transition-opacity"
-      leave-class="opacity-100"
-      leave-to-class="opacity-0"
-    >
+    <transition name="slide-fade">
       <div
         v-if="isOpen && !isLoading"
-        class="absolute right-0 z-10 mt-1 overflow-auto rounded border border-gray-300/30 bg-white text-sm shadow-lg transition-opacity"
+        class="absolute right-0 z-10 mt-1 origin-top-left overflow-auto rounded border border-gray-300/30 bg-white text-sm shadow-lg"
         :class="props.dropdownClass || 'w-full'"
       >
         <div
@@ -159,5 +151,20 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.1s ease; /* 延长动画时间 */
+  will-change: transform, opacity; /* 提前优化渲染 */
+}
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+.slide-fade-enter-to,
+.slide-fade-leave-from {
+  transform: translateY(0);
+  opacity: 1;
+}
 /* 添加必要的样式 */
 </style>

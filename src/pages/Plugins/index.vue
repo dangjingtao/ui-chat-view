@@ -7,7 +7,7 @@
     <template #content>
       <div class="flex h-full flex-col p-4">
         <div class="pb-2 text-gray-700">
-          每一个插件，本身都是一个工具(tool), 也是微应用制作器（写太累了）
+          每一个插件，本身就是一个工具(tool), 也是微应用制作器。
         </div>
         <div class="mb-4 flex items-center justify-between gap-3">
           <x-input
@@ -51,7 +51,12 @@
             </template>
             <template #footer>
               <div class="flex w-full justify-end gap-4">
-                <x-button type="base" @click="() => viewPlugin(plugin.id)">
+                <x-button
+                  type="base"
+                  size="small"
+                  class="w-full text-sm"
+                  @click="() => viewPlugin(plugin.id)"
+                >
                   调试
                 </x-button>
               </div>

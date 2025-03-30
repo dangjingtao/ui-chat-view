@@ -18,7 +18,18 @@
   --color-geekblue-9: #061178;
   --color-geekblue-10: #030852;
 
-  --color-volcano-1: #fff2e8;
+  /* --color-volcano-1: #fff2e8;
+  --color-volcano-2: #ffe7d9;
+  --color-volcano-3: #f7c4ab;
+  --color-volcano-4: #eb9d7c;
+  --color-volcano-5: #de7853;
+  --color-volcano-6: #b8583b;
+  --color-volcano-7: #913c27;
+  --color-volcano-8: #6b2518;
+  --color-volcano-9: #45160e;
+  --color-volcano-10: #45160e; */
+
+  --color-volcano-1: #fff6f0;
   --color-volcano-2: #ffd8bf;
   --color-volcano-3: #ffbb96;
   --color-volcano-4: #ff9c6e;
@@ -77,6 +88,7 @@
   --color-primary-9: var(--color-geekblue-9);
   --color-primary-10: var(--color-geekblue-10);
   --color-primary: var(--color-geekblue-6);
+
 
 }
 
