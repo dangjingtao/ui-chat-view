@@ -333,7 +333,9 @@ const execute = async () => {
     loading.value = true;
     const app = await Client.connect(url);
     const result = await app.predict("/get_tts_wav", params);
-    let audioUrl = processAudioUrl(result?.data?.[0]?.url || "");
+    let audioUrl = processAudioUrl(
+      processAudioUrl(result?.data?.[0]?.url || "", isProduction),
+    );
 
     audioSrc.value = await generateBlobURL(audioUrl);
     message.success(t("executeSuccess"));
