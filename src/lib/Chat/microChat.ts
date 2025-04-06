@@ -126,6 +126,7 @@ export class MicroChat {
         chunkOverlap,
         vectorStoreConfig,
         onChunkSuccess,
+        retrievalLimit,
       } = rag;
       this.app = {
         invoke: async ({ messages }, config) =>
@@ -138,6 +139,7 @@ export class MicroChat {
             messages,
             vectorStoreConfig,
             onChunkSuccess,
+            retrievalLimit,
           }),
       };
     } else {

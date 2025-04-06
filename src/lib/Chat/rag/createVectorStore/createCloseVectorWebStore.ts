@@ -40,10 +40,17 @@ async function saveToCache(
   textData: string[],
   embeddings: any,
   vectorStoreName: string,
+  options: any = {
+    text: "",
+    chunkSize: 100,
+    chunkOverlap: 1,
+    retrievalLimit: 2,
+  },
 ) {
   const vectors = await embeddings.embedDocuments(textData);
   const dataToSave = {
     name: vectorStoreName,
+    options,
     texts: textData,
     metadata: textData.map((_, i) => ({ id: i })),
     embeddings: vectors,
@@ -57,6 +64,17 @@ export async function createCloseVectorWebStore(
   textData: string[],
   embeddings: any,
   vectorStoreName: string,
+  options: {
+    text: string;
+    chunkSize: number;
+    chunkOverlap: number;
+    retrievalLimit: number;
+  } = {
+    text: "",
+    chunkSize: 100,
+    chunkOverlap: 1,
+    retrievalLimit: 2,
+  },
 ) {
   const cachedData = await loadFromCache(vectorStoreName);
 
@@ -65,6 +83,12 @@ export async function createCloseVectorWebStore(
   }
 
   const vectorStore = await initializeCloseVectorWeb(textData, embeddings);
-  await saveToCache(vectorStore, textData, embeddings, vectorStoreName);
+  await saveToCache(
+    vectorStore,
+    textData,
+    embeddings,
+    vectorStoreName,
+    options,
+  );
   return vectorStore;
 }

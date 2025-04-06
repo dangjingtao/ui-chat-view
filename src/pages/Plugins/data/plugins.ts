@@ -74,7 +74,7 @@ export const plugins: XPlugin[] = [
   {
     id: 7,
     name: "代码解释器",
-    description: "在UIChat中运行前端+ts+node代码！",
+    description: "在UIChat中运行前端/ts/node代码！",
     version: "1.0.0",
     enabled: false,
     component: "CodeRunner",

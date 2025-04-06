@@ -75,5 +75,34 @@ export default {
       execute: "Execute",
       executeSuccess: "Success",
     },
+    Rag: {
+      embedding: "Embedding",
+      databaseSelection: "Database Selection",
+      databaseTooltip:
+        "UI Chat has improved the cumbersome Close Vector integration in langchain to support browser-side storage. If you choose memory, it will re-vectorize every time, which is quite token-intensive.",
+      memory: "Memory",
+      closeVector: "Close Vector",
+      chunk: "Chunk",
+      chunkOverlap: "Chunk Overlap",
+      chunkIdentifier: "Chunk Identifier",
+      chunkIdentifierTooltip:
+        "A separator is a character used to split text.\n\n\\n and \\n\\n are commonly used to separate paragraphs and lines. Use comma-separated separators (\\n,\\n\\n), and when a paragraph exceeds the maximum chunk length, it will be split by lines. You can also use custom special separators (e.g., ***).",
+      retrievalLimit: "Retrieval Limit",
+      retrievalLimitTooltip:
+        "The maximum number of references the model can use when answering.",
+      loadKnowledgeBase: "Load Knowledge Base",
+      uploadAndVectorize: "Upload and Vectorize",
+      query: "Query",
+      inputYourQuestion: "Input your question",
+      execute: "Execute",
+      originalText: "Original Text",
+      chunkedText: "Chunked Text",
+      defaultResult:
+        "I am an expert deeply in touch with the people. My specialty is giving advice to the masses. That's why I became a representative.",
+      noKnowledgeBaseUploaded: "No knowledge base document uploaded",
+      uploadSuccess: "Upload successful",
+      chunkSuccess: "Chunking successful",
+      defaultQuestion: "What is a Molotov cocktail?",
+    },
   },
 };

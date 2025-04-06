@@ -46,6 +46,7 @@ export const useRAG = async ({
       textData,
       embeddings,
       vectorStoreConfig,
+      { text, chunkSize, chunkOverlap, retrievalLimit },
     );
 
     // 创建提示模板

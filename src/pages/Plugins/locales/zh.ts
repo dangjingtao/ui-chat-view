@@ -81,5 +81,37 @@ export default {
       execute: "处理",
       executeSuccess: "推理成功",
     },
+
+    Rag: {
+      embedding: "嵌入",
+      databaseSelection: "数据库选择",
+      databaseTooltip:
+        "UI Chat改造了langchain中极为难用的Close Vector集成，让它支持浏览器端储存。如果你选择内存，每次都会重新调用向量化，相当费token。",
+      memory: "内存",
+      closeVector: "Close Vector",
+      chunk: "分块",
+      chunkOverlap: "分块重叠",
+      chunkIdentifier: "分块标识符",
+      chunkIdentifierTooltip:
+        "分隔符是用于分隔文本的字符。\n\n和 \n 是常用于分隔段落和行的分隔符。用逗号连接分隔符(\nn,\n)，当段落超过最大块长度时，会按行进行分割。你也可以使用自定义的特殊分隔符(例如 ***)",
+      retrievalLimit: "引用计数",
+      retrievalLimitTooltip: "大模型回答时最大的引用数量",
+      loadKnowledgeBase: "加载知识库",
+      uploadAndVectorize: "上传文档并向量化",
+      query: "查询",
+      inputYourQuestion: "输入你的问题",
+      execute: "执行",
+      originalText: "原始文本",
+      chunkedText: "分块文本",
+      defaultResult:
+        "我是深谙民情的砖家，我特长是向群众建议。所以当上了人大代表。",
+      noKnowledgeBaseUploaded: "当前没上传知识库文档",
+      uploadSuccess: "上传成功",
+      chunkSuccess: "分块成功",
+      defaultQuestion: "莫洛托夫鸡尾酒是啥?",
+      clearDB: "清除向量数据库",
+      clearDBConfirm:
+        "清除向量数据库后，你将可以重新上传新的知识库文档，是否继续？",
+    },
   },
 };

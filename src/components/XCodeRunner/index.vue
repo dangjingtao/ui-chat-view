@@ -1,24 +1,20 @@
 <template>
-  <div class="code-runner border-gray-300">
-    <div
-      class="flex items-center justify-between rounded-t-md border border-b border-gray-300 px-2 py-1"
-    >
-      <div class="text-sm font-bold text-gray-600">UI Chat Code Runner</div>
+  <div class="code-runner">
+    <div class="flex items-center justify-between rounded-t-md px-2">
+      <div class="text-sm font-bold text-gray-600">
+        {{ loading ? "Loading Runtime..." : "UI Chat Code Runner" }}
+      </div>
       <div>
-        <x-button @click="reset" type="text" class="ml-2">Reset</x-button>
-        <x-button @click="run" type="text" class="ml-2">Run</x-button>
+        <x-button @click="reset" type="text" class="ml-2"
+          ><i-mdi-restore
+        /></x-button>
+        <x-button @click="run" type="text" class="ml-2"
+          ><i-mdi-play-outline
+        /></x-button>
       </div>
     </div>
 
-    <x-message v-if="loading" type="info">Loading Runtime...</x-message>
-    <div
-      :class="{
-        'rounded-b-md border-r border-b border-l border-gray-300':
-          isFrontEndMode,
-      }"
-      class="output"
-      :style="{ height }"
-    >
+    <div class="output" :style="{ height }">
       <div
         v-if="isFrontEndMode"
         ref="outputRef"
@@ -141,7 +137,6 @@ defineExpose({ run, reset, parseMarkdown, download });
   flex-direction: column;
 }
 .output {
-  border: 1px solid #ccc;
   overflow: auto;
 }
 .loading {

@@ -1,23 +1,19 @@
 <template>
   <plugin-page-wrapper>
     <template #pluginConsole>
-      <div>
-        <h3 class="mt-1.5 flex gap-1 text-sm leading-8 text-gray-700">
-          <div class="mb-1">{{ t("url") }}</div>
-        </h3>
-        <x-input v-model="url" placeholder="input URL" />
-      </div>
+      <model-card />
 
-      <div>
-        <h3 class="mt-1.5 flex gap-1 text-sm leading-8 text-gray-700">
-          <div class="mb-1">{{ t("question") }}</div>
-        </h3>
+      <form-item :label="t('url')">
+        <x-input class="w-full" v-model="url" placeholder="input URL" />
+      </form-item>
+
+      <form-item :label="t('question')">
         <x-textarea
           :rows="10"
           v-model="userQuestion"
           placeholder="input your question"
         />
-      </div>
+      </form-item>
     </template>
     <template #pluginConsoleOperation>
       <x-button :disabled="loading" @click="execute" class="w-full"
@@ -57,6 +53,8 @@ import microChat from "@/lib/Chat/microChat";
 import { useNamespace } from "@/i18n";
 import PluginPageWrapper from "../PluginPageWrapper.vue";
 import { PROXY_WEBSITE_URL } from "@/config";
+import FormItem from "../FormItem.vue";
+import ModelCard from "../ModelCard.vue";
 
 const { t } = useNamespace("PluginsViews.WebReader");
 const loading = ref(false);
@@ -137,7 +135,6 @@ watch(
   () => url,
   (newVal) => {
     microChat.useConfig({
-      pluginId: route.params.id,
       client: "default",
       memory: 20,
       systemMessageTemplate,

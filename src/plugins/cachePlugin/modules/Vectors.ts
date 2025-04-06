@@ -50,6 +50,13 @@ export default class extends Base {
     cache.set(DB_NAME, newRecords);
   }
 
+  async deleteVectorDataBaseByName(name) {
+    const { cache } = this;
+    const vectorDataBases = (await this.getVectorDataBases()) || [];
+    const newRecords = vectorDataBases.filter((item) => item.name !== name);
+    cache.set(DB_NAME, newRecords);
+  }
+
   // 根据name更新向量数据库
   async updateVectorDataBaseByName(name, record) {
     const { cache } = this;

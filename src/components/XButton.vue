@@ -27,6 +27,7 @@ const props = defineProps<{
   disabled?: boolean;
   class?: string;
   loading?: boolean;
+  danger?: boolean;
 }>();
 
 const emits = defineEmits(["click"]);
@@ -45,7 +46,7 @@ const buttonClass = computed(() => {
     ghost:
       "bg-transparent border border-primary-6 text-primary-6 hover:bg-primary-1",
     text: "bg-transparent text-primary-6 hover:bg-primary-1",
-    danger: "bg-red-600 text-white hover:bg-red-700",
+    danger: "text-red-600 hover:bg-red-100 border border-red-200",
   };
 
   const sizeMap = {

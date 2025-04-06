@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.0.50] - 2025-04-06
+
+> "一万年太短，只争朝夕", https://huggingface.co/spaces/enzostvs/deepsite 前端该死透了吗？
+
+更新3个主要功能。项目代码接入 [Sonar Cloud](https://sonarcloud.io/project/overview?id=dangjingtao_ui-chat-view)
+
+### Added
+
+- 插件增加GPT-sovits / 代码解析器/ 检索增强生成 
+
+- 提供MCP测试入口
+
+- 新增 XCodeRunner 等几个高级组件
+
+
+### Changed
+
+- 已完成的组件界面新增modelCard
+
+- 微调了多个X组件的表现
+
+### Fixed
+
+- x-robot组件可正常显示markdown
+
+- 设置界面模型选项反复被重置的问题
+
+- 聊天主界面丢失侧边栏宽度
+
+
 ## [0.0.45] - 2025-03-29
 
 > "用 LangChain 适配某个模型时，反而比直接调用 API 更麻烦。"

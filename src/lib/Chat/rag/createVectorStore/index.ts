@@ -12,6 +12,17 @@ export async function createVectorStore(
   vectorStoreConfig: VectorStoreConfig = {
     type: "memory",
   },
+  options: {
+    text: string;
+    chunkSize: number;
+    chunkOverlap: number;
+    retrievalLimit: number;
+  } = {
+    text: "",
+    chunkSize: 100,
+    chunkOverlap: 1,
+    retrievalLimit: 2,
+  },
 ) {
   const { type: vectorStoreType } = vectorStoreConfig;
   switch (vectorStoreType) {
@@ -23,6 +34,7 @@ export async function createVectorStore(
         textData,
         embeddings,
         vectorStoreName,
+        options
       );
     default:
       throw new Error(`Unsupported vector store type: ${vectorStoreType}`);
