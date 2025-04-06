@@ -1,9 +1,21 @@
 import { getLanguage } from "@/i18n";
+import dayjs from "dayjs";
 
 // 最基础的输入
 const language = getLanguage();
+// 注入当天信息
+function getFormattedDate(): string {
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const now = dayjs();
+  const year = now.year();
+  const month = now.format("MM");
+  const day = now.format("DD");
+  const dayOfWeek = daysOfWeek[now.day()];
 
-export const baseSystemPrompt = `You are a helpful assistant. Answer all questions to the best of your ability in ${language}.`;
+  return `Today is ${year}-${month}-${day}, ${dayOfWeek}`;
+}
+
+export const baseSystemPrompt = `You are UI Chat AI robot, a helpful assistant which designed by Tomz Dang. Answer all questions to the best of your ability in ${language}. ${getFormattedDate()}`;
 
 export const genConversationTitlePrompt = () =>
   `Generate a concise ${language} title for the following conversation, summarizing the core content (within 20 words)`;

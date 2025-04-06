@@ -53,7 +53,7 @@
 
     <div
       v-else
-      class="inline-block max-w-max flex-auto rounded-lg border border-gray-200 bg-white px-4 py-3"
+      class="inline-block flex-1 rounded-lg border border-gray-200 bg-white px-4 py-3"
     >
       <!-- <x-think
         v-if="hasThinkContent(message.content)"
@@ -62,11 +62,38 @@
       <x-markdown :use-typed="true" :content="message" />
     </div>
   </div>
+  <div class="bg-primary-1 mt-1.5 ml-10 rounded-md p-3">
+    <div class="text-primary-7 flex items-center gap-2 text-sm leading-5">
+      <i-mdi-information-slab-circle class="text-primary-7 text-sm" /> Found
+      {{ (refers || 0).length }}
+      relevant documents
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <div
+        v-for="(refer, index) in refers || []"
+        :class="{ 'flex flex-col gap-1.5': true, 'mt-2': index === 0 }"
+      >
+        <div class="rounded-md bg-white px-4 py-3 text-sm text-gray-600">
+          <div class="text-primary pb-2">
+            Document #{{ index + 1 }} (Score:
+            {{
+              Math.round((refer.metadata?.similarityScore || 0) * 100) / 100
+            }})
+          </div>
+          <div class="text-gray-500">
+            {{ refer.pageContent }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 const props = defineProps<{
   inputting: boolean;
   message: string;
+  refers: any[];
 }>();
 </script>

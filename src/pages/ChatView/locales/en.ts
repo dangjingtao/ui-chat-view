@@ -7,6 +7,7 @@ export default {
     },
     ChatEntrance: {
       newConversation: "New Conversation",
+      character: "Character",
       settings: "Settings",
       knowledgeHub: "Knowledge Hub",
       microApps: "Micro Apps",

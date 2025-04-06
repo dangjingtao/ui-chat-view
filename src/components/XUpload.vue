@@ -42,7 +42,7 @@ const props = defineProps<{
   onSuccess?: () => void;
   onUpload?: (data) => any;
   onFailed?: (error: string) => void;
-  accept?: string; // 新增的可选文件类型属性
+  accept?: string;
 }>();
 
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -59,11 +59,25 @@ const onFileChange = async (event: Event) => {
       if (isImageFile(file)) {
         file = await compressImage(file);
       }
-      fileType.value = file.type;
+
+      // 如果 file.type 为空，根据扩展名推断类型
+      fileType.value = file.type || "";
+      if (!fileType.value) {
+        const extension = file.name.toLowerCase().split(".").pop();
+        if (extension === "md") {
+          fileType.value = "text/markdown";
+        } else if (extension === "txt") {
+          fileType.value = "text/plain";
+        } else {
+          fileType.value = "application/octet-stream"; // 兜底类型
+        }
+      }
+
       document.value = file;
       const reader = new FileReader();
       reader.onload = (e) => {
         fileBase64.value = e.target?.result as string;
+        console.log(fileBase64.value);
         resolve(fileBase64.value);
       };
       reader.onerror = (e) => {

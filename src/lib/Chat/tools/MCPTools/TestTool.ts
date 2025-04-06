@@ -49,12 +49,6 @@ export class MCPTestTool extends Tool {
     });
 
     return data.content[0].text;
-
-    // return "模型上下文协议（Model Context Protocol，简称MCP）。这一新标准旨在将人工智能助手与数据存储系统无缝连接，包括内容仓库、商业工具和开发环境，帮助前沿模型产出更精准的相关响应。";
-    // const [url, query] = inputs.split(",");
-    // const res = await fetch(url);
-    // const text = await res.text();
-    // const summary = await summarize(text, query);
   }
 }
 

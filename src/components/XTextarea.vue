@@ -4,7 +4,7 @@
     v-model="value"
     @focus="handleFocus"
     @blur="handleBlur"
-    class="focus:outline-primary-4 w-full rounded-md border border-gray-200 bg-gray-100 px-2 py-1.5 text-sm text-gray-700 transition-all hover:bg-gray-50 focus:bg-white"
+    class="focus:outline-primary-4 hover:border-primary-4 w-full rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm text-gray-700 transition-all focus:bg-white"
     :class="[
       {
         'cursor-not-allowed bg-gray-200 text-gray-400 hover:bg-gray-200 focus:bg-gray-200':

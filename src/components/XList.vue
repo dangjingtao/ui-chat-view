@@ -17,14 +17,15 @@
     <ul :style="{ maxHeight: ulMaxHeight + 'px' }" class="overflow-y-auto">
       <x-result v-if="props.items.length === 0" class="w-[50%]" type="404" />
       <li
-        v-for="item in props.items"
+        v-for="(item, index) in props.items"
         :key="item.id"
         @click="selectItem(item)"
         :class="{
           'bg-primary-1': selectedItem && selectedItem.id === item.id,
-          'border-0 hover:bg-gray-100': true,
+          'border-0 hover:bg-gray-50': true,
+          'border-t': index !== 0,
         }"
-        class="cursor-pointer border-t border-gray-200 px-4 py-2 text-sm leading-tight text-gray-700 dark:border-gray-300"
+        class="cursor-pointer border-gray-200 px-4 py-2 text-sm leading-tight text-gray-700 dark:border-gray-300"
       >
         <slot
           name="item"

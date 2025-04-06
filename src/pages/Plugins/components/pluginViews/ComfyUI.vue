@@ -18,7 +18,7 @@
               class="flex-1"
               :placeholder="'配置不要带协议，比如 127.0.0.1:8188 即可'"
             />
-            <x-button @click="checkState" type="base" size="small"
+            <x-button :loading="loading" @click="checkState" type="base" size="small"
               ><i-mdi-connection
             /></x-button>
           </div>
@@ -170,6 +170,7 @@ const executeBtnDisabled = computed(() => {
 
 // 检查系统连通性
 const checkState = async () => {
+  loading.value = true;
   const result = await comfyUI.value.checkState();
   if (result) {
     dialog.confirm({
@@ -179,6 +180,8 @@ const checkState = async () => {
       message: result,
     });
   }
+  loading.value = false;
+  terminalRef.value.info(result ? "已连接远程主机" : "远程主机连接失败");
 };
 
 const executeWorkflow = async () => {

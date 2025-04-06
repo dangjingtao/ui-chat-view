@@ -33,6 +33,7 @@ watch(
 
 const utils = {
   addTerminalMessage(message) {
+    console.log(message);
     terminalMessages.value.push(message);
   },
   success(msg) {
@@ -50,6 +51,9 @@ const utils = {
   },
   info(msg) {
     this.addTerminalMessage(`<span class="text-blue-400">[Info]</span> ${msg}`);
+  },
+  log(msg) {
+    this.addTerminalMessage(`${msg}`);
   },
   rewrite({ msg, type }) {
     terminalMessages.value = terminalMessages.value.slice(

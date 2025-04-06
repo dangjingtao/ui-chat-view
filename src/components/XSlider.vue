@@ -7,10 +7,19 @@
       :min="min"
       :max="max"
       :step="step"
-      class="bg-primary-2 inline-block max-h-1.5 min-h-1.5 w-full cursor-pointer appearance-none rounded-lg"
+      :class="{
+        'bg-primary-2 inline-block max-h-1.5 min-h-1.5 w-full cursor-pointer appearance-none rounded-lg': true,
+        inputClass: props.vertical,
+      }"
+      :style="
+        props.vertical
+          ? 'writing-mode: bt-lr; -webkit-appearance: slider-vertical'
+          : ''
+      "
     />
     <span
-      class="inline-block min-w-10 text-right text-sm font-semibold text-gray-500"
+      v-if="!props.hideValue"
+      class="inline-block min-w-[1/10] text-right text-sm font-semibold text-gray-500"
       >{{ internalValue }}</span
     >
   </div>
@@ -35,6 +44,18 @@ const props = defineProps({
   modelValue: {
     type: Number,
     default: 50,
+  },
+  hideValue: {
+    type: Boolean,
+    default: false,
+  },
+  inputClass: {
+    type: String,
+    default: "",
+  },
+  vertical: {
+    type: Boolean,
+    default: false,
   },
 });
 

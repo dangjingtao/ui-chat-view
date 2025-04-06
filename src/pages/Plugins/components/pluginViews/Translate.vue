@@ -164,7 +164,7 @@ const systemMessageExample = `[systemMessage]: "${systemMessage}"
 `;
 
 // 注册插件消息处理
-microChat.usePlugin({
+microChat.useConfig({
   pluginId: id,
   client: "default",
   memory: false,

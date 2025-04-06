@@ -97,7 +97,7 @@ const execute = async () => {
   loading.value = false;
 };
 
-microChat.usePlugin({
+microChat.useConfig({
   pluginId: route.params.id,
   client: "default",
   memory: 20,
@@ -136,7 +136,7 @@ microChat.usePlugin({
 watch(
   () => url,
   (newVal) => {
-    microChat.usePlugin({
+    microChat.useConfig({
       pluginId: route.params.id,
       client: "default",
       memory: 20,

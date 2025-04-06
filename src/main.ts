@@ -10,7 +10,7 @@ import "./styles/index.css";
 import { checkUpdate } from "@/lib/pwa";
 // import { UIChatShadow } from "@/plugins/WebContainer";
 
-// const _UIChatShadow = new UIChatShadow({});
+// // const _UIChatShadow = new UIChatShadow({});
 
 checkUpdate();
 

@@ -46,6 +46,7 @@ const props = defineProps<{
 const providers = [
   { id: "cloudflare", name: "Cloudflare" },
   { id: "cohere", name: "Cohere" },
+  { id: "ollama", name: "Ollama" },
 ];
 
 const embedTaskProvider = ref("");

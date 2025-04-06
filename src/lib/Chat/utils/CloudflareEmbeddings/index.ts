@@ -1,14 +1,6 @@
 import { Embeddings, EmbeddingsParams } from "@langchain/core/embeddings";
 import { chunkArray } from "@langchain/core/utils/chunk_array";
 import request from "@/lib/request";
-type AiTextEmbeddingsInput = {
-  text: string | string[];
-};
-
-type AiTextEmbeddingsOutput = {
-  shape: number[];
-  data: number[][];
-};
 
 export interface CloudflareWorkersAIEmbeddingsParams extends EmbeddingsParams {
   /** Binding */
@@ -76,7 +68,6 @@ export default class CloudflareWorkersAIEmbeddings extends Embeddings {
         embeddings.push(batchResponse[j]);
       }
     }
-
     return embeddings;
   }
 
@@ -97,7 +88,7 @@ export default class CloudflareWorkersAIEmbeddings extends Embeddings {
         },
       });
 
-      return response.data;
+      return response.data.result.data;
     });
   }
 }

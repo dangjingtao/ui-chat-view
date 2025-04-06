@@ -14,6 +14,12 @@
     </x-button>
   </x-tooltip>
 
+  <x-tooltip :position="position" :text="t('character')">
+    <x-button type="text" class="w-full py-2" size="small" @click="toCharacter">
+      <i-mdi-account-box-edit-outline class="text-lg" />
+    </x-button>
+  </x-tooltip>
+
   <x-tooltip :position="position" :text="t('knowledgeHub')">
     <x-button
       type="text"
@@ -78,5 +84,9 @@ const toPlugins = () => {
 
 const toMicroApps = () => {
   router.push("/micro-apps");
+};
+
+const toCharacter = () => {
+  router.push("/characters");
 };
 </script>
