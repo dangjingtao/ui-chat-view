@@ -63,6 +63,7 @@ export default defineConfig({
         "**/*.otf",
       ],
       workbox: {
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB = 10485760 字节
         globPatterns: ["**/*.{js,css,html,png,jpg,gif,svg,woff,ttf,otf,woff2}"],
         runtimeCaching: [
           {
