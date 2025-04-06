@@ -11,7 +11,7 @@ const Modal = {
     title?: string;
     message?: string;
     type: "info" | "danger" | "alert" | "prompt";
-    injectHtml: boolean;
+    injectHtml?: boolean;
   }) {
     return new Promise((resolve) => {
       const visible = ref(true);

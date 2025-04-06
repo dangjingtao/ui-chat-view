@@ -14,31 +14,33 @@ import message from "../message";
 import type { AdvanceOptions } from "@/plugins/cachePlugin/types";
 import { v4 as uuid } from "uuid";
 import createEmbeddingClient from "./utils/createEmbedding";
-import { RunnableLambda } from "@langchain/core/runnables";
-import { getTools } from "./utils/tools";
+import { getTools, withCallTools } from "./utils/tools";
+import { useRAG } from "./rag";
 
 // “微”任务模型，与状态解耦,与db直接交互
 interface ClientConfig {
-  provider: ProviderName;
-  model: string;
+  provider?: ProviderName;
+  model?: string;
   client: "default";
   systemMessage?: string;
   advanceOptions: AdvanceOptions;
   memory: boolean | number;
+  rag?: any;
   tools?: any[];
-  userMessageTemplate: (any) => string;
+  userMessageTemplate?: (any) => string;
   systemMessageTemplate?: (any) => string;
   onError?: (errorMessage: string, error) => void;
 }
 
-class MicroChat {
+export class MicroChat {
   private client?: ChatClient;
   private clientConfig: ClientConfig;
   private chatHistory: any[] = [];
   private app: any;
   private embeddingClient?: any;
   private sendMessageController?: AbortController | null;
-  private tools: any[] = [];
+  public tools: any[] = [];
+  callTool: any;
 
   constructor() {
     this.clientConfig = {} as ClientConfig;
@@ -69,7 +71,7 @@ class MicroChat {
     }
   }
 
-  // 使用客户端
+  // 使用客户端(包括向量模型)
   private async useClient(config: ClientConfig) {
     try {
       const { client = "default", advanceOptions = {} } = config;
@@ -110,12 +112,40 @@ class MicroChat {
     }
   }
 
-  async usePlugin(config: ClientConfig) {
+  //  rag知识库单独用一套
+  async useConfig(config: ClientConfig) {
     this.validConfig(config);
     this.clientConfig = config;
     await this.useClient(config);
-    await this.useTools(config.tools);
-    this.initChain();
+    const { rag } = this.clientConfig;
+    if (!!rag) {
+      // 如果有检索增强生成的配置
+      const {
+        text,
+        chunkSize,
+        chunkOverlap,
+        vectorStoreConfig,
+        onChunkSuccess,
+        retrievalLimit,
+      } = rag;
+      this.app = {
+        invoke: async ({ messages }, config) =>
+          await useRAG({
+            text,
+            client: this.client,
+            embeddings: this.embeddingClient,
+            chunkSize,
+            chunkOverlap,
+            messages,
+            vectorStoreConfig,
+            onChunkSuccess,
+            retrievalLimit,
+          }),
+      };
+    } else {
+      await this.useTools(config.tools);
+      this.initChain();
+    }
   }
 
   abort() {
@@ -124,6 +154,7 @@ class MicroChat {
   }
 
   async useTools(inputTools) {
+    this.callTool = withCallTools(this);
     // 创建 Function 实例
     const tools = getTools({
       client: this.client,
@@ -131,7 +162,7 @@ class MicroChat {
       inputTools,
     });
 
-    this.client = this.client?.bindTools(tools);
+    this.client = this.client?.bindTools(tools) as ChatClient;
     //除了要绑定工具，还要绑定工具到this
     this.tools = tools;
   }
@@ -164,56 +195,7 @@ class MicroChat {
 
     const parser = new StringOutputParser();
 
-    // console.error("this.client", this.client);
-    this.app = chatPrompt
-      .pipe(client)
-      .pipe(
-        new RunnableLambda({
-          func: async (state, ...args) => {
-            const { tool_calls = [] } = state;
-            if (tool_calls.length) {
-              try {
-                // 使用 Promise.allSettled 并行处理工具调用
-                const toolMessages = await Promise.allSettled(
-                  tool_calls.map(async (toolCall) => {
-                    const selectedTool = this.tools.find(
-                      (item) => item.name === toolCall.name,
-                    );
-                    if (selectedTool) {
-                      return selectedTool.invoke(toolCall);
-                    } else {
-                      message.error(`Tool not found: ${toolCall.name}`);
-                      throw new Error(`Tool not found: ${toolCall.name}`);
-                    }
-                  }),
-                );
-
-                // 处理工具调用结果
-                const fulfilledToolMessages = toolMessages
-                  .filter((result) => result.status === "fulfilled")
-                  .map(
-                    (result) => (result as PromiseFulfilledResult<any>).value,
-                  );
-
-                const chatHistory = await this.getFormatChatHistory();
-                chatHistory.push(state);
-                chatHistory.push(...fulfilledToolMessages);
-                return await client?.invoke(chatHistory);
-              } catch (error) {
-                if (error instanceof Error) {
-                  message.error(`Failed to invoke tool: ${error.message}`);
-                } else {
-                  message.error("Failed to invoke tool: Unknown error");
-                }
-                return state;
-              }
-            }
-
-            return state;
-          },
-        }),
-      )
-      .pipe(parser);
+    this.app = chatPrompt.pipe(client).pipe(this.callTool).pipe(parser);
   }
 
   // 提示词解析不能直接使用，需要先进行处理，但是否需要加入历史？
@@ -244,6 +226,7 @@ class MicroChat {
     const { userMessageTemplate, memory } = this.clientConfig;
 
     const formateUserMessage = userMessageTemplate(userTemplateConfig);
+
     this.chatHistory.push({
       role: "user",
       content: formateUserMessage,
@@ -266,8 +249,6 @@ class MicroChat {
   async invoke(userTemplateConfig) {
     const messages = await this.updateChatHistory(userTemplateConfig);
     this.beforeInvoke();
-    // console.error(messages);
-    // return;
 
     // 打断发送
     const config = {
@@ -279,13 +260,24 @@ class MicroChat {
     };
 
     let result = "";
-    // return;
+    let refers = [];
+
+    // 创建向量模型 ，如果需要做检索增强生成
+
     try {
-      result = await this.app.invoke(chatContext, config);
+      // 兼容有refers 的invoke
+      const _result = await this.app.invoke(chatContext, config);
+      result = typeof _result === "string" ? _result : _result?.answer;
+      refers = typeof _result === "string" ? refers : _result?.refers;
     } catch (error) {
-      message.error(`Failed to invoke: ${error.message}`);
+      if (error instanceof Error) {
+        message.error(`Failed to invoke: ${error.message}`);
+      } else {
+        message.error("Failed to invoke: Unknown error");
+      }
     }
-    this.chatHistory.push({ role: "assistant", content: result });
+
+    this.chatHistory.push({ role: "assistant", content: result, refers });
 
     return {
       role: "assistant",
@@ -293,6 +285,7 @@ class MicroChat {
       content: "",
       createTime: Date.now(),
       id: uuid(),
+      refers,
     };
   }
 }

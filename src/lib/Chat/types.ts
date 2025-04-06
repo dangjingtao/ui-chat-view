@@ -1,6 +1,7 @@
-import { ChatOpenAI } from "@langchain/openai";
-import { ChatOllama } from "@langchain/ollama";
+import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
+import { ChatOllama, OllamaEmbeddings } from "@langchain/ollama";
 import { ChatGroq } from "@langchain/groq";
+import CloudflareWorkersAIEmbeddings from "@/lib/Chat/utils/CloudflareEmbeddings";
 
 export type ProviderName =
   | "kimi"
@@ -23,3 +24,9 @@ export interface ChatConfig {
   presencePenalty: number;
 }
 export type ChatClient = ChatOpenAI | ChatOllama | ChatGroq | null;
+
+export type ChatEmbeddings =
+  | OpenAIEmbeddings
+  | OllamaEmbeddings
+  | CloudflareWorkersAIEmbeddings
+  | null;

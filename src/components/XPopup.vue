@@ -5,11 +5,11 @@
       class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-gray-50"
     >
       <div
-        class="relative m-auto h-full w-full overflow-hidden bg-white shadow-lg lg:mx-[15%]"
+        class="relative m-auto h-full w-full overflow-hidden bg-white shadow-lg lg:w-[1440px]"
       >
         <button
           @click="close"
-          class="absolute top-0 right-2 text-4xl text-gray-500 hover:text-gray-900"
+          class="absolute top-0 right-2 cursor-pointer text-4xl text-gray-500 hover:text-gray-900"
         >
           &times;
         </button>

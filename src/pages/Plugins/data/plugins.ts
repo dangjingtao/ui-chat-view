@@ -3,6 +3,12 @@ import type { XPlugin } from "../types";
 import translateIcon from "~icons/mdi/translate";
 // @ts-ignore
 import networkIcon from "~icons/mdi/web-check";
+// @ts-ignore
+import castAudioVariant from "~icons/mdi/cast-audio-variant";
+// @ts-ignore
+import applicationBraces from "~icons/mdi/application-braces";
+// @ts-ignore
+import bookOpenVariant from "~icons/mdi/bookOpenVariant";
 
 export const plugins: XPlugin[] = [
   {
@@ -44,66 +50,52 @@ export const plugins: XPlugin[] = [
     icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAY1BMVEX///8AAAD19fWMjIzj4+NBQUEiIiINDQ3m5uba2tqysrKqqqouLi7ExMTR0dH8/PxISEiZmZnLy8u5ubkUFBRhYWE7Ozvt7e14eHgnJydZWVlQUFBqamqEhIQaGhqSkpKhoaHiMf6YAAACDUlEQVRIib2WSYKDIBREkeAsalScp/ufskFAaRSVXnTt/NZLQAr4ABgEUViU8XdqSe45cx+ZfMwacOvYu85ZVXgCok9Lhu7Cq2nR/sdorPtx+sZlEaIGxTMrNCrYKtZkGNsljjC1Zvq4JmZQZ+qx8ZcpCuDN9JkwI8nxg9vEnyA+qYF5CxV0HPyGBF9mnX6B+iczKGTWDqmg019bswalRRmtbHmH2uPeSAWdahs9TUGKqY+trWtcXKyCNvrYgn4ykDegX9NE0PREND5BI9YMX4Ddhe8keAbjV0tyAb7Kzz+CGUTNCzCDzb7l4VgnFTMstyBsBzfx1Y/Vi/ducAvmR0HseLyyXVw/zTH3Klk4gk9L7vPHCfZKKUH/FYjOJWuQ/BWUZ8p7sEtEMbMEk1QUR0vQA6OoFragvBv8zBIEkSi3tiAYRD21BWWCZluQH/mbzxIEcjGRZwmG4o1rC/LrVMBWIPD/CmIj6N+DgJjA4QGEJjB+APfk6SA4gywxVbr3F7kBLHQwEIGZA/7c8MdEB8HnNyiP3/284TEg4Qncj2AOkmmhjRhOA3AoPQaugpk2x3spoIzkOzBUQLC+BGGDik4FeT5OrSwMtjZ5XaaRDHKLMSl9GLtoEsyaI+prR5Lfdr7lAaI7n65aHVb07N9Em2GtsW8vfbPbk/az0rY5DU29cJT7fpKTUfou+mtFPwwEHTPGCzJuAAAAAElFTkSuQmCC",
   },
 
-  // {
-  //   id: 5,
-  //   name: "MCP运行器",
-  //   description:
-  //     "随着人工智能助手的主流采用，行业已经投入大量资源在模型能力上，实现了快速的进步。然而，即使是最先进的模型也受到数据隔离的影响——被困在信息孤岛和遗留系统中。每个新的数据源都需要其独特的定制实现，这使得真正连通的系统难以扩展。\nMCP 解决了这一挑战。它提供了一个通用、开放的标准，用于连接 AI 系统与数据源，取代碎片化的集成，使用单一协议。结果是为 AI 系统提供所需数据的一种更简单、更可靠的途径。",
-  //   version: "1.0.0",
-  //   enabled: false,
-  //   component: "MCPRunner",
-  //   icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAA10lEQVR4AXXPIWyDQBhH8ee9DzUk9b71l5ypmZqeqT07ixdIDBKfulnU+cyiq1Cc+y9ky9HvYM/+1EOmeRxn5SwGgHCMjqrrKt6P0OMk6ULMaG0YFGl26FZrQROhRP9nT/UA7Su6bBHOb+A39K82SHL0Ent7aIlaqFfcW6qYdEbi0ILELzq81BX2SbNiwknfhTWQVlSSFIiFzdvKBT1Ly3hjXq6FZey5S1qMZdSJ69CSzWK6AbTZDErT15isCZmMFdgbK7A2VuAH4X9MJ+4WjdZEi0Yf2voBIRlaTuvjYuQAAAAASUVORK5CYII=",
-  // },
-  // {
-  //   id: 5,
-  //   name: "代码解析器",
-  //   description: "在UIChat中运行代码！",
-  //   version: "1.0.0",
-  //   enabled: false,
-  //   component: "WebReader",
-  //   icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAY1BMVEX///8AAAD19fWMjIzj4+NBQUEiIiINDQ3m5uba2tqysrKqqqouLi7ExMTR0dH8/PxISEiZmZnLy8u5ubkUFBRhYWE7Ozvt7e14eHgnJydZWVlQUFBqamqEhIQaGhqSkpKhoaHiMf6YAAACDUlEQVRIib2WSYKDIBREkeAsalScp/ufskFAaRSVXnTt/NZLQAr4ABgEUViU8XdqSe45cx+ZfMwacOvYu85ZVXgCok9Lhu7Cq2nR/sdorPtx+sZlEaIGxTMrNCrYKtZkGNsljjC1Zvq4JmZQZ+qx8ZcpCuDN9JkwI8nxg9vEnyA+qYF5CxV0HPyGBF9mnX6B+iczKGTWDqmg019bswalRRmtbHmH2uPeSAWdahs9TUGKqY+trWtcXKyCNvrYgn4ykDegX9NE0PREND5BI9YMX4Ddhe8keAbjV0tyAb7Kzz+CGUTNCzCDzb7l4VgnFTMstyBsBzfx1Y/Vi/ducAvmR0HseLyyXVw/zTH3Klk4gk9L7vPHCfZKKUH/FYjOJWuQ/BWUZ8p7sEtEMbMEk1QUR0vQA6OoFragvBv8zBIEkSi3tiAYRD21BWWCZluQH/mbzxIEcjGRZwmG4o1rC/LrVMBWIPD/CmIj6N+DgJjA4QGEJjB+APfk6SA4gywxVbr3F7kBLHQwEIGZA/7c8MdEB8HnNyiP3/284TEg4Qncj2AOkmmhjRhOA3AoPQaugpk2x3spoIzkOzBUQLC+BGGDik4FeT5OrSwMtjZ5XaaRDHKLMSl9GLtoEsyaI+prR5Lfdr7lAaI7n65aHVb07N9Em2GtsW8vfbPbk/az0rY5DU29cJT7fpKTUfou+mtFPwwEHTPGCzJuAAAAAElFTkSuQmCC",
-  // },
-  // {
-  //   id: 6,
-  //   name: "ChatCMS",
-  //   description: "虽然不太可能有人看，依然要装出很多人看的样子",
-  //   version: "1.0.0",
-  //   enabled: false,
-  //   component: "WebReader",
-  //   icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAY1BMVEX///8AAAD19fWMjIzj4+NBQUEiIiINDQ3m5uba2tqysrKqqqouLi7ExMTR0dH8/PxISEiZmZnLy8u5ubkUFBRhYWE7Ozvt7e14eHgnJydZWVlQUFBqamqEhIQaGhqSkpKhoaHiMf6YAAACDUlEQVRIib2WSYKDIBREkeAsalScp/ufskFAaRSVXnTt/NZLQAr4ABgEUViU8XdqSe45cx+ZfMwacOvYu85ZVXgCok9Lhu7Cq2nR/sdorPtx+sZlEaIGxTMrNCrYKtZkGNsljjC1Zvq4JmZQZ+qx8ZcpCuDN9JkwI8nxg9vEnyA+qYF5CxV0HPyGBF9mnX6B+iczKGTWDqmg019bswalRRmtbHmH2uPeSAWdahs9TUGKqY+trWtcXKyCNvrYgn4ykDegX9NE0PREND5BI9YMX4Ddhe8keAbjV0tyAb7Kzz+CGUTNCzCDzb7l4VgnFTMstyBsBzfx1Y/Vi/ducAvmR0HseLyyXVw/zTH3Klk4gk9L7vPHCfZKKUH/FYjOJWuQ/BWUZ8p7sEtEMbMEk1QUR0vQA6OoFragvBv8zBIEkSi3tiAYRD21BWWCZluQH/mbzxIEcjGRZwmG4o1rC/LrVMBWIPD/CmIj6N+DgJjA4QGEJjB+APfk6SA4gywxVbr3F7kBLHQwEIGZA/7c8MdEB8HnNyiP3/284TEg4Qncj2AOkmmhjRhOA3AoPQaugpk2x3spoIzkOzBUQLC+BGGDik4FeT5OrSwMtjZ5XaaRDHKLMSl9GLtoEsyaI+prR5Lfdr7lAaI7n65aHVb07N9Em2GtsW8vfbPbk/az0rY5DU29cJT7fpKTUfou+mtFPwwEHTPGCzJuAAAAAElFTkSuQmCC",
-  // },
-  // {
-  //   id: 7,
-  //   name: "ChatCrawler",
-  //   description: "知法犯法",
-  //   version: "1.0.0",
-  //   enabled: false,
-  //   component: "WebReader",
-  //   icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAY1BMVEX///8AAAD19fWMjIzj4+NBQUEiIiINDQ3m5uba2tqysrKqqqouLi7ExMTR0dH8/PxISEiZmZnLy8u5ubkUFBRhYWE7Ozvt7e14eHgnJydZWVlQUFBqamqEhIQaGhqSkpKhoaHiMf6YAAACDUlEQVRIib2WSYKDIBREkeAsalScp/ufskFAaRSVXnTt/NZLQAr4ABgEUViU8XdqSe45cx+ZfMwacOvYu85ZVXgCok9Lhu7Cq2nR/sdorPtx+sZlEaIGxTMrNCrYKtZkGNsljjC1Zvq4JmZQZ+qx8ZcpCuDN9JkwI8nxg9vEnyA+qYF5CxV0HPyGBF9mnX6B+iczKGTWDqmg019bswalRRmtbHmH2uPeSAWdahs9TUGKqY+trWtcXKyCNvrYgn4ykDegX9NE0PREND5BI9YMX4Ddhe8keAbjV0tyAb7Kzz+CGUTNCzCDzb7l4VgnFTMstyBsBzfx1Y/Vi/ducAvmR0HseLyyXVw/zTH3Klk4gk9L7vPHCfZKKUH/FYjOJWuQ/BWUZ8p7sEtEMbMEk1QUR0vQA6OoFragvBv8zBIEkSi3tiAYRD21BWWCZluQH/mbzxIEcjGRZwmG4o1rC/LrVMBWIPD/CmIj6N+DgJjA4QGEJjB+APfk6SA4gywxVbr3F7kBLHQwEIGZA/7c8MdEB8HnNyiP3/284TEg4Qncj2AOkmmhjRhOA3AoPQaugpk2x3spoIzkOzBUQLC+BGGDik4FeT5OrSwMtjZ5XaaRDHKLMSl9GLtoEsyaI+prR5Lfdr7lAaI7n65aHVb07N9Em2GtsW8vfbPbk/az0rY5DU29cJT7fpKTUfou+mtFPwwEHTPGCzJuAAAAAElFTkSuQmCC",
-  // },
-  // {
-  //   id: 8,
-  //   name: "MCP 工作流",
-  //   description: "知法犯法",
-  //   version: "1.0.0",
-  //   enabled: false,
-  //   component: "WebReader",
-  //   icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAY1BMVEX///8AAAD19fWMjIzj4+NBQUEiIiINDQ3m5uba2tqysrKqqqouLi7ExMTR0dH8/PxISEiZmZnLy8u5ubkUFBRhYWE7Ozvt7e14eHgnJydZWVlQUFBqamqEhIQaGhqSkpKhoaHiMf6YAAACDUlEQVRIib2WSYKDIBREkeAsalScp/ufskFAaRSVXnTt/NZLQAr4ABgEUViU8XdqSe45cx+ZfMwacOvYu85ZVXgCok9Lhu7Cq2nR/sdorPtx+sZlEaIGxTMrNCrYKtZkGNsljjC1Zvq4JmZQZ+qx8ZcpCuDN9JkwI8nxg9vEnyA+qYF5CxV0HPyGBF9mnX6B+iczKGTWDqmg019bswalRRmtbHmH2uPeSAWdahs9TUGKqY+trWtcXKyCNvrYgn4ykDegX9NE0PREND5BI9YMX4Ddhe8keAbjV0tyAb7Kzz+CGUTNCzCDzb7l4VgnFTMstyBsBzfx1Y/Vi/ducAvmR0HseLyyXVw/zTH3Klk4gk9L7vPHCfZKKUH/FYjOJWuQ/BWUZ8p7sEtEMbMEk1QUR0vQA6OoFragvBv8zBIEkSi3tiAYRD21BWWCZluQH/mbzxIEcjGRZwmG4o1rC/LrVMBWIPD/CmIj6N+DgJjA4QGEJjB+APfk6SA4gywxVbr3F7kBLHQwEIGZA/7c8MdEB8HnNyiP3/284TEg4Qncj2AOkmmhjRhOA3AoPQaugpk2x3spoIzkOzBUQLC+BGGDik4FeT5OrSwMtjZ5XaaRDHKLMSl9GLtoEsyaI+prR5Lfdr7lAaI7n65aHVb07N9Em2GtsW8vfbPbk/az0rY5DU29cJT7fpKTUfou+mtFPwwEHTPGCzJuAAAAAElFTkSuQmCC",
-  // },
-  // {
-  //   id: 9,
-  //   name: "TTS",
-  //   description: "知法犯法",
-  //   version: "1.0.0",
-  //   enabled: false,
-  //   component: "WebReader",
-  //   icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADgAAAA4CAMAAACfWMssAAAAY1BMVEX///8AAAD19fWMjIzj4+NBQUEiIiINDQ3m5uba2tqysrKqqqouLi7ExMTR0dH8/PxISEiZmZnLy8u5ubkUFBRhYWE7Ozvt7e14eHgnJydZWVlQUFBqamqEhIQaGhqSkpKhoaHiMf6YAAACDUlEQVRIib2WSYKDIBREkeAsalScp/ufskFAaRSVXnTt/NZLQAr4ABgEUViU8XdqSe45cx+ZfMwacOvYu85ZVXgCok9Lhu7Cq2nR/sdorPtx+sZlEaIGxTMrNCrYKtZkGNsljjC1Zvq4JmZQZ+qx8ZcpCuDN9JkwI8nxg9vEnyA+qYF5CxV0HPyGBF9mnX6B+iczKGTWDqmg019bswalRRmtbHmH2uPeSAWdahs9TUGKqY+trWtcXKyCNvrYgn4ykDegX9NE0PREND5BI9YMX4Ddhe8keAbjV0tyAb7Kzz+CGUTNCzCDzb7l4VgnFTMstyBsBzfx1Y/Vi/ducAvmR0HseLyyXVw/zTH3Klk4gk9L7vPHCfZKKUH/FYjOJWuQ/BWUZ8p7sEtEMbMEk1QUR0vQA6OoFragvBv8zBIEkSi3tiAYRD21BWWCZluQH/mbzxIEcjGRZwmG4o1rC/LrVMBWIPD/CmIj6N+DgJjA4QGEJjB+APfk6SA4gywxVbr3F7kBLHQwEIGZA/7c8MdEB8HnNyiP3/284TEg4Qncj2AOkmmhjRhOA3AoPQaugpk2x3spoIzkOzBUQLC+BGGDik4FeT5OrSwMtjZ5XaaRDHKLMSl9GLtoEsyaI+prR5Lfdr7lAaI7n65aHVb07N9Em2GtsW8vfbPbk/az0rY5DU29cJT7fpKTUfou+mtFPwwEHTPGCzJuAAAAAElFTkSuQmCC",
-  // },
+  {
+    id: 5,
+    name: "MCP运行器",
+    description:
+      "随着人工智能助手的主流采用，行业已经投入大量资源在模型能力上，实现了快速的进步。然而，即使是最先进的模型也受到数据隔离的影响——被困在信息孤岛和遗留系统中。每个新的数据源都需要其独特的定制实现，这使得真正连通的系统难以扩展。\nMCP 解决了这一挑战。它提供了一个通用、开放的标准，用于连接 AI 系统与数据源，取代碎片化的集成，使用单一协议。结果是为 AI 系统提供所需数据的一种更简单、更可靠的途径。",
+    version: "1.0.0",
+    enabled: false,
+    component: "MCPRunner",
+    icon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAAAAABXZoBIAAAA10lEQVR4AXXPIWyDQBhH8ee9DzUk9b71l5ypmZqeqT07ixdIDBKfulnU+cyiq1Cc+y9ky9HvYM/+1EOmeRxn5SwGgHCMjqrrKt6P0OMk6ULMaG0YFGl26FZrQROhRP9nT/UA7Su6bBHOb+A39K82SHL0Ent7aIlaqFfcW6qYdEbi0ILELzq81BX2SbNiwknfhTWQVlSSFIiFzdvKBT1Ly3hjXq6FZey5S1qMZdSJ69CSzWK6AbTZDErT15isCZmMFdgbK7A2VuAH4X9MJ+4WjdZEi0Yf2voBIRlaTuvjYuQAAAAASUVORK5CYII=",
+  },
+
+  {
+    id: 6,
+    name: "GPT-SoVITS-v3",
+    description: "A Powerful Few-shot Voice Conversion and Text-to-Speech",
+    version: "1.0.0",
+    enabled: false,
+    component: "GptSoVITS",
+    icon: castAudioVariant,
+  },
+
+  {
+    id: 7,
+    name: "代码解释器",
+    description: "在UIChat中运行前端/ts/node代码！",
+    version: "1.0.0",
+    enabled: false,
+    component: "CodeRunner",
+    icon: applicationBraces,
+  },
+
+  {
+    id: 8,
+    name: "检索增强生成（RAG）",
+    description:
+      "结合实时检索与生成模型，动态引入外部知识库，解决大模型信息滞后与幻觉问题，提升生成内容真实性。",
+    version: "1.0.0",
+    enabled: false,
+    component: "Rag",
+    icon: bookOpenVariant,
+  },
 
   // {
   //   id: 9,
   //   name: "live2d",
-  //   description: "知法犯法",
+  //   description: "A Powerful Few-shot Voice Conversion and Text-to-Speech",
   //   version: "1.0.0",
   //   enabled: false,
   //   component: "WebReader",

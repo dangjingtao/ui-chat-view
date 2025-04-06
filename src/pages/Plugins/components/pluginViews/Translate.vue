@@ -1,54 +1,33 @@
 <template>
   <plugin-page-wrapper>
     <template #pluginConsole>
-      <div>
-        <h3 class="mt-1.5 flex gap-1 text-sm leading-8 text-gray-700">
-          <div>{{ t("promptTemplate") }}</div>
-          <x-tooltip
-            position="right"
-            class="flex items-center"
-            :text="t('promptTemplateTooltip')"
-            ><i-mdi-help-circle-outline
-          /></x-tooltip>
-        </h3>
+      <model-card />
+      <form-item
+        :label="t(`promptTemplate`)"
+        :tooltip="t('promptTemplateTooltip')"
+      >
         <x-textarea disabled rows="8" :placeholder="systemMessageExample" />
-      </div>
+      </form-item>
 
-      <div>
-        <h3 class="mt-1.5 flex gap-1 text-sm leading-8 text-gray-700">
-          <div>{{ t("temperature") }}</div>
-          <x-tooltip
-            position="right"
-            class="flex items-center"
-            :text="t('temperatureTooltip')"
-            ><i-mdi-help-circle-outline
-          /></x-tooltip>
-        </h3>
+      <form-item :label="t('temperature')" :tooltip="t('temperatureTooltip')">
         <x-slider
+          class="w-full"
           v-model="settings.temperature"
           :min="0"
           :max="2"
           :step="0.01"
         />
-      </div>
+      </form-item>
 
-      <div>
-        <h3 class="mt-1.5 flex gap-1 text-sm leading-8 text-gray-700">
-          <div>{{ t("maxTokens") }}</div>
-          <x-tooltip
-            position="right"
-            class="flex items-center"
-            :text="t('maxTokensTooltip')"
-            ><i-mdi-help-circle-outline
-          /></x-tooltip>
-        </h3>
+      <form-item :label="t('maxTokens')" :tooltip="t('maxTokensTooltip')">
         <x-slider
+          class="w-full"
           v-model="settings.maxTokens"
           :min="100"
           :max="10000"
           :step="1"
         />
-      </div>
+      </form-item>
     </template>
     <template #pluginConsoleOperation>
       <div class="mt-6 flex justify-end gap-2">
@@ -115,6 +94,8 @@ import copy from "@/lib/textProcessor/copy";
 import { useNamespace } from "@/i18n";
 import { plugins } from "../../data/plugins";
 import PluginPageWrapper from "../PluginPageWrapper.vue";
+import FormItem from "../FormItem.vue";
+import ModelCard from "../ModelCard.vue";
 
 const { t } = useNamespace("PluginsViews.Translate");
 const route = useRoute();
@@ -164,7 +145,7 @@ const systemMessageExample = `[systemMessage]: "${systemMessage}"
 `;
 
 // 注册插件消息处理
-microChat.usePlugin({
+microChat.useConfig({
   pluginId: id,
   client: "default",
   memory: false,

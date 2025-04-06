@@ -20,10 +20,10 @@ import { computed, ref } from "vue";
 
 type MessageType = {
   type?: "success" | "danger" | "warning" | "info" | undefined;
-  dismissible: boolean;
+  dismissible?: boolean;
 };
 
-export type Message = Omit<MessageType, "dismissible"> & {
+type Message = Omit<MessageType, "dismissible"> & {
   code?: string | number;
   content: string;
 };

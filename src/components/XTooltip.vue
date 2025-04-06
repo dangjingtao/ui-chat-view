@@ -9,7 +9,7 @@
     <div
       v-if="visible"
       :class="{
-        'fixed z-50 max-w-[300px] rounded bg-gray-800 p-2 text-sm break-words text-white opacity-[80%] shadow-lg': true,
+        'fixed z-50 max-w-[300px] rounded bg-gray-800 p-2 text-sm break-words text-white opacity-[70%] shadow-lg': true,
       }"
       ref="tooltip"
       :style="tooltipStyle"

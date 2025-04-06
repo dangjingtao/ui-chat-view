@@ -7,6 +7,7 @@ export default {
     },
     ChatEntrance: {
       newConversation: "新对话",
+      character: "角色卡",
       settings: "设置",
       knowledgeHub: "知识库",
       microApps: "微应用",

@@ -12,16 +12,16 @@ import { v4 as uuid } from "uuid";
 import prompts from "@/dataSet/prompts.json";
 // 工具
 import createClient from "./utils/createClient";
-
 import { baseSystemPrompt, genConversationTitlePrompt } from "./prompts/system";
 import { defaultAdvanceOptions } from "@/plugins/cachePlugin/schema.ts"; // 绕过了协议
-import { RunnableLambda } from "@langchain/core/runnables";
+import { removeThinkContent } from "@/lib/textProcessor/answerParser";
+import { getTools, withCallTools } from "./utils/tools";
 import formatChatHistory from "./utils/formatChatHistory";
 import createEmbeddingClient from "./utils/createEmbedding";
-import { getLanguage } from "@/i18n";
-import { removeThinkContent } from "@/lib/textProcessor/answerParser";
-import { getTools } from "./utils/tools";
+
 import cachePlugin from "@/plugins/cachePlugin";
+import type { AIMessage } from "@langchain/core/messages";
+import type { RunnableLambda } from "@langchain/core/runnables";
 
 type ProviderName =
   | "kimi"
@@ -50,7 +50,8 @@ class Chat {
   private miniApp: any;
   private sendMessageController?: AbortController | null;
   private embeddingClient?: any;
-  private tools: any[] = [];
+  public tools: any[] = [];
+  private callTool?: RunnableLambda<AIMessage, any, any>; // Update callTool type
 
   constructor() {}
 
@@ -95,8 +96,6 @@ class Chat {
     this.useStructuredModel();
     this.initChain();
 
-    // this.chatHistory = this.formatChatHistory();
-    //
     this.initMiniPermissionChain(this.client);
 
     return this;
@@ -108,7 +107,9 @@ class Chat {
    * @returns
    */
   async useTools(inputTools) {
-    //!
+    // 只是处理useTool逻辑
+    this.callTool = withCallTools(this);
+
     if (!inputTools || !inputTools?.length) {
       return;
     }
@@ -187,7 +188,7 @@ class Chat {
 
   // 参数是未格式化的聊天记录
   async getFormatChatHistory(originalChatHistory?) {
-    const { provider, advanceOptions = {} } = this.clientConfig;
+    const { provider, advanceOptions = {} } = this.clientConfig || {};
     const { maxTokens = 8192 } = advanceOptions;
     const chatHistory = originalChatHistory || this.chatHistory;
 
@@ -214,53 +215,11 @@ class Chat {
       throw new Error("Client not initialized");
     }
 
-    this.app = chatPrompt
-      .pipe(client)
-      // 工具调用
-      .pipe(
-        new RunnableLambda({
-          func: async (state, ...args) => {
-            console.log("state", state);
-            const { tool_calls = [] } = state;
-            if (tool_calls.length) {
-              try {
-                // 使用 Promise.allSettled 并行处理工具调用
-                const toolMessages = await Promise.allSettled(
-                  tool_calls.map(async (toolCall) => {
-                    const selectedTool = this.tools.find(
-                      (item) => item.name === toolCall.name,
-                    );
-                    if (selectedTool) {
-                      console.log("selectedTool", selectedTool);
-                      return selectedTool.invoke(toolCall);
-                    } else {
-                      throw new CommonError(`Tool not found: ${toolCall.name}`);
-                    }
-                  }),
-                );
+    if (!this.callTool) {
+      throw new Error("callTool is not initialized");
+    }
 
-                // 处理工具调用结果
-                const fulfilledToolMessages = toolMessages
-                  .filter((result) => result.status === "fulfilled")
-                  .map(
-                    (result) => (result as PromiseFulfilledResult<any>).value,
-                  );
-
-                const chatHistory = await this.getFormatChatHistory();
-                chatHistory.push(state);
-                chatHistory.push(...fulfilledToolMessages);
-                return await client?.invoke(chatHistory);
-              } catch (error) {
-                // message.error(`Failed to invoke tool: ${error.message}`);
-                return state;
-              }
-            }
-
-            return state;
-          },
-        }),
-      )
-      .pipe(parser);
+    this.app = chatPrompt.pipe(client).pipe(this.callTool).pipe(parser);
   }
 
   // 获取最近一条用户信息
@@ -340,8 +299,6 @@ class Chat {
     const recentChatHistory = this.chatHistory.slice(
       -this.clientConfig.advanceOptions.context,
     );
-
-    // this.miniApp
 
     // 在发送之前设置消息修剪
     // console.error("recentChatHistory", recentChatHistory);

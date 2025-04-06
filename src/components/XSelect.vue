@@ -10,7 +10,7 @@
       :class="{
         'cursor-not-allowed opacity-50': isLoading,
         'border-primary': isOpen,
-        'hover:border-primary-3 border-gray-200': !isOpen,
+        'hover:border-primary-4 border-gray-200': !isOpen,
       }"
       :aria-disabled="isLoading"
     >

@@ -7,13 +7,16 @@
       @input="onInput"
       @keydown.enter="onSearch"
       :placeholder="placeholder"
+      :max="props.max"
+      :min="props.min"
+      :step="props.step"
       :class="{
         'cursor-not-allowed': disabled,
         'bg-gray-200': disabled,
         'text-gray-400': disabled,
-        'hover:bg-gray-50': !disabled,
+        'hover:border-primary-4': !disabled,
       }"
-      class="focus:outline-primary-4 w-full rounded-md border border-gray-200 bg-gray-100 px-2 py-1.5 text-sm placeholder-gray-400 transition-all focus:bg-white dark:text-gray-600 dark:placeholder-gray-500"
+      class="focus:outline-primary-4 w-full rounded-md border border-gray-200 bg-white px-2 py-1.5 text-sm placeholder-gray-400 transition-all focus:bg-white dark:text-gray-600 dark:placeholder-gray-500"
     />
     <button
       v-if="type === 'search' && !inputValue"
@@ -26,7 +29,9 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
+import { number } from "zod";
+
+const props = defineProps({
   type: {
     type: String,
     default: "text",
@@ -38,6 +43,16 @@ defineProps({
   disabled: {
     type: Boolean,
     default: false,
+  },
+  max: {
+    type: Number,
+  },
+  min: {
+    type: Number,
+  },
+  step: {
+    type: number,
+    default: 1,
   },
 });
 

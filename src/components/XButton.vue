@@ -1,6 +1,18 @@
 <template>
   <button :class="buttonClass" @click="handleClick">
-    <slot></slot>
+    <div v-if="props.loading" class="loading-spinner flex w-full items-center">
+      <svg class="spinner m-auto" viewBox="0 0 50 50">
+        <circle
+          class="path"
+          cx="25"
+          cy="25"
+          r="20"
+          fill="none"
+          stroke-width="4"
+        ></circle>
+      </svg>
+    </div>
+    <slot v-else></slot>
   </button>
 </template>
 
@@ -10,16 +22,19 @@ import { twMerge } from "tailwind-merge";
 
 const props = defineProps<{
   round?: boolean;
-  type?: "primarily" | "ghost" | "text" | "base";
+  type?: "primarily" | "ghost" | "text" | "base" | "danger";
   size?: "small" | "default" | "large";
   disabled?: boolean;
   class?: string;
+  loading?: boolean;
+  danger?: boolean;
 }>();
 
 const emits = defineEmits(["click"]);
 
 const handleClick = (event: Event) => {
-  if (!props.disabled) {
+  event.stopPropagation(); // 阻止事件冒泡
+  if (!props.disabled || props.loading) {
     emits("click", event);
   }
 };
@@ -31,6 +46,7 @@ const buttonClass = computed(() => {
     ghost:
       "bg-transparent border border-primary-6 text-primary-6 hover:bg-primary-1",
     text: "bg-transparent text-primary-6 hover:bg-primary-1",
+    danger: "text-red-600 hover:bg-red-100 border border-red-200",
   };
 
   const sizeMap = {
@@ -44,10 +60,45 @@ const buttonClass = computed(() => {
     props.round ? "rounded-full" : "rounded-md",
     sizeMap[props.size || "default"],
     typeMap[props.type || "primarily"],
-    props.disabled ? "opacity-50 cursor-not-allowed" : "",
+    props.disabled || props.loading ? "opacity-50 cursor-not-allowed" : "",
     props.class,
   ];
 
   return twMerge(...classResult);
 });
 </script>
+
+<style scoped>
+.spinner {
+  animation: rotate 1s linear infinite;
+  width: 1em;
+  height: 1em;
+}
+
+.path {
+  stroke: currentColor;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}
+</style>

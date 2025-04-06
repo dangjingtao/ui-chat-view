@@ -13,6 +13,7 @@ import { readFileSync } from "fs";
 import { resolve } from "path";
 import Markdown from "vite-plugin-md";
 import rawPlugin from "vite-raw-plugin";
+import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill";
 
 // 读取 package.json 文件
 const pkg = JSON.parse(
@@ -125,12 +126,19 @@ export default defineConfig({
     __APP_BASE_DOMAIN__: JSON.stringify(BASE_DOMAIN),
   },
   server: {
-    allowedHosts: ["tavern.tomz.io"],
+    allowedHosts: ["tavern.tomz.io", "127.0.0.1:9873"],
     headers: {
       "Cross-Origin-Embedder-Policy": "require-corp",
       "Cross-Origin-Opener-Policy": "same-origin",
     },
     port: 8461,
+    proxy: {
+      "/gptsovits": {
+        target: "http://localhost:9872",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/gptsovits/, ""),
+      },
+    },
   },
   resolve: {
     alias: {
@@ -162,6 +170,12 @@ export default defineConfig({
       },
     },
   },
+
+  // optimizeDeps: {
+  //   esbuildOptions: {
+  //     plugins: [NodeModulesPolyfillPlugin()],
+  //   },
+  // },
 
   test: {
     globals: true,

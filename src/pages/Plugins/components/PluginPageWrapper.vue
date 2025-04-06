@@ -34,12 +34,12 @@
           <slot name="pluginConsole"></slot>
         </div>
 
-        <div class="px-0.5">
+        <div class="mt-3 px-0.5 md:mt-0">
           <slot name="pluginConsoleOperation"></slot>
         </div>
       </div>
     </div>
-    <div class="relative flex flex-1 flex-col py-4 md:mb-0">
+    <div class="relative flex flex-col py-4 md:mb-0 md:w-[calc(100%-500px)]">
       <slot name="pluginDebugger"></slot>
     </div>
   </div>
